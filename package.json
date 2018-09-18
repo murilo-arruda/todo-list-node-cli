@@ -1,0 +1,9 @@
+{
+  "name": "todo-cli-node",
+  "version": "0.1.0",
+  "description": "Todo List CLI build whit node",
+  "main": "index.js",
+  "repository": "https://github.com/github.com/passok11",
+  "author": "passok11",
+  "license": "MIT"
+}
