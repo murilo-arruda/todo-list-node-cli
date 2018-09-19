@@ -1,5 +1,8 @@
 const readline = require('readline');
+const chalk = require('chalk');
 
+const success = chalk.green;
+const waiting = chalk.blue;
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -22,7 +25,10 @@ const todos = [
 ];
 
 function showTodos() {
-  todos.forEach(todo => console.log(todo));
+  todos.forEach((todo, index)=> {
+    const color = todo.isChecked ? success : waiting;
+    console.log(color(`${index} - [${todo.isChecked ? 'X' : ' ' }] ${todo.text}`))
+  });
 }
 
 function askForATask(withHelp) {
@@ -51,10 +57,12 @@ function askForATask(withHelp) {
   });
 }
 function addTodo(text) {
-  todos.push({
-    isChecked: false,
-    text,
-  })
+  if( text.length > 0){
+    todos.push({
+      isChecked: false,
+      text,
+    });
+  }
 }
 function checkTodos(ids){
   ids.forEach((id) => {
