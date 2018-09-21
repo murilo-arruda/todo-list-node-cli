@@ -111,7 +111,7 @@ function checkTask(answer, args) {
   saveData();
   askForATask(help);
 }
-// try to read data from a json file
+
 function loadFile() {
   try{
     todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
