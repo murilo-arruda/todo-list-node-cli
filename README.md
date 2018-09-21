@@ -3,11 +3,14 @@
 # TODO LIST CLI
 > Todo list CLI build in node.js
 
-Simple implementation todo list in Node.js . Manage your todo's directly on terminal.
+Simple implementation todo list in Node.js . Manage yours todos directly on terminal.
 
 
 ## Installation
 
+1 - Clone the repo
+2 - cd to the page
+3 -
 
 ```sh
 npm install
