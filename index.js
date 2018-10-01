@@ -68,13 +68,13 @@ function removeTodos(ids){
 function showHelp() {
   console.log(`
   ${chalk.bgGreen('TODO LIST NODE CLI')}\n
-  Manager todos anytime using command line!\n
+  Manage your todos anytime using command line!\n
   Every change will be saved in your system.\n
   usage: 'command [arguments]' - the arguments are space separated!\n
 
-  add - add a new todo. Example ${chalk.inverse('add my new task')}\n
-  check - checkmark the  items. Example: ${chalk.inverse('check 0 2')}. this will check the first item and the third.\n
-  remove - remove items from the list. Example ${chalk.inverse('remove 0 1')}. this will remove the first two items.\n
+  ${chalk.green('add')} - add a new todo. Example ${chalk.inverse('add my new task')}\n
+  ${chalk.blue('check')} - checkmark the  items. Example: ${chalk.inverse('check 0 2')}. this will check the first item and the third.\n
+  ${chalk.red('remove')} - remove items from the list. Example ${chalk.inverse('remove 0 1')}. this will remove the first two items.\n
   you can use the initial letter of each command for a shortcut\n
   > PRESS ENTER TO CONTINUE < \n
 `)
