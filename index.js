@@ -144,6 +144,11 @@ function loadFile() {
 function saveData() {
   fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8');
 }
+
+console.clear = function () {
+  return process.stdout.write('\033c\033[3J');
+}
+
 let todos;
 loadFile();
 
