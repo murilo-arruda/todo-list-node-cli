@@ -144,8 +144,10 @@ Firt configuraiton..
 ## Contributors
 
 Initial Work - [@passok11](https://twitter.com/passocabr)
-Documentation - [@gattigaga](https://github.com/gattigaga)
 
+Documentation - [@gattigaga](https://github.com/gattigaga)
+[@Ridermansb](https://github.com/Ridermansb)
+[@Primogenia](https://github.com/Ridermansb)
 
 ## Contributing
 
