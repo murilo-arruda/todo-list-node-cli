@@ -140,10 +140,11 @@ You can exit with typing **e** like :
 * 0.1.0
     * Working in progress
 
-## Meta
+## Contributors
 
-Murilo Arruda – [@passok11](https://twitter.com/passocabr)
-@@ test
+Initial Work - [@passok11](https://twitter.com/passocabr)
+Documentation - [@gattigaga](https://github.com/gattigaga)
+
 
 ## Contributing
 
