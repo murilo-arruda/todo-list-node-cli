@@ -101,7 +101,7 @@ You can open built-in documentation with typing **h** like :
 
 It will be :
 
-Firt configuraiton..
+First configuraiton..
 
 ```sh
   TODO LIST NODE CLI
