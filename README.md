@@ -135,7 +135,8 @@ Firt configuraiton..
 *Todos are save on `todos.json` file*
 
 ## Release History
-
+* 0.3.0
+    * Hacktoberfest
 * 0.2.0
     * First beta release
 * 0.1.0
@@ -144,6 +145,7 @@ Firt configuraiton..
 ## Contributors
 
 Initial Work - [@passok11](https://twitter.com/passocabr)
+Code improvements - [@Johnb21](https://github.com/Johnb21)
 
 Documentation - [@gattigaga](https://github.com/gattigaga)
 [@Ridermansb](https://github.com/Ridermansb)
