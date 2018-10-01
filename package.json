@@ -1,6 +1,6 @@
 {
   "name": "todo-cli-node",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Todo List CLI build whit node",
   "main": "index.js",
   "repository": "https://github.com/github.com/passok11",
