@@ -26,7 +26,7 @@ If you're on Windows, do yourself a favor and use [`cmder`](http://cmder.net/) i
 ```sh
 node index.js
 ```
-Working in progress
+Work in progress
 
 
 
@@ -35,7 +35,7 @@ Working in progress
 * 0.2.0
     * First beta release
 * 0.1.0
-    * Working in progress
+    * Work in progress
 
 ## Meta
 
@@ -44,4 +44,4 @@ Murilo Arruda – [@passok11](https://twitter.com/passocabr)
 
 ## Contributing
 
-Pull request are always open! fell free to help!
+Pull requests are always open! Feel free to help!
