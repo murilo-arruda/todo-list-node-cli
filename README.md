@@ -145,7 +145,10 @@ Firt configuraiton..
 ## Contributors
 
 Initial Work - [@passok11](https://twitter.com/passocabr)
+
 Code improvements - [@Johnb21](https://github.com/Johnb21)
+
+Compatibility - [mani1soni](https://github.com/mani1soni)
 
 Documentation - [@gattigaga](https://github.com/gattigaga)
 [@Ridermansb](https://github.com/Ridermansb)
