@@ -139,7 +139,7 @@ Firt configuraiton..
 * 0.2.0
     * First beta release
 * 0.1.0
-    * Working in progress
+    * Work in progress
 
 ## Contributors
 
@@ -149,4 +149,4 @@ Documentation - [@gattigaga](https://github.com/gattigaga)
 
 ## Contributing
 
-Pull request are always open! fell free to help!
+Pull requests are always open! Feel free to help!
