@@ -101,6 +101,8 @@ You can open built-in documentation with typing **h** like :
 
 It will be :
 
+Firt configuraiton..
+
 ```sh
   TODO LIST NODE CLI
 
@@ -122,16 +124,15 @@ It will be :
   > PRESS ENTER TO CONTINUE <
 ```
 
-- **Exiting App**
+  > usage: `command [arguments]` - the arguments are space separated!
 
-You can exit with typing **e** like :
+* `a` or `add` - add a new todo. Example add my new task
+* `c` or `check` - checkmark the  items. Example: `check 0 2`. this will check the first item and the third.
+* `r` or `remove` - remove items from the list. Example `remove 0 1`. this will remove the first two items.
+* `h` or `help` - get available commands
+* `e` or `exit` - exit cli
 
-```sh
-    0 - [X] First Todo
-
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    > e
-```
+*Todos are save on `todos.json` file*
 
 ## Release History
 
