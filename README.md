@@ -23,12 +23,21 @@ If you're on Windows, do yourself a favor and use [`cmder`](http://cmder.net/) i
 
 ## Usage example
 
+Firt configuraiton..
+
 ```sh
 node index.js
 ```
-Working in progress
 
+  > usage: `command [arguments]` - the arguments are space separated!
 
+* `a` or `add` - add a new todo. Example add my new task
+* `c` or `check` - checkmark the  items. Example: `check 0 2`. this will check the first item and the third.
+* `r` or `remove` - remove items from the list. Example `remove 0 1`. this will remove the first two items.
+* `h` or `help` - get available commands
+* `e` or `exit` - exit cli
+
+*Todos are save on `todos.json` file*
 
 ## Release History
 
