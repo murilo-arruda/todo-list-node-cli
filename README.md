@@ -10,11 +10,11 @@ Simple implementation of a Todo List in Node.js. Manage your todos directly in t
 - Clone the repo: `git clone https://github.com/Passok11/todo-list-node-cli.git`
 - Go into the repo folder locally: `cd todo-list-node-cli`
 - Run `npm install` from the terminal to install **node_modules**.
-- And finally, Run `node index.js` from the terminal to run Todo List CLI.
+- And finally, run `node index.js` from the terminal to run Todo List CLI.
 
 Windows:
 
-If you're on Windows, do yourself a favor and use [`cmder`](http://cmder.net/) instead of `cmd.exe`.
+If you're using Windows, do yourself a favor and use [`cmder`](http://cmder.net/) instead of `cmd.exe`.
 
 
 ## Usage
