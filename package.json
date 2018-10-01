@@ -6,12 +6,24 @@
   "repository": "https://github.com/github.com/passok11",
   "author": "passok11",
   "license": "MIT",
+  "lint-staged": {
+    "src/**/*.{ts,tsx,js,jsx,json,css}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
   "dependencies": {
     "chalk": "^2.4.1",
     "each-async": "1.1.1",
     "indent-string": "3.2.0"
   },
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "precommit": "lint-staged"
+  },
+  "devDependencies": {
+    "husky": "^1.1.0",
+    "lint-staged": "^7.3.0",
+    "prettier": "^1.14.3"
   }
 }
