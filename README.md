@@ -21,7 +21,7 @@ If you're on Windows, do yourself a favor and use [`cmder`](http://cmder.net/) i
 
 - **Add New Todo**
 
-Type **a YOUR_TODO_HERE** to add new todo. In the example, it will be add Third Todo.
+Type **a [YOUR_TODO_HERE]** to add new todo. In the example, it will be add Third Todo.
 
 ```sh
     0 - [X] First Todo
