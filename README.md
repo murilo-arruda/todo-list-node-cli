@@ -10,11 +10,14 @@ Simple implementation Todo List in Node.js. Manage yours todos directly on termi
 - Clone the repo
 - Go into the repo folder locally
 - Run **npm install** from Terminal to install node_modules.
+
 - And finally, Run **node index.js** from Terminal to run Todo List CLI.
 
 Windows:
 
 If you're on Windows, do yourself a favor and use [`cmder`](http://cmder.net/) instead of `cmd.exe`.
+
+
 
 
 ## Usage
