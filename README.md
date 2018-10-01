@@ -152,7 +152,7 @@ Compatibility - [mani1soni](https://github.com/mani1soni)
 
 Documentation - [@gattigaga](https://github.com/gattigaga)
 [@Ridermansb](https://github.com/Ridermansb)
-[@Primogenia](https://github.com/Ridermansb)
+[@Primogenia](https://github.com/Primogenia)
 
 ## Contributing
 
