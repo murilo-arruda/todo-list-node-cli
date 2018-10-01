@@ -50,12 +50,33 @@ function addTodo(text) {
     });
   }
 }
+
+/**
+* Check the todos
+* @function checkTodos
+*/
 function checkTodos(ids){
-  ids.forEach((id) => {
-    if (todos[id]){
-      todos[id].isChecked = !todos[id].isChecked;
+  // If the string includes the '-' (c 1-3) it means is in range
+  if(ids[0].includes('-')) {
+    ids = ids[0].split('-');
+    // We allow only when the args are ok ['1', '3'] for example
+    if(ids.length === 2) {
+      // Do the stuff in the old way
+      for(let i = ids[0]; i <= ids[1]; i++) {
+        // Do the job only when the todos exists
+        if (todos[i]) {
+          todos[i].isChecked = !todos[i].isChecked;
+        }
+      }
     }
-  });
+  // Or else, is just specific checks
+  } else {
+    ids.forEach((id) => {
+      if (todos[id]){
+        todos[id].isChecked = !todos[id].isChecked;
+      }
+    });
+  }
 }
 function removeTodos(ids){
   ids.sort((a, b) => b - a);
@@ -146,4 +167,3 @@ function saveData() {
 }
 let todos;
 loadFile();
-
