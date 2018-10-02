@@ -85,9 +85,9 @@ function showHelp() {
   Every change will be saved in your system.\n
   Usage: 'command [arguments]' - the arguments are space separated!\n
 
-  ${chalk.green('add')} - Add a new todo. Example ${chalk.inverse('add my new task')}\n
+  ${chalk.green('add')} - Add a new todo. Example: ${chalk.inverse('add my new task')}\n
   ${chalk.blue('check')} - Checkmark the  items. Example: ${chalk.inverse('check 0 2')}. This will check the first item and the third.\n
-  ${chalk.red('remove')} - Remove items from the list. Example ${chalk.inverse('remove 0 1')}. This will remove the first two items.\n
+  ${chalk.red('remove')} - Remove items from the list. Example: ${chalk.inverse('remove 0 1')}. This will remove the first two items.\n
   You can use the initial letter of each command for a shortcut.\n
   > PRESS ENTER TO CONTINUE < \n
 `)
@@ -129,7 +129,6 @@ function checkTask(answer, args) {
       break;
     default:
       help = false;
-
   }
   saveData();
   askForATask(help);
@@ -141,7 +140,7 @@ function loadFile() {
     askForATask(false);
   } catch (err){
     if (err.code = 'ENOENT'){
-      console.log('Todo file not found. Do you want generate a new one? (Y/n)');
+      console.log('Todo file not found. Do you want generate a new one? (Y/N)');
       rl.question('> ', (answer) => {
         switch(answer) {
           case 'y':
