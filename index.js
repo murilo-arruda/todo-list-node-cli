@@ -58,12 +58,21 @@ function checkTodos(ids){
   });
 }
 function removeTodos(ids){
-  ids.sort((a, b) => b - a);
-  ids.forEach((id) => {
-    if (todos[id]) {
-      todos.splice(id, 1);
+  if(ids[0].length === 3 && ids[0].includes('-')) {
+    const [startRemoval, stopRemoval] = ids[0].split('-');
+     if ((startRemoval >= 0 && startRemoval < todos.length)
+      && (stopRemoval >= 0 && stopRemoval < todos.length)) {
+      const toRemove = (parseInt(stopRemoval) - parseInt(startRemoval)) + 1;
+      todos.splice(startRemoval, toRemove);
     }
-  });
+  } else {
+    ids.sort((a, b) => b - a);
+    ids.forEach((id) => {
+      if (todos[id]) {
+        todos.splice(id, 1);
+      }
+    });
+  }
 }
 function showHelp() {
   console.log(`
