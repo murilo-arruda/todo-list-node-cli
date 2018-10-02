@@ -35,7 +35,7 @@ function askForATask(withHelp) {
     showHelp();
   } else {
     showTodos();
-    console.log('type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit ');
+    console.log('type an option: (a)dd, (c)heck, (r)emove, (u)pdate, (h)elp, (e)xit ');
   }
   rl.question('> ', (answer) => {
     [answer, ...args] = answer.split(' ');
@@ -49,6 +49,17 @@ function addTodo(text) {
       text,
     });
   }
+}
+function updateTodo(id) {
+  var index = id[0];
+  var updateText = "";
+  if(todos[index]){
+    for(i=1; i<(id.length); i++){
+      updateText += id[i];
+      updateText += " ";
+    }
+  }
+  todos[index].text = updateText;
 }
 function checkTodos(ids){
   ids.forEach((id) => {
@@ -81,9 +92,12 @@ function showHelp() {
   Every change will be saved in your system.\n
   usage: 'command [arguments]' - the arguments are space separated!\n
 
-  ${chalk.green('add')} - add a new todo. Example ${chalk.inverse('add my new task')}\n
-  ${chalk.blue('check')} - checkmark the  items. Example: ${chalk.inverse('check 0 2')}. this will check the first item and the third.\n
-  ${chalk.red('remove')} - remove items from the list. Example ${chalk.inverse('remove 0 1')}. this will remove the first two items.\n
+
+  add - add a new todo. Example ${chalk.inverse('add my new task')}\n
+  check - checkmark the  items. Example: ${chalk.inverse('check 0 2')}. this will check the first item and the third.\n
+  remove - remove items from the list. Example ${chalk.inverse('remove 0 1')}. this will remove the first two items.\n
+  update - update the existing todo. Example ${chalk.inverse('update 0 hi there' )}.this will take the index of second todo and update it with the text "hi there".\n 
+
   you can use the initial letter of each command for a shortcut\n
   > PRESS ENTER TO CONTINUE < \n
 `)
@@ -102,6 +116,10 @@ function checkTask(answer, args) {
     case 'r':
     case 'remove':
       removeTodos(args);
+      break;
+    case 'u':
+    case 'update':
+      updateTodo(args);
       break;
     case 'h':
     case 'help':
