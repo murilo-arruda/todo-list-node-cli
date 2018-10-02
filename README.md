@@ -88,6 +88,28 @@ Which gives:
     >
 ```
 
+In this example, we will remove a range of todos(from **'Second Todo'** to **'Third Todo'**)
+```
+    0 - [ ] First Todo
+    1 - [X] Second Todo
+    2 - [X] Third Todo
+    3 - [X] Fourth Todo
+    4 - [ ] Fifth Todo
+
+    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
+    > r 1-3
+```
+
+Which gives:
+
+```
+    0 - [ ] First Todo
+    1 - [ ] Fifth Todo
+
+    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
+    >
+```
+
 ### Documentation
 
 You can open the built-in documentation by typing `h` as such:
