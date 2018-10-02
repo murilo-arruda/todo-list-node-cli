@@ -90,33 +90,21 @@ function showHelp() {
 }
 function checkTask(answer, args) {
   let help = false;
-  switch(answer){
-    case 'a':
-    case 'add':
-      addTodo(args.join(' '));
-      break;
-    case 'c':
-    case 'check':
-      checkTodos(args);
-      break;
-    case 'r':
-    case 'remove':
-      removeTodos(args);
-      break;
-    case 'h':
-    case 'help':
-      help = true;
-      break;
-    case 'e':
-    case 'exit':
-      console.clear();
-      rl.close();
-      process.exit();
-      break;
-    default:
-      help = false;
 
+  if (answer === 'a' || answer === 'add') addTodo(args.join(' '));
+
+  if (answer === 'c' || answer === 'check') checkTodos(args);
+
+  if (answer === 'r' || answer === 'remove') removeTodos(args);
+
+  if (answer === 'h' || answer === 'help') help = true;
+
+  if (answer === 'e' || answer === 'exit') {
+    console.clear();
+    rl.close();
+    process.exit();
   }
+
   saveData();
   askForATask(help);
 }
