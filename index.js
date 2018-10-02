@@ -86,6 +86,7 @@ function showHelp() {
   add - add a new todo. Example ${chalk.inverse('add my new task')}\n
   check - checkmark the  items. Example: ${chalk.inverse('check 0 2')}. this will check the first item and the third.\n
   remove - remove items from the list. Example ${chalk.inverse('remove 0 1')}. this will remove the first two items.\n
+  update - update the existing todo. Example ${chalk.inverse('update 0 hi there' )}.this will take the index of second todo and update it with the text "hi there".\n 
   you can use the initial letter of each command for a shortcut\n
   > PRESS ENTER TO CONTINUE < \n
 `)
