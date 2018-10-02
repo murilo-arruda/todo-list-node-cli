@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const readline = require('readline');
 const chalk = require('chalk');
 const fs = require('fs');

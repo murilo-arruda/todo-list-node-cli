@@ -13,5 +13,9 @@
   },
   "scripts": {
     "start": "node index.js"
-  }
+  },
+  "bin": {
+      "todo": "./index.js"
+  },
+  "preferGlobal": true
 }
