@@ -7,7 +7,7 @@ const waiting = chalk.blue;
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout,
+  output: process.stdout
 });
 
 const template = `[
@@ -24,7 +24,9 @@ const template = `[
 function showTodos() {
   todos.forEach((todo, index)=> {
     const color = todo.isChecked ? success : waiting;
-    console.log(color(`${index} - [${todo.isChecked ? 'X' : ' ' }] ${todo.text}`))
+    console.log(color(`${index} - [${todo.isChecked
+      ? 'X' : ' ' }]
+      ${todo.text}`));
   });
 }
 
