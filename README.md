@@ -3,27 +3,27 @@
 # Todo List CLI
 > Todo List CLI build in Node.js
 
-Simple implementation Todo List in Node.js. Manage yours todos directly on terminal.
+Simple implementation of a Todo List in Node.js. Manage your todos directly in the terminal.
 
 ## Installation
 
-- Clone the repo
-- Go into the repo folder locally
-- Run **npm install** from Terminal to install node_modules.
-- And finally, Run **node index.js** from Terminal to run Todo List CLI.
+- Clone the repo: `git clone https://github.com/Passok11/todo-list-node-cli.git`
+- Go into the repo folder locally: `cd todo-list-node-cli`
+- Run `npm install` from the terminal to install **node_modules**.
+- And finally, run `node index.js` from the terminal to run Todo List CLI.
 
 Windows:
 
-If you're on Windows, do yourself a favor and use [`cmder`](http://cmder.net/) instead of `cmd.exe`.
+If you're using Windows, do yourself a favor and use [`cmder`](http://cmder.net/) instead of `cmd.exe`.
 
 
 ## Usage
 
-- **Add New Todo**
+### Add New Todo
 
-Type **a YOUR_TODO_HERE** to add new todo. In the example, it will be add Third Todo.
+Type `a YOUR_TODO_HERE` to add a new todo. In this example, we will add **'Third Todo'**.
 
-```sh
+```
     0 - [X] First Todo
     1 - [ ] Second Todo
 
@@ -31,9 +31,9 @@ Type **a YOUR_TODO_HERE** to add new todo. In the example, it will be add Third 
     > a Third Todo
 ```
 
-It will be :
+Which gives:
 
-```sh
+```
     0 - [X] First Todo
     1 - [ ] Second Todo
     2 - [ ] Third Todo
@@ -42,11 +42,11 @@ It will be :
     >
 ```
 
-- **Check/Uncheck Existing Todo**
+### Check/Uncheck Existing Todo
 
-Type **c TODO_INDEX_HERE** to check/uncheck existing todos. You can check/uncheck more than one todo. In the example, It will be check First Todo and Third Todo.
+Type `c TODO_INDEX_HERE` to check/uncheck existing todos. You can check or uncheck more than one todo at once. In this example, we will check **'First Todo'** and **'Third Todo'**.
 
-```sh
+```
     0 - [ ] First Todo
     1 - [ ] Second Todo
     2 - [ ] Third Todo
@@ -55,9 +55,9 @@ Type **c TODO_INDEX_HERE** to check/uncheck existing todos. You can check/unchec
     > c 0 2
 ```
 
-It will be :
+Which gives:
 
-```sh
+```
     0 - [X] First Todo
     1 - [ ] Second Todo
     2 - [X] Third Todo
@@ -66,11 +66,11 @@ It will be :
     >
 ```
 
-- **Remove Existing Todo**
+### Remove Existing Todo
 
-Type **r TODO_INDEX_HERE** to remove existing todos. You can remove more than one todo. In the example, It will be remove First Todo and Third Todo.
+Type `r TODO_INDEX_HERE` to remove an existing todo. You can remove more than one todo at once. In this example, we will remove **'First Todo'** and **'Third Todo'**.
 
-```sh
+```
     0 - [X] First Todo
     1 - [ ] Second Todo
     2 - [X] Third Todo
@@ -79,34 +79,32 @@ Type **r TODO_INDEX_HERE** to remove existing todos. You can remove more than on
     > r 0 2
 ```
 
-It will be :
+Which gives:
 
-```sh
+```
     0 - [ ] Second Todo
 
     type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
     >
 ```
 
-- **Documentation**
+### Documentation
 
-You can open built-in documentation with typing **h** like :
+You can open the built-in documentation by typing `h` as such:
 
-```sh
+```
     0 - [X] First Todo
 
     type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
     > h
 ```
 
-It will be :
+Which gives:
 
-Firt configuraiton..
-
-```sh
+```
   TODO LIST NODE CLI
 
-  Manager todos anytime using command line!
+  Manage your todos anytime using command line!
 
   Every change will be saved in your system.
 
@@ -127,26 +125,35 @@ Firt configuraiton..
   > usage: `command [arguments]` - the arguments are space separated!
 
 * `a` or `add` - add a new todo. Example add my new task
-* `c` or `check` - checkmark the  items. Example: `check 0 2`. this will check the first item and the third.
+* `c` or `check` - checkmark the items. Example: `check 0 2`. this will check the first item and the third.
 * `r` or `remove` - remove items from the list. Example `remove 0 1`. this will remove the first two items.
 * `h` or `help` - get available commands
 * `e` or `exit` - exit cli
 
-*Todos are save on `todos.json` file*
+*Todos are save in the `todos.json` file*
 
 ## Release History
-
+* 0.3.0
+    * Hacktoberfest
 * 0.2.0
     * First beta release
 * 0.1.0
-    * Working in progress
+    * Work in progress
 
 ## Contributors
 
 Initial Work - [@passok11](https://twitter.com/passocabr)
+
+Code improvements - [@Johnb21](https://github.com/Johnb21)
+
+Compatibility - [mani1soni](https://github.com/mani1soni)
+
 Documentation - [@gattigaga](https://github.com/gattigaga)
+[@Ridermansb](https://github.com/Ridermansb)
+[@Primogenia](https://github.com/Primogenia)
+[@tducasse](https://github.com/tducasse)
 
 
 ## Contributing
 
-Pull request are always open! fell free to help!
+Pull requests are always open! Feel free to help!
