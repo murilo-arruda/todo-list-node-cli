@@ -35,7 +35,7 @@ function askForATask(withHelp) {
     showHelp();
   } else {
     showTodos();
-    console.log('type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit ');
+    console.log('type an option: (a)dd, (c)heck, (r)emove, (u)pdate, (h)elp, (e)xit ');
   }
   rl.question('> ', (answer) => {
     [answer, ...args] = answer.split(' ');
@@ -49,6 +49,17 @@ function addTodo(text) {
       text,
     });
   }
+}
+function updateTodo(id) {
+  var index = id[0];
+  var updateText = "";
+  if(todos[index]){
+    for(i=1; i<(id.length); i++){
+      updateText += id[i];
+      updateText += " ";
+    }
+  }
+  todos[index].text = updateText;
 }
 function checkTodos(ids){
   ids.forEach((id) => {
@@ -93,6 +104,10 @@ function checkTask(answer, args) {
     case 'r':
     case 'remove':
       removeTodos(args);
+      break;
+    case 'u':
+    case 'update':
+      updateTodo(args);
       break;
     case 'h':
     case 'help':
