@@ -166,7 +166,11 @@ Which gives:
 
 Initial Work - [@passok11](https://twitter.com/passocabr)
 
-Code improvements - [@Johnb21](https://github.com/Johnb21)
+Features - [IAMOTZ](https://github.com/IAMOTZ)
+
+Code improvements - [@Johnb21](https://github.com/Johnb21) [JackieCalapristi](https://github.com/JackieCalapristi)
+
+Minor Update - [ywpark1](https://github.com/ywpark1) [zjael](https://github.com/zjael)
 
 Compatibility - [mani1soni](https://github.com/mani1soni)
 
