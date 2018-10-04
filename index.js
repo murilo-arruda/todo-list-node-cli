@@ -127,7 +127,7 @@ function loadFile() {
     askForATask(false);
   } catch (err){
     if (err.code = 'ENOENT'){
-      console.log('Todo file not found. do you want generate a new one? (Y/n)');
+      console.log('Todo file not found. Do you want to generate a new one? (Y/n)');
       rl.question('> ', (answer) => {
         switch(answer) {
             case 'y':
@@ -139,7 +139,7 @@ function loadFile() {
               askForATask(false);
               break;
             default:
-              console.log('Exiting...');
+              console.log('You can\'t use this app without creating the todo file.\nExiting...');
               process.exit(0);
         }
        });
