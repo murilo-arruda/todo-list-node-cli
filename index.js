@@ -13,18 +13,30 @@ const rl = readline.createInterface({
 const template = `[
   {
     "isChecked": false,
-    "text": "Check me to test if is working! "
+    "text": "Check me to test if is working! ",
+    "lastActivity": "created",
+    "lastUpdated": ${Date.now()}
   },
   {
     "isChecked": true,
-    "text": "You can remove this template todo! "
+    "text": "You can remove this template todo!",
+    "lastActivity": "checked",
+    "lastUpdated": ${Date.now()}
+
   }
 ]`;
+
+function formatTodoTime(time) {
+  const date = new Date(time);
+  return chalk.grey(
+    `${date.getDate()}/${date.getMonth()}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
+  );
+}
 
 function showTodos() {
   todos.forEach((todo, index)=> {
     const color = todo.isChecked ? success : waiting;
-    console.log(color(`${index} - [${todo.isChecked ? 'X' : ' ' }] ${todo.text}`))
+    console.log(color(`${index} - [${todo.isChecked ? 'X' : ' ' }] ${todo.text}\t ${todo.lastActivity} ${formatTodoTime(todo.lastUpdated)}`))
   });
 }
 
@@ -48,6 +60,8 @@ function addTodo(text) {
     todos.push({
       isChecked: false,
       text,
+      lastActivity: 'created',
+      lastUpdated: Date.now(),
     });
   }
 }
@@ -56,6 +70,8 @@ function checkTodos(ids){
   ids.forEach((id) => {
     if (todos[id]){
       todos[id].isChecked = !todos[id].isChecked;
+      todos[id].lastActivity = 'checked';
+      todos[id].lastUpdated = Date.now();
     }
   });
 }
