@@ -76,7 +76,7 @@ function removeTodos(ids){
 }
 function showHelp() {
   console.log(`
-  ${chalk.bgGreen('TODO LIST NODE CLI')}\n
+  ${chalk.white.bgGreen(' TODO LIST NODE CLI ')}\n
   Manage your todos anytime using command line!\n
   Every change will be saved in your system.\n
   usage: 'command [arguments]' - the arguments are space separated!\n
