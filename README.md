@@ -30,10 +30,11 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 
 **Planning to add:**
 * `rd` or `redo` - This will redo the last to-do.
-* `ag` or `remdones` - This will remove all the the checked to-dos.
-* `ag` or `license` - Show the license of the software.
+* `rc` or `remcheckeds` - This will remove all the the checked to-dos.
+* `l` or `license` - Show the license of the software.
 * `ag` or `addgroup` - Create a new group of to-dos. This helps you to organize better the types of to-dos you have.
 * `rg` or `remgroup` - Delete the selected group.
+* `cg` or `checkgroup` - Check all todos in the selected group.
 * `ng` or `namegroup` - Name the selected group. First is the group you want to rename and then the name you want.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
 * `rs` or `restart` - Restart the program. :|

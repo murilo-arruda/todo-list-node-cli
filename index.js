@@ -20,22 +20,6 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-const template = `[
-  {
-    "isChecked": false,
-    "text": "Check me to test if is working! ",
-    "lastActivity": ">",
-    "lastUpdated": ${Date.now()}
-  },
-  {
-    "isChecked": true,
-    "text": "You can remove this template todo!",
-    "lastActivity": "»",
-    "lastUpdated": ${Date.now()}
-
-  }
-]`;
-
 function formatTodoTime(time) {
   const date = new Date(time);
   // make date prettier
@@ -51,9 +35,11 @@ function formatTodoTime(time) {
   return chalk.grey(output);
 }
 
+/* Show todos with gui */
+
 function showTodos() {
   console.log(guiLines(lineHeader));
-  const lastIndex = todos.length.toString();
+  //const lastIndex = todos.length.toString();
   todos.forEach((todo, index) => {
     // color for the whole console ??? if is checked or not
     const color = todo.isChecked ? success : waiting;
@@ -61,7 +47,7 @@ function showTodos() {
     const bar = guiLines(` │ `);
     // prettier the index...
     index = index.toString();
-    while (index.length < lastIndex.length) index = ` ${index}`;
+    while (index.length < 2) index = ` ${index}`; // 2 => lastIndex.length
     index = color(index);
     // status
     const status = color(`(${todo.isChecked ? 'X' : ' '})`);
@@ -111,11 +97,11 @@ function askForATask(withHelp) {
     (h)  help                       Show all list of commands and explanations
     (a)  add                        Add to-do (default is main list)
     (x)  check                      Check to-do (default is main list)
+    (rd) redo                       Redo last edit
     (r)  remove                     Remove to-do (default is main list)
     (ed) edit                       Edit to-do (default is main list)
     (e)  exit                       Close terminal
     `));
-    /*     (rd) redo                       Redo last edit */
   }
   rl.question(' > ', (answer) => {
     [answer, ...args] = answer.split(' ');
@@ -123,13 +109,45 @@ function askForATask(withHelp) {
   });
 }
 
-function addNormalTodo(text) {
-  todos.push({
-    isChecked: false,
-    text,
-    lastActivity: '>',
-    lastUpdated: Date.now(),
-  });
+/* Redo Method */
+function addRedo(command, args) {
+  command = command.toLowerCase();
+  switch(command) {
+    case 'add':
+      redos.unshift({
+        command,
+        index: args
+      });
+      break;
+    case 'rem':
+      redos.unshift({
+        command,
+        object: args
+      });
+      break;
+  }
+}
+
+function redoAction() {
+  if (redos.length === 0) return;
+  const redo = redos[0];
+  switch(redo.command) {
+    case 'add':
+      // remove todo added
+      todos.splice(redo.index, 1);
+      break;
+    case 'check':
+      //
+      break;
+    case 'rem':
+      // add todo removed
+      todos.push(redo.object);
+      break;
+    case 'edit':
+      //
+      break;
+  }
+  redos.shift();
 }
 
 function getNumber(text) {
@@ -159,11 +177,22 @@ function getNumber(text) {
   return validate;
 }
 
+function addNormalTodo(text) {
+  addRedo('add', todos.length);
+  todos.push({
+    isChecked: false,
+    text,
+    lastActivity: '>',
+    lastUpdated: Date.now(),
+  });
+}
+
 function addTodo(text) {
   if (text.length > 0) {
     const validate = getNumber(text);
     if (typeof validate === 'string') return addNormalTodo(validate);
     if (validate.is) {
+      addRedo('add', validate.index);
       todos.splice(validate.index, 0, {
         isChecked: false,
         text: validate.text,
@@ -189,7 +218,39 @@ function editTodo(text) {
   }
 }
 
+/* Range In between */
+
+function rangeIn(ids) {
+  ids = [ids];
+  let [start, end] = ids[0].split('-');
+  // if the index given is bigger than how much you have
+  if (start > todos.length || todos.length < end) return;
+  if (start < 0 && end < 0 ) return;
+  start = parseInt(start);
+  end = parseInt(end);
+  let endN, startN;
+  if (end < start) {
+    startN = end;
+    endN = start;
+  }
+  start = startN || start;
+  end = endN || end;
+  let validate = [];
+  for (let i = start; i <= end; i++) validate.push(i.toString());
+  return validate;;
+}
+
 function checkTodos(ids) {
+  // verify if there's any item with range in
+  ids.forEach((id, index) => {
+    id = id.toString();
+    if (id.includes('-')) {
+      const validate = rangeIn(id);
+      ids.splice(index, 1);
+      ids = ids.concat(validate);
+    };
+  });
+  // loop for change each id
   ids.forEach((id) => {
     if (todos[id]) {
       const ischecked = !todos[id].isChecked;
@@ -201,19 +262,21 @@ function checkTodos(ids) {
 }
 
 function removeTodos(ids) {
-  if (ids[0].length === 3 && ids[0].includes('-')) {
-    const [startRemoval, stopRemoval] = ids[0].split('-');
-    if ((startRemoval >= 0 && startRemoval < todos.length) &&
-      (stopRemoval >= 0 && stopRemoval < todos.length)) {
-      const toRemove = (parseInt(stopRemoval) - parseInt(startRemoval)) + 1;
-      todos.splice(startRemoval, toRemove);
-    }
-  } else {
-    ids.sort((a, b) => b - a);
-    ids.forEach((id) => {
-      if (todos[id]) todos.splice(id, 1);
-    });
-  }
+  if (ids.length === 0) return;
+  // verify if there's any item with range in
+  ids.forEach((item, index) => {
+    item = item.toString();
+    if (/[a-zA-Z]/g.test(item)) return;
+    if (item.includes('-')) {
+      const validate = rangeIn(item);
+      ids.splice(index, 1);
+      ids = ids.concat(validate);
+    };
+  });
+  ids.sort((a, b) => b - a);
+  ids.forEach((id) => {
+    if (todos[id]) todos.splice(id, 1);
+  });
 }
 
 function showHelp() {
@@ -240,9 +303,14 @@ function showHelp() {
       'example': 'rem 0 1',
     },
     {
-      'commands': ['remdones', 'rd'],
+      'commands': ['redo', 'rd'],
+      'explanation': 'This will redo the last action you made.',
+      'example': 'redo',
+    },
+    {
+      'commands': ['remcheckeds', 'rc'],
       'explanation': 'This will remove all the the checked to-dos.',
-      'example': 'remdones',
+      'example': 'remcheckeds',
     },
     {
       'commands': ['help', 'h'],
@@ -328,6 +396,10 @@ function checkTask(answer, args) {
     case 'check':
       checkTodos(args);
       break;
+    case 'rd':
+    case 'redo':
+      redoAction();
+      break;
     case 'r':
     case 'rem':
       removeTodos(args);
@@ -353,25 +425,48 @@ function checkTask(answer, args) {
   askForATask(help);
 }
 
+const templateTodos = `[
+  {
+    "isChecked": false,
+    "text": "Check me to test if is working! ",
+    "lastActivity": ">",
+    "lastUpdated": ${Date.now()}
+  },
+  {
+    "isChecked": true,
+    "text": "You can remove this template todo!",
+    "lastActivity": "»",
+    "lastUpdated": ${Date.now()}
+  }
+]`;
+
+const templateRedos = `[]`;
+
 function loadFile() {
   try {
     todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
+    redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
     askForATask(false);
   } catch (err) {
     if (err.code == 'ENOENT') {
-      console.log('Todo file not found. Do you want generate a new one? (Y/N)');
+      console.log('Todo file and redo file not found. Do you want generate new ones? (Y/N)');
       rl.question('> ', (answer) => {
 		answer = answer.toLowerCase();
         switch (answer) {
           case 'y':
           case 'yes':
-            fs.writeFileSync('todos.json', template, 'utf8');
+            fs.writeFileSync('todos.json', templateTodos, 'utf8');
+            fs.writeFileSync('redos.json', templateRedos, 'utf8');
+            redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
             todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
             askForATask(false);
             break;
           default:
-            console.log('You can\'t use this app without creating the todo file.\nExiting...');
-            process.exit(0);
+            console.clear();
+            console.log('You can\'t use todoncli without creating the todo and redo file.\nExiting...');
+            setTimeout(() => {
+              process.exit(0);
+            }, 1000);
         }
       });
     } else {
@@ -382,7 +477,8 @@ function loadFile() {
 }
 
 function saveData() {
-  fs.writeFileSync('todos.json', JSON.stringify(todos, null, 2), 'utf8');
+  fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8'); // |, null, 2| for prettier output
+  fs.writeFileSync('redos.json', JSON.stringify(redos, null, 2), 'utf8'); // |, null, 2| for prettier output
 }
 
 console.clear = function() {
@@ -390,11 +486,11 @@ console.clear = function() {
 };
 
 let todos;
+let redos;
 loadFile();
 
 
 /*
-const text = 'KEKEKEKE -17';
-const validate = getNumber(text);
-console.log(validate.is);
+const text = ['31-33'];
+checkTodos(text);
 */
