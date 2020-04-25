@@ -107,15 +107,15 @@ function askForATask(withHelp) {
   } else {
     showTodos();
     console.log(`
-    Type an option:`, chalk.whiteBright(`
+    Type a command:`, chalk.whiteBright(`
     (h)  help                       Show all list of commands and explanations
-    (a)  addnode                    Add to-do (default is main list)
+    (a)  add                        Add to-do (default is main list)
     (x)  check                      Check to-do (default is main list)
     (r)  remove                     Remove to-do (default is main list)
     (ed) edit                       Edit to-do (default is main list)
-    (rd) redo                       Redo last edit
     (e)  exit                       Close terminal
     `));
+    /*     (rd) redo                       Redo last edit */
   }
   rl.question(' > ', (answer) => {
     [answer, ...args] = answer.split(' ');
@@ -231,13 +231,18 @@ function showHelp() {
     },
     {
       'commands': ['edit', 'ed'],
-      'explanation': 'This will replace the indexed quote for another. Same usage of add command.',
+      'explanation': 'This will replace the indexed to-do for another. Same usage of add command.',
       'example': 'edit this one is the new -5',
     },
     {
-      'commands': ['remove', 'r'],
-      'explanation': 'This will remove the first two items. If you want to check only one, then just type the index.',
-      'example': 'remove 0 1',
+      'commands': ['rem', 'r'],
+      'explanation': 'This will remove the selected to-do. If you want to remove more, just separate the arguments with spaces.',
+      'example': 'rem 0 1',
+    },
+    {
+      'commands': ['remdones', 'rd'],
+      'explanation': 'This will remove all the the checked to-dos.',
+      'example': 'remdones',
     },
     {
       'commands': ['help', 'h'],
@@ -266,14 +271,19 @@ function showHelp() {
     },
     {
       'commands': ['setwidth', 'sw'],
-      'explanation': 'For set a new line width for the gui, it\'s only for resolve design problems.',
+      'explanation': 'For set a new line width for the gui, it\'s only for resolve design bugs.',
       'example': 'setwidth',
     },
-	{
+	  {
       'commands': ['restart', 'rs'],
       'explanation': 'Restart the program. :|',
       'example': 'restart',
-	},
+	  },
+	  {
+      'commands': ['exit', 'e'],
+      'explanation': 'Exit the program. :|',
+      'example': 'exit',
+	  },
   ];
   console.log(` ┌───────────────────────────────────────────────────────────────────────────┐
  │ ${chalk.bold('TodoNcli v1.0')}                                                        ${chalk.bold(2020)} │
@@ -319,7 +329,7 @@ function checkTask(answer, args) {
       checkTodos(args);
       break;
     case 'r':
-    case 'remove':
+    case 'rem':
       removeTodos(args);
       break;
     case 'h':
