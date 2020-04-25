@@ -1,10 +1,10 @@
 {
-  "name": "todo-cli-node",
-  "version": "0.3.0",
-  "description": "Todo List CLI build whit node",
+  "name": "todoncli",
+  "version": "1.0.0",
+  "description": "Todo List CLI with node.",
   "main": "index.js",
-  "repository": "https://github.com/github.com/passok11",
-  "author": "passok11",
+  "repository": "https://github.com/Koetemagie/todoncli",
+  "author": "koetemagie",
   "license": "MIT",
   "dependencies": {
     "chalk": "^2.4.1",
@@ -13,5 +13,9 @@
   },
   "scripts": {
     "start": "node index.js"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-google": "^0.14.0"
   }
 }
