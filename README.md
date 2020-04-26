@@ -1,6 +1,10 @@
 # Todo List CLI
 > Todo List CLI build in Node.js
 
+*We are hackers, and hackers have black terminals with ~~green~~ gray and blue text*
+
+![Template](Template.png?raw=trueg)
+
 Simple implementation of a Todo List in Node.js. Manage your todos directly in the terminal. This is an updated ~~forked~~ version from todo-list-node-cli by [@murilo-arruda](https://github.com/murilo-arruda). *I forked this because I wanted to make something unique, something that I don't think everyone the original repository would agree.*
 
 ## Installation
@@ -27,11 +31,17 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `r` or `remove` - This will remove the first two items. If you want to check only one, then just type the index.
 * `h` or `help` - Show help. Duh :3
 * `e` or `exit` - Exit the program. :|
+* `rd` or `redo` - This will redo the last to-do. Only working add e remove (with bugs).
+* `m` or `move` - This will move the todo.
+
 
 **Planning to add:**
-* `rd` or `redo` - This will redo the last to-do.
+* `s` or `switch` - Switch the todo with another.
+* `c` or `copy` - This will copy the todo. 
+* `at` or `addtime` - This will loop the todo in the time you put.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
 * `l` or `license` - Show the license of the software.
+* `sg` or `showgroup` - Show the selected group.
 * `ag` or `addgroup` - Create a new group of to-dos. This helps you to organize better the types of to-dos you have.
 * `rg` or `remgroup` - Delete the selected group.
 * `cg` or `checkgroup` - Check all todos in the selected group.
@@ -42,6 +52,8 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 ## Usage
 
 *Todos are save in the `todos.json` file*
+
+For development I recommend you use [nodemon](https://nodemon.io/). Or just fast exit using `e` and then back with `node .`.
 
 ### Add New Todo
 
@@ -168,14 +180,6 @@ You can open the built-in documentation by typing `h` as such:
         Type a command...
     > h
 ```
-
-## Release History
-* 0.3.0
-    * Hacktoberfest
-* 0.2.0
-    * First beta release
-* 0.1.0
-    * Created a gui
 
 ## Contributors
 

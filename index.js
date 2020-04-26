@@ -86,29 +86,6 @@ function showTodos() {
   return console.log(guiLines(lineSub));
 }
 
-function askForATask(withHelp) {
-  console.clear();
-  if (withHelp) {
-    showHelp();
-  } else {
-    showTodos();
-    console.log(`
-    Type a command:`, chalk.whiteBright(`
-    (h)  help                       Show all list of commands and explanations
-    (a)  add                        Add to-do (default is main list)
-    (x)  check                      Check to-do (default is main list)
-    (rd) redo                       Redo last edit
-    (r)  remove                     Remove to-do (default is main list)
-    (ed) edit                       Edit to-do (default is main list)
-    (e)  exit                       Close terminal
-    `));
-  }
-  rl.question(' > ', (answer) => {
-    [answer, ...args] = answer.split(' ');
-    checkTask(answer, args);
-  });
-}
-
 /* Redo Method */
 function addRedo(command, args) {
   command = command.toLowerCase();
@@ -218,8 +195,63 @@ function editTodo(text) {
   }
 }
 
-/* Range In between */
+/* Verify two numbers in a method that reads two numbers and returns true if everything is okay :3 */
+function verifyTwoNumbers(args) {
+  // always need two arguments
+  if (args.length !== 2) return false;
+  for (item of args) {
+    // need always be a number
+    if (/[^\d+]/.test(item)) return false;
+    // if the number is bigger or lower than expected
+    if (item < 0 || item > todos.length) return false;
+  }
+  return true;
+}
 
+/* Switch todo */
+function switchTodo(args) {
+  // this does not have a default position, it's forced two arguments!!!
+  // because for switching you must be careful
+  // verify both numbers
+  if (verifyTwoNumbers(args) === false) return;
+  // first todo you want to switch
+  moveTodo([args[0], args[1]]);
+  // verify if they are next on other, if so, then just move one is enough...
+  if (args[1] - 1 !== args[0]) moveTodo([args[1], args[0]]);
+  if (args[0] - 1 !== args[1]) moveTodo([args[1], args[0]]);
+}
+
+/* Copy todo */
+function copyTodo(args) {
+  // if theres only the todo you want to move then default position to move is the last one
+  if (args.length === 1) args.push(todos.length);
+  // verify both numbers
+  if (verifyTwoNumbers(args) === false) return;
+  // first is the todo you want to copy
+  const todo = todos[args[0]];
+  // second the index you want to put
+  const index = args[1];
+  // copy it
+  todos.splice(index, 0, todo); 
+}
+
+/* Move todo */
+function moveTodo(args) {
+  // if theres only the todo you want to move then default position to move is the last one
+  if (args.length === 1) args.push(todos.length);
+  // verify both numbers
+  if (verifyTwoNumbers(args) === false) return;
+  // first is the todo you want to move
+  const todo = todos[args[0]];
+  // second the index you want to put
+  const index = args[1];
+  // remove the current todo of the todos.json
+  todos.splice(args[0], 1);
+  // move it
+  todos.splice(index, 0, todo); 
+}
+
+/* Range In between */
 function rangeIn(ids) {
   ids = [ids];
   let [start, end] = ids[0].split('-');
@@ -294,9 +326,24 @@ function showHelp() {
     },
     {
       'commands': ['edit', 'ed'],
-      'explanation': 'This will replace the indexed to-do for another. Same usage of add command.',
+      'explanation': 'This will replace the indexed to-do to another. Same usage of add command.',
       'example': 'edit this one is the new -5',
     },
+    {
+      'commands': ['switch', 's'],
+      'explanation': 'This will switch the indexed to-do to another. There is no default!',
+      'example': 'switch 1 5',
+    }, 
+    {
+      'commands': ['copy', 'c'],
+      'explanation': 'This will copy the indexed to-do to other position. Default position is the last.',
+      'example': 'copy 2 4',
+    }, 
+    {
+      'commands': ['move', 'm'],
+      'explanation': 'This will move the indexed to-do to other position.',
+      'example': 'move 9 6',
+    }, 
     {
       'commands': ['rem', 'r'],
       'explanation': 'This will remove the selected to-do. If you want to remove more, just separate the arguments with spaces.',
@@ -384,6 +431,19 @@ ${newLine}
   return console.log(` └───────────────────────────────────────────────────────────────────────────┘`);
 }
 
+function askForATask(withHelp) {
+  console.clear();
+  if (withHelp) {
+    showHelp();
+  } else {
+    showTodos();
+  }
+  rl.question(' > ', (answer) => {
+    [answer, ...args] = answer.split(' ');
+    checkTask(answer, args);
+  });
+}
+
 function checkTask(answer, args) {
   let help = false;
   answer = answer.toLowerCase(); 4;
@@ -396,6 +456,10 @@ function checkTask(answer, args) {
     case 'check':
       checkTodos(args);
       break;
+    case 's':
+    case 'switch':
+      switchTodo(args);
+      break;
     case 'rd':
     case 'redo':
       redoAction();
@@ -403,6 +467,14 @@ function checkTask(answer, args) {
     case 'r':
     case 'rem':
       removeTodos(args);
+      break;
+    case 'c':
+    case 'copy':
+      copyTodo(args);
+      break;
+    case 'm':
+    case 'move':
+      moveTodo(args);
       break;
     case 'h':
     case 'help':
@@ -456,7 +528,7 @@ function loadFile() {
           case 'y':
           case 'yes':
             fs.writeFileSync('todos.json', templateTodos, 'utf8');
-            fs.writeFileSync('redos.json', templateRedos, 'utf8');
+            if (redos) fs.writeFileSync('redos.json', templateRedos, 'utf8');
             redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
             todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
             askForATask(false);
