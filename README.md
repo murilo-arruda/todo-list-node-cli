@@ -3,7 +3,7 @@
 
 *We are hackers, and hackers have black terminals with ~~green~~ gray and blue text*
 
-![Template](Template.png?raw=trueg)
+![Template](/preview/template.png?raw=trueg)
 
 Simple implementation of a Todo List in Node.js. Manage your todos directly in the terminal. This is an updated ~~forked~~ version from todo-list-node-cli by [@murilo-arruda](https://github.com/murilo-arruda). *I forked this because I wanted to make something unique, something that I don't think everyone the original repository would agree.*
 
@@ -22,6 +22,21 @@ Do the same thing with the **node terminal** if you open the app using **app.vbs
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
+## Features v1.1
+
+* Extremely light (4.2KB);
+* Easy to use;
+* All you need is node installed;
+* Still needs installation with npm or yarn.
+* Minimalist gui;
+* Redo command (only is working with add and remove commands);
+* Add todo in the place you want or how many todos you want);
+* Check the todo you want (or how mt;
+* Remove the todo you want (or any todos you want);
+* See the time you last updated your todo.
+* Switch any todo with another.
+* Copy any todo.
+
 ## Command Cheat
 
 > usage: `command [arguments]` - the arguments are space separated!
@@ -33,11 +48,10 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `e` or `exit` - Exit the program. :|
 * `rd` or `redo` - This will redo the last to-do. Only working add e remove (with bugs).
 * `m` or `move` - This will move the todo.
-
+* `s` or `switch` - Switch the todo with another.
+* `c` or `copy` - This will copy the todo.
 
 **Planning to add:**
-* `s` or `switch` - Switch the todo with another.
-* `c` or `copy` - This will copy the todo. 
 * `at` or `addtime` - This will loop the todo in the time you put.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
 * `l` or `license` - Show the license of the software.
@@ -52,134 +66,11 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 ## Usage
 
 *Todos are save in the `todos.json` file*
+*Redos are save in the `redos.json` file*
 
 For development I recommend you use [nodemon](https://nodemon.io/). Or just fast exit using `e` and then back with `node .`.
 
-### Add New Todo
-
-Type `a YOUR_TODO_HERE` to add a new todo. In this example, we will add **'Third Todo'**.
-
-```
-    │ 0 │ [X] │ First Todo
-    │ 1 │ [ ] │ Second Todo
-
-        Type a command...
-     > a Third Todo
-```
-
-Which gives:
-
-```
-    │ 0 │ [X] │ First Todo
-    │ 1 │ [ ] │ Second Todo
-    │ 2 │ [ ] │ Third Todo
-
-        Type a command...
-     >
-```
-
-### Add New Todo in index
-
-Type `a YOUR_TODO_HERE -INDEX` to add a new todo in that index. In this example, we will add **'Third Todo'** in first index (start).
-
-```
-    │ 0 │ [X] │ First Todo
-    │ 1 │ [ ] │ Second Todo
-
-        Type a command...
-     > a Zero Todo -0
-```
-
-Which gives:
-
-```
-    │ 0 │ [ ] │ Zero Todo
-    │ 1 │ [X] │ Second Todo
-    │ 2 │ [ ] │ Third Todo
-
-        Type a command...
-     >
-```
-
-### Check/Uncheck Existing Todo
-
-Type `x TODO_INDEX_HERE` to check/uncheck existing todos. You can check or uncheck more than one todo at once. In this example, we will check **'First Todo'** and **'Third Todo'**.
-
-```
-    │ 0 │ [ ] │ Zero Todo
-    │ 1 │ [ ] │ Second Todo
-    │ 2 │ [ ] │ Third Todo
-
-        Type a command...
-    > x 0 2
-```
-
-Which gives:
-
-```
-    │ 0 │ [X] │ Zero Todo
-    │ 1 │ [ ] │ Second Todo
-    │ 2 │ [X] │ Third Todo
-
-        Type a command...
-    >
-```
-
-### Remove Existing Todo
-
-Type `r TODO_INDEX_HERE` to remove an existing todo. You can remove more than one todo at once. In this example, we will remove **'First Todo'** and **'Third Todo'**.
-
-```
-    │ 0 │ [X] │ Zero Todo
-    │ 1 │ [ ] │ Second Todo
-    │ 2 │ [X] │ Third Todo
-
-        Type a command...
-    > r 0 2
-```
-
-Which gives:
-
-```
-    │ 1 │ [ ] │ Second Todo
-
-        Type a command...
-    >
-```
-
-In this example, we will remove a range of todos(from **'Second Todo'** to **'Third Todo'**)
-```
-    │ 0 │ [ ] │ First Todo
-    │ 1 │ [X] │ Second Todo
-    │ 2 │ [X] │ Third Todo
-    │ 3 │ [X] │ Fourth Todo
-    │ 4 │ [ ] │ Fifth Todo
-
-        Type a command...
-    > r 1-3
-```
-
-Which gives:
-
-```
-    │ 0 │ [ ] │ First Todo
-    │ 1 │ [ ] │ Fifth Todo
-
-        Type a command...
-    >
-```
-
-### Documentation
-
-You can open the built-in documentation by typing `h` as such:
-
-```
-    │ 0 │ [ ] │ First Todo
-    │ 1 │ [ ] │ Fifth Todo
-
-        Type a command...
-    > h
-```
+![Documentation](/preview/documentation.png?raw=trueg)
 
 ## Contributors
 

@@ -221,7 +221,7 @@ function organizeTwoNumbers(args) {
 }
 
 /* Switch todo */
-function switchTodo(args) { // 0 33 
+function switchTodo(args) {
   // this does not have a default position, it's forced two arguments!!!
   // because for switching you must be careful
   // verify both numbers
@@ -506,7 +506,7 @@ function checkTask(answer, args) {
 const templateTodos = `[
   {
     "isChecked": false,
-    "text": "Check me to test if is working! ",
+    "text": "Check me to test if is working!",
     "lastActivity": ">",
     "lastUpdated": ${Date.now()}
   },
@@ -526,27 +526,19 @@ function loadFile() {
     redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
     askForATask(false);
   } catch (err) {
-    if (err.code == 'ENOENT') {
-      console.log('Todo file and redo file not found. Do you want generate new ones? (Y/N)');
-      rl.question('> ', (answer) => {
-		answer = answer.toLowerCase();
-        switch (answer) {
-          case 'y':
-          case 'yes':
-            fs.writeFileSync('todos.json', templateTodos, 'utf8');
-            if (redos) fs.writeFileSync('redos.json', templateRedos, 'utf8');
-            redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
-            todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
-            askForATask(false);
-            break;
-          default:
-            console.clear();
-            console.log('You can\'t use todoncli without creating the todo and redo file.\nExiting...');
-            setTimeout(() => {
-              process.exit(0);
-            }, 1000);
-        }
-      });
+    if (err.code === 'ENOENT') {
+      // if only is missing redos files
+      if (!redos && todos) {
+        fs.writeFileSync('redos.json', templateRedos, 'utf8');
+        redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
+        return askForATask(false);
+      }
+      // generate both files
+      fs.writeFileSync('todos.json', templateTodos, 'utf8');
+      fs.writeFileSync('redos.json', templateRedos, 'utf8');
+      redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
+      todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
+      return askForATask(false);
     } else {
       console.log(err);
       process.exit(0);
