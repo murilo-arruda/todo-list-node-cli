@@ -1,11 +1,38 @@
 const readline = require('readline');
-const chalk = require('chalk');
 const fs = require('fs');
 
+const colors = (color, m) => {
+  const res = '\x1b[0m';
+  switch(color) {
+    case 'cyan':
+      m = `\x1b[36m${m + res}`;
+      break;
+    case 'white':
+      m = `\x1b[2m${m + res}`;
+      break
+    case 'bwhite':
+      m = `\x1b[1m${m + res}`;
+      break;
+    case 'inverse':
+      m = `\x1b[7m${m + res}`;
+      break
+  }
+  return m;
+}
+
 // colors for gui (in terminal)
-const success = chalk.cyan;
-const waiting = chalk.bold.white;
-const guiLines = chalk.white;
+const success = (m) => {
+  return colors('cyan', m);
+}
+const waiting = (m) => {
+  return colors('white', m);
+}
+const guiLines = (m) => {
+  return colors('bwhite', m);
+}
+const inverse = (m) => {
+  return colors('inverse', m);
+}
 
 // const indexConsole = 20;
 const lineHeader = `
@@ -32,7 +59,7 @@ function formatTodoTime(time) {
   let output = ` ${specials[0]}/${specials[1]}/${date.getFullYear()} ${specials[2]}:${specials[3]}`;
   while (output.length < 16) output = ` ${output}`;
   // console.log(specials);
-  return chalk.grey(output);
+  return output;
 }
 
 /* Show todos with gui */
@@ -63,7 +90,7 @@ function showTodos() {
         // output final for first item => show data, stt
         if (si === 0) {
 			string = color(string);
-			console.log(startString + string + bar + activity + actualTime + bar);
+			console.log(startString + string + bar + activity + waiting(actualTime) + bar);
 		}
         // output final for the rest of items => only task
         else {
@@ -79,7 +106,7 @@ function showTodos() {
       while (task.length < 41) task += ' ';
       task = color(task);
       // output final
-      console.log(startString + task + bar + activity + actualTime + bar);
+      console.log(startString + task + bar + activity + waiting(actualTime) + bar);
       return;
     }
   });
@@ -209,7 +236,6 @@ function verifyTwoNumbers(args) {
 }
 
 /* Returns an array with the min value first and the max value at the end */
-
 function organizeTwoNumbers(args) {
   let start = parseInt(args[0]);
   let end = parseInt(args[1]);
@@ -407,20 +433,20 @@ function showHelp() {
 	  },
   ];
   console.log(` ┌───────────────────────────────────────────────────────────────────────────┐
- │ ${chalk.bold('TodoNcli v1.0')}                                                        ${chalk.bold(2020)} │
+ │ ${guiLines('TodoNcli v1.0')}                                                        ${guiLines(2020)} │
  ├───────────────────────────────────────────────────────────────────────────┤
  │ Manage your todos anytime using command line!                             │
  │ Every change will be saved in your system.                                │
 ${newLine}
- │ Usage: ${chalk.inverse('command [arguments]')} - the arguments are space separated!           │
+ │ Usage: ${inverse('command [arguments]')} - the arguments are space separated!           │
  ├───────────────────────────────────────────────────────────────────────────┤`);
   console.log(newLine);
   // console through helps
   helpFull.forEach((item) => {
-    let commands = ` │ ${chalk.bold(item.commands[0])} or ${chalk.bold(item.commands[1])}`;
+    let commands = ` │ ${guiLines(item.commands[0])} or ${guiLines(item.commands[1])}`;
     while (commands.length < 40) commands += ' ';
-    let example = `${chalk.inverse(item.example)}`;
-    while (example.length < 63) example = ' ' + example;
+    let example = `${inverse(item.example)}`;
+    while (example.length < 60) example = ' ' + example;
     console.log(commands + example + ' │ ');
     let explanation = item.explanation;
     while (explanation.length < 73) explanation += ' ';
@@ -437,13 +463,43 @@ ${newLine}
   return console.log(` └───────────────────────────────────────────────────────────────────────────┘`);
 }
 
-function askForATask(withHelp) {
+
+/* Show the license :| */
+function showLicense() {
+  console.log(`
+todoncli
+
+Copyright © 2020-2020 Koetemagie
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without │ restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ `);
+}
+
+/* ??? */
+function showProtec() {
+  console.log(`
+ ┌───────────────────────────────────────────────────────────────────────────┐
+ │    -=-                                                                    │
+ │ (\\  _  /)                                    The Angel will protec you!   │
+ │ ( \\( )/ )                                                :Z               │
+ │ (       )                                                                 │
+ │  \`>   <´                                                                  │
+ │  /     \\                                                                  │
+ │  \`-._.-´         fgpfy vjlqb jqihl acuan zogf                             │
+ │                                                                           │
+ └───────────────────────────────────────────────────────────────────────────┘
+ `);
+}
+
+function askForATask(help) {
   console.clear();
-  if (withHelp) {
-    showHelp();
-  } else {
-    showTodos();
-  }
+  if (help === true) showHelp();
+  else if (help === 2) showProtec();
+  else if (help === 3) showLicense();
+  else showTodos();
   rl.question(' > ', (answer) => {
     [answer, ...args] = answer.split(' ');
     checkTask(answer, args);
@@ -485,6 +541,13 @@ function checkTask(answer, args) {
     case 'h':
     case 'help':
       help = true;
+      break;
+    case 'protec':
+      help = 2;
+      break;
+    case 'l':
+    case 'license':
+      help = 3;
       break;
     case 'ed':
     case 'edit':
@@ -547,7 +610,7 @@ function loadFile() {
 }
 
 function saveData() {
-  fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8'); // |, null, 2| for prettier output
+  fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8');
   fs.writeFileSync('redos.json', JSON.stringify(redos, null, 2), 'utf8'); // |, null, 2| for prettier output
 }
 
@@ -558,9 +621,3 @@ console.clear = function() {
 let todos;
 let redos;
 loadFile();
-
-
-/*
-const text = ['31-33'];
-checkTodos(text);
-*/

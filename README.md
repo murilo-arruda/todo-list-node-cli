@@ -10,9 +10,13 @@ Simple implementation of a Todo List in Node.js. Manage your todos directly in t
 ## Installation
 
 - Install [node](https://nodejs.org/);
+Download the latest version [here](https://github.com/Koetemagie/todoncli/releases/latest)!
+
+## Source Installation
+
+- Install [node](https://nodejs.org/);
 - Download this repository. Or use terminal with git: `git clone https://github.com/Passok11/todo-list-node-cli.git`;
 - Open the repository folder locally. Or use terminal: `cd todoncli`;
-- If you are using Windows, open **install.vbs**. Or in the terminal run: `npm install`;
 - If you are using Windows, open **app.vbs**. Or in the terminal run todoncli using any of these commands: `node .`, `node index.js`, `npm start`.
 
 ### Windows:
@@ -27,12 +31,12 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Extremely light (4.2KB);
 * Easy to use;
 * All you need is node installed;
-* Still needs installation with npm or yarn.
+* No more nstallation with npm or yarn. Just open and use it!
 * Minimalist gui;
 * Redo command (only is working with add and remove commands);
-* Add todo in the place you want or how many todos you want);
-* Check the todo you want (or how mt;
-* Remove the todo you want (or any todos you want);
+* Add todo in the place you want (or how many todos you want);
+* Check the todo you want (or how many you want);
+* Remove the todo you want (or how many you want);
 * See the time you last updated your todo.
 * Switch any todo with another.
 * Copy any todo.
@@ -50,11 +54,11 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `m` or `move` - This will move the todo.
 * `s` or `switch` - Switch the todo with another.
 * `c` or `copy` - This will copy the todo.
+* `l` or `license` - Show the license of the software.
 
 **Planning to add:**
 * `at` or `addtime` - This will loop the todo in the time you put.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
-* `l` or `license` - Show the license of the software.
 * `sg` or `showgroup` - Show the selected group.
 * `ag` or `addgroup` - Create a new group of to-dos. This helps you to organize better the types of to-dos you have.
 * `rg` or `remgroup` - Delete the selected group.
@@ -104,3 +108,7 @@ Documentation
 ## Contributing
 
 Pull requests are always open! Feel free to help!
+
+## License
+
+[MIT](/LICENSE.md?raw=trueg).

@@ -1,1 +1,0 @@
-CreateObject("Wscript.Shell").Run "npm install"
