@@ -208,17 +208,31 @@ function verifyTwoNumbers(args) {
   return true;
 }
 
+/* Returns an array with the min value first and the max value at the end */
+
+function organizeTwoNumbers(args) {
+  let start = parseInt(args[0]);
+  let end = parseInt(args[1]);
+  if (end < start) {
+    start = parseInt(args[1]);
+    end = parseInt(args[0]);
+  }
+  return [start, end];
+}
+
 /* Switch todo */
-function switchTodo(args) {
+function switchTodo(args) { // 0 33 
   // this does not have a default position, it's forced two arguments!!!
   // because for switching you must be careful
   // verify both numbers
   if (verifyTwoNumbers(args) === false) return;
+  args = organizeTwoNumbers(args);
+  if (args[0] === args[1]) return;
   // first todo you want to switch
   moveTodo([args[0], args[1]]);
   // verify if they are next on other, if so, then just move one is enough...
-  if (args[1] - 1 !== args[0]) moveTodo([args[1], args[0]]);
-  if (args[0] - 1 !== args[1]) moveTodo([args[1], args[0]]);
+  if (args[1] - 1 < 0) args[1] = 0;
+  if (args[1] - 1 !== args[0]) moveTodo([args[1] - 1, args[0]]); 
 }
 
 /* Copy todo */
@@ -258,17 +272,9 @@ function rangeIn(ids) {
   // if the index given is bigger than how much you have
   if (start > todos.length || todos.length < end) return;
   if (start < 0 && end < 0 ) return;
-  start = parseInt(start);
-  end = parseInt(end);
-  let endN, startN;
-  if (end < start) {
-    startN = end;
-    endN = start;
-  }
-  start = startN || start;
-  end = endN || end;
+  const args = organizeTwoNumbers([start, end]);
   let validate = [];
-  for (let i = start; i <= end; i++) validate.push(i.toString());
+  for (let i = args[0]; i <= args[1]; i++) validate.push(i.toString());
   return validate;;
 }
 
