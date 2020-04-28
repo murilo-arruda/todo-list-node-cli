@@ -51,7 +51,7 @@ function formatTodoTime(time) {
   const date = new Date(time);
   // make date prettier
   let specials = [date.getDate(), (date.getMonth() + 1), date.getHours(), date.getMinutes()];
-  specials = specials.map((item) => {
+  specials = specials.map(item => {
     item = item.toString();
     while (item.length <= 1) item = `0${item}`;
     return item;
@@ -339,7 +339,18 @@ function removeTodos(ids) {
     };
   });
   ids.sort((a, b) => b - a);
-  ids.forEach((id) => {
+  ids.forEach(id => {
+    if (todos[id]) todos.splice(id, 1);
+  });
+}
+
+/* Delete all the checked todos */
+function remCheckedTodos() {
+  let ids = todos.map((item, index) => {
+    if (item.isChecked === true) return index;
+  });
+  ids = ids.filter(item => item !== undefined);
+    ids.forEach(id => {
     if (todos[id]) todos.splice(id, 1);
   });
 }
@@ -404,6 +415,11 @@ function showHelp() {
       'example': 'license',
     },
     {
+      'commands': ['remcheckeds', 'rc'],
+      'explanation': 'Remove the checkeds to-dos.',
+      'example': 'remcheckeds',
+    },
+    {
       'commands': ['addgroup', 'ag'],
       'explanation': 'Create a new group of to-dos. This helps you to organize better the types of to-dos you have.',
       'example': 'addgroup NewWorld',
@@ -436,7 +452,7 @@ function showHelp() {
   ];
   console.clear();
   console.log(` ┌───────────────────────────────────────────────────────────────────────────┐
- │ ${guiLines('TodoNcli v1.0')}                                                        ${guiLines(2020)} │
+ │ ${guiLines('TodoNcli v1.3')}                                                        ${guiLines(2020)} │
  ├───────────────────────────────────────────────────────────────────────────┤
  │ Manage your todos anytime using command line!                             │
  │ Every change will be saved in your system.                                │
@@ -445,7 +461,7 @@ ${newLine}
  ├───────────────────────────────────────────────────────────────────────────┤`);
   console.log(newLine);
   // console through helps
-  helpFull.forEach((item) => {
+  helpFull.forEach(item => {
     let commands = ` │ ${guiLines(item.commands[0])} or ${guiLines(item.commands[1])}`;
     while (commands.length < 40) commands += ' ';
     let example = `${inverse(item.example)}`;
@@ -455,7 +471,7 @@ ${newLine}
     while (explanation.length < 73) explanation += ' ';
     if (explanation.length > 73) {
       const allStrings = explanation.match(/.{1,73}/g);
-      allStrings.forEach((string) => {
+      allStrings.forEach(string => {
         string = string.replace(/^ /, '');
         while (string.length < 73) string += ' ';
         console.log(` │ ${string} │ `);
@@ -465,7 +481,6 @@ ${newLine}
   });
   return console.log(` └───────────────────────────────────────────────────────────────────────────┘`);
 }
-
 
 /* Show the license :| */
 function showLicense() {
@@ -548,6 +563,10 @@ function checkTask(answer, args) {
     case 'help':
       help = true;
       break;
+    case 'rc':
+    case 'remcheckeds':
+      remCheckedTodos();
+      break;
     case 'protec':
       help = 2;
       break;
@@ -580,8 +599,7 @@ function loadFile() {
   try {
     todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
     redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
-    OTODOS = todos;
-    OREDOS = redos;
+    OTODOS = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
     askForATask(false);
   } catch (err) {
     if (err.code === 'ENOENT') {
@@ -621,23 +639,26 @@ function loadFile() {
 
 function saveData() {
   // just save if there's any change (optimization)
-  if (OTODOS !== todos) fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8');
-  if (OREDOS !== redos) fs.writeFileSync('redos.json', JSON.stringify(redos), 'utf8'); // |, null, 2| for prettier output
+  if (JSON.stringify(todos) !== JSON.stringify(OTODOS)) {
+    fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8');
+    fs.writeFileSync('redos.json', JSON.stringify(redos), 'utf8'); 
+    // |, null, 2| for prettier output
+  };
 }
 
 /* Redefines console.clear for better output (windows and linux) */
-console.clear = function() {
+console.clear = () => {
   process.stdout.write("\u001b[2J\u001b[0;0H");
   return process.stdout.write('\033c\033[3J');
 };
 
 /* Initialize todos and redos */
-let OTODOS, OREDOS, todos, redos;
+let OTODOS, todos, redos;
 
 /* Start the program */
 function start() {
   console.clear();
-  OTODOS, OREDOS, todos, redos = undefined;
+  OTODOS, todos, redos = undefined;
   loadFile();
 }
 start();

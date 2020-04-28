@@ -29,7 +29,7 @@ Do the same thing with the **node terminal** if you open the app using **app.vbs
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## Features v1.2
+## Features v1.3
 
 * Extremely light (4.2KB);
 * Easy to use;
