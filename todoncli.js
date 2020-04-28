@@ -327,6 +327,16 @@ function removeTodos(ids) {
   });
 }
 
+/* Copy to clipboard method */
+function getCopy(ids) {
+  if (ids.length === 0) return;
+  const id = ids[0];
+  if (todos[id]) {
+    const todo = (todos[id].text);
+    require('child_process').spawn('clip').stdin.end(todo);
+  }
+}
+
 /* Delete all the checked todos */
 function remCheckedTodos() {
   let ids = todos.map((item, index) => {
@@ -379,6 +389,11 @@ function showHelp() {
       'commands': ['redo', 'rd'],
       'explanation': 'This will redo the last action you made.',
       'example': 'redo',
+    },
+    {
+      'commands': ['get', 'g'],
+      'explanation': 'This will copy to clipboard the indexed todo.',
+      'example': 'get 5',
     },
     {
       'commands': ['remcheckeds', 'rc'],
@@ -539,6 +554,10 @@ function checkTask(answer, args) {
     case 'm':
     case 'move':
       moveTodo(args);
+      break;
+    case 'g':
+    case 'get':
+      getCopy(args);
       break;
     case 'h':
     case 'help':

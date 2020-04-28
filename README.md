@@ -64,6 +64,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `rc` or `remcheckeds` - Remove checked to-dos.
 
 **Planning to add:**
+* `get` or `g` - This will copy to clipboard the todo.
 * `at` or `addtime` - This will loop the todo in the time you put.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
 * `sg` or `showgroup` - Show the selected group.
