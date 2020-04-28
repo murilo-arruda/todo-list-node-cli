@@ -350,9 +350,7 @@ function remCheckedTodos() {
     if (item.isChecked === true) return index;
   });
   ids = ids.filter(item => item !== undefined);
-    ids.forEach(id => {
-    if (todos[id]) todos.splice(id, 1);
-  });
+  removeTodos(ids);
 }
 
 /* Show documentation */

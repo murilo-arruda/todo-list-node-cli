@@ -61,6 +61,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `c` or `copy` - This will copy the todo.
 * `rs` or `restart` - Restart the program. :|
 * `l` or `license` - Show the license of the software.
+* `rc` or `remcheckeds` - Remove checked to-dos.
 
 **Planning to add:**
 * `at` or `addtime` - This will loop the todo in the time you put.
