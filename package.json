@@ -2,13 +2,13 @@
   "name": "todoncli",
   "version": "1.5.0",
   "description": "Todo List CLI with node.",
-  "main": "index.js",
+  "main": "todoncli.js",
   "repository": "https://github.com/Koetemagie/todoncli",
   "author": "koetemagie",
   "license": "MIT",
   "dependencies": {},
   "scripts": {
-    "start": "node index.js"
+    "start": "node todoncli.js"
   },
   "devDependencies": {}
 }

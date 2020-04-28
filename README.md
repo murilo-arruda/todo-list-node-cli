@@ -10,7 +10,7 @@ Simple implementation of a Todo List in Node.js. Manage your todos directly in t
 ## Installation
 
 - Install [node](https://nodejs.org/);
-Download the latest version [here](https://github.com/Koetemagie/todoncli/releases/latest)!
+- Download the latest version [here](https://github.com/Koetemagie/todoncli/releases/latest)!
 
 ## Source Installation
 
@@ -21,12 +21,15 @@ Download the latest version [here](https://github.com/Koetemagie/todoncli/releas
 
 ### Windows:
 
-If you're using Windows 10/8x, I recommend you: **open the cmd** > **right click in the top tab** > **Layout** > **Screen Buffer Size** > **Height** > **28**.
+If you're using Windows 10/8x: 
+- **open the cmd** > **right click on the top tab** > **Properties** > **Terminal** > check **Disable Scroll-Forward**.
+- If you don't have that option on Terminal, update your Windows 10 to the last one. If you can't I recommend you: **Layout** > **Screen Buffer Size** > **Height** > **50**.
+Unfornately the last tip changes the Screen Buffer Size, so the help command won't show properly the documentation. Don't know how to resolve this bug. 
 Do the same thing with the **node terminal** if you open the app using **app.vbs**.
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## Features v1.1
+## Features v1.2
 
 * Extremely light (4.2KB);
 * Easy to use;
@@ -40,6 +43,8 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * See the time you last updated your todo.
 * Switch any todo with another.
 * Copy any todo.
+* Only saves the file if there's any changes.
+* Restart the program.
 
 ## Command Cheat
 
@@ -54,6 +59,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `m` or `move` - This will move the todo.
 * `s` or `switch` - Switch the todo with another.
 * `c` or `copy` - This will copy the todo.
+* `rs` or `restart` - Restart the program. :|
 * `l` or `license` - Show the license of the software.
 
 **Planning to add:**
@@ -65,14 +71,13 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `cg` or `checkgroup` - Check all todos in the selected group.
 * `ng` or `namegroup` - Name the selected group. First is the group you want to rename and then the name you want.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
-* `rs` or `restart` - Restart the program. :|
 
 ## Usage
 
 *Todos are save in the `todos.json` file*
 *Redos are save in the `redos.json` file*
 
-For development I recommend you use [nodemon](https://nodemon.io/). Or just fast exit using `e` and then back with `node .`.
+For development I recommend you use [nodemon](https://nodemon.io/). Or just fast exit using `CTRL + c` or `e` and then back with `node .`.
 
 ![Documentation](/preview/documentation.png?raw=trueg)
 

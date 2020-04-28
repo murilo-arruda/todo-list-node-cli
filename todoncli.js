@@ -8,7 +8,7 @@ const colors = (color, m) => {
       m = `\x1b[36m${m + res}`;
       break;
     case 'white':
-      m = `\x1b[2m${m + res}`;
+      m = `\x1b[90m${m + res}`;
       break
     case 'bwhite':
       m = `\x1b[1m${m + res}`;
@@ -65,11 +65,12 @@ function formatTodoTime(time) {
 /* Show todos with gui */
 
 function showTodos() {
+  console.clear();
   console.log(guiLines(lineHeader));
   //const lastIndex = todos.length.toString();
   todos.forEach((todo, index) => {
     // color for the whole console ??? if is checked or not
-    const color = todo.isChecked ? success : waiting;
+    const color = todo.isChecked ? success : guiLines;
     // bar with normal color...
     const bar = guiLines(` │ `);
     // prettier the index...
@@ -89,14 +90,14 @@ function showTodos() {
       allStrings.forEach( (string, si) => {
         // output final for first item => show data, stt
         if (si === 0) {
-			string = color(string);
-			console.log(startString + string + bar + activity + waiting(actualTime) + bar);
-		}
+          string = color(string);
+          console.log(startString + string + bar + activity + waiting(actualTime) + bar);
+        }
         // output final for the rest of items => only task
         else {
           while (string.length < 41) string += ' ';
-		  // color string
-		  string = color(string);
+          // color string
+          string = color(string);
           console.log(bar + '  ' + bar + '   ' + bar + string + bar + '                  ' + bar);
           return;
         }
@@ -343,6 +344,7 @@ function removeTodos(ids) {
   });
 }
 
+/* Show documentation */
 function showHelp() {
   const newLine = ' │                                                                           │';
   const helpFull = [
@@ -432,6 +434,7 @@ function showHelp() {
       'example': 'exit',
 	  },
   ];
+  console.clear();
   console.log(` ┌───────────────────────────────────────────────────────────────────────────┐
  │ ${guiLines('TodoNcli v1.0')}                                                        ${guiLines(2020)} │
  ├───────────────────────────────────────────────────────────────────────────┤
@@ -466,6 +469,7 @@ ${newLine}
 
 /* Show the license :| */
 function showLicense() {
+  console.clear();
   console.log(`
 todoncli
 
@@ -480,6 +484,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 /* ??? */
 function showProtec() {
+  console.clear();
   console.log(`
  ┌───────────────────────────────────────────────────────────────────────────┐
  │    -=-                                                                    │
@@ -494,8 +499,8 @@ function showProtec() {
  `);
 }
 
+/* */
 function askForATask(help) {
-  console.clear();
   if (help === true) showHelp();
   else if (help === 2) showProtec();
   else if (help === 3) showLicense();
@@ -506,6 +511,7 @@ function askForATask(help) {
   });
 }
 
+/* Get command and pass to function */
 function checkTask(answer, args) {
   let help = false;
   answer = answer.toLowerCase(); 4;
@@ -553,6 +559,10 @@ function checkTask(answer, args) {
     case 'edit':
       editTodo(args.join(' '))
       break;
+    case 'rs':
+    case 'restart':
+      start();
+      break;
     case 'e':
     case 'exit':
       console.clear();
@@ -566,37 +576,37 @@ function checkTask(answer, args) {
   askForATask(help);
 }
 
-const templateTodos = `[
+function loadFile() {
+  try {
+    todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
+    redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
+    OTODOS = todos;
+    OREDOS = redos;
+    askForATask(false);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      const templateTodos = ' ' + [
   {
     "isChecked": false,
     "text": "Check me to test if is working!",
     "lastActivity": ">",
-    "lastUpdated": ${Date.now()}
+    "lastUpdated": Date.now()
   },
   {
     "isChecked": true,
     "text": "You can remove this template todo!",
     "lastActivity": "»",
-    "lastUpdated": ${Date.now()}
+    "lastUpdated": Date.now()
   }
-]`;
-
-const templateRedos = `[]`;
-
-function loadFile() {
-  try {
-    todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
-    redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
-    askForATask(false);
-  } catch (err) {
-    if (err.code === 'ENOENT') {
+];
+      const templateRedos = '[]';
       // if only is missing redos files
       if (!redos && todos) {
         fs.writeFileSync('redos.json', templateRedos, 'utf8');
         redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
         return askForATask(false);
       }
-      // generate both files
+      // if is missing both files generate them
       fs.writeFileSync('todos.json', templateTodos, 'utf8');
       fs.writeFileSync('redos.json', templateRedos, 'utf8');
       redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
@@ -610,14 +620,24 @@ function loadFile() {
 }
 
 function saveData() {
-  fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8');
-  fs.writeFileSync('redos.json', JSON.stringify(redos, null, 2), 'utf8'); // |, null, 2| for prettier output
+  // just save if there's any change (optimization)
+  if (OTODOS !== todos) fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8');
+  if (OREDOS !== redos) fs.writeFileSync('redos.json', JSON.stringify(redos), 'utf8'); // |, null, 2| for prettier output
 }
 
+/* Redefines console.clear for better output (windows and linux) */
 console.clear = function() {
+  process.stdout.write("\u001b[2J\u001b[0;0H");
   return process.stdout.write('\033c\033[3J');
 };
 
-let todos;
-let redos;
-loadFile();
+/* Initialize todos and redos */
+let OTODOS, OREDOS, todos, redos;
+
+/* Start the program */
+function start() {
+  console.clear();
+  OTODOS, OREDOS, todos, redos = undefined;
+  loadFile();
+}
+start();
