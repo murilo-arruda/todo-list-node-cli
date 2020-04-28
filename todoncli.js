@@ -1,37 +1,20 @@
 const readline = require('readline');
 const fs = require('fs');
+const res = '\x1b[0m';
 
-const colors = (color, m) => {
-  const res = '\x1b[0m';
-  switch(color) {
-    case 'cyan':
-      m = `\x1b[36m${m + res}`;
-      break;
-    case 'white':
-      m = `\x1b[90m${m + res}`;
-      break
-    case 'bwhite':
-      m = `\x1b[1m${m + res}`;
-      break;
-    case 'inverse':
-      m = `\x1b[7m${m + res}`;
-      break
+const colors = {
+  cyan: m => {
+    return `\x1b[36m${m + res}`;
+  },
+  white: m => {
+    return `\x1b[90m${m + res}`;
+  },
+  bwhite: m => {
+    return `\x1b[1m${m + res}`;
+  },
+  inverse: m => {
+    return `\x1b[7m${m + res}`;
   }
-  return m;
-}
-
-// colors for gui (in terminal)
-const success = (m) => {
-  return colors('cyan', m);
-}
-const waiting = (m) => {
-  return colors('white', m);
-}
-const guiLines = (m) => {
-  return colors('bwhite', m);
-}
-const inverse = (m) => {
-  return colors('inverse', m);
 }
 
 // const indexConsole = 20;
@@ -66,13 +49,13 @@ function formatTodoTime(time) {
 
 function showTodos() {
   console.clear();
-  console.log(guiLines(lineHeader));
+  console.log(colors.bwhite(lineHeader));
   //const lastIndex = todos.length.toString();
   todos.forEach((todo, index) => {
     // color for the whole console ??? if is checked or not
-    const color = todo.isChecked ? success : guiLines;
+    const color = todo.isChecked ? colors.cyan : colors.bwhite;
     // bar with normal color...
-    const bar = guiLines(` │ `);
+    const bar = colors.bwhite(` │ `);
     // prettier the index...
     index = index.toString();
     while (index.length < 2) index = ` ${index}`; // 2 => lastIndex.length
@@ -82,7 +65,7 @@ function showTodos() {
     // task and checked symbol
     let task = todo.text;
     // make text adapts when there more than 41 charas per line
-    const startString = bar + index + bar + status + bar;
+    const startString = bar + index + bar + colors.white(status) + bar;
     const actualTime = formatTodoTime(todo.lastUpdated);
     const activity = color(todo.lastActivity);
     if (task.length > 41) {
@@ -91,7 +74,7 @@ function showTodos() {
         // output final for first item => show data, stt
         if (si === 0) {
           string = color(string);
-          console.log(startString + string + bar + activity + waiting(actualTime) + bar);
+          console.log(startString + string + bar + activity + colors.white(actualTime) + bar);
         }
         // output final for the rest of items => only task
         else {
@@ -107,11 +90,11 @@ function showTodos() {
       while (task.length < 41) task += ' ';
       task = color(task);
       // output final
-      console.log(startString + task + bar + activity + waiting(actualTime) + bar);
+      console.log(startString + task + bar + activity + colors.white(actualTime) + bar);
       return;
     }
   });
-  return console.log(guiLines(lineSub));
+  return console.log(colors.bwhite(lineSub));
 }
 
 /* Redo Method */
@@ -450,19 +433,19 @@ function showHelp() {
   ];
   console.clear();
   console.log(` ┌───────────────────────────────────────────────────────────────────────────┐
- │ ${guiLines('TodoNcli v1.3')}                                                        ${guiLines(2020)} │
+ │ ${colors.bwhite('TodoNcli v1.3')}                                                        ${colors.bwhite(2020)} │
  ├───────────────────────────────────────────────────────────────────────────┤
  │ Manage your todos anytime using command line!                             │
  │ Every change will be saved in your system.                                │
 ${newLine}
- │ Usage: ${inverse('command [arguments]')} - the arguments are space separated!           │
+ │ Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!           │
  ├───────────────────────────────────────────────────────────────────────────┤`);
   console.log(newLine);
   // console through helps
   helpFull.forEach(item => {
-    let commands = ` │ ${guiLines(item.commands[0])} or ${guiLines(item.commands[1])}`;
+    let commands = ` │ ${colors.bwhite(item.commands[0])} or ${colors.bwhite(item.commands[1])}`;
     while (commands.length < 40) commands += ' ';
-    let example = `${inverse(item.example)}`;
+    let example = `${colors.inverse(item.example)}`;
     while (example.length < 60) example = ' ' + example;
     console.log(commands + example + ' │ ');
     let explanation = item.explanation;
