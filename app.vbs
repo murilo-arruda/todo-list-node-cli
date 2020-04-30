@@ -1,1 +1,1 @@
-CreateObject("Wscript.Shell").Run "node index.js"
+CreateObject("Wscript.Shell").Run "node todoncli.js"

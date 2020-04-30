@@ -138,31 +138,27 @@ function redoAction() {
   redos.shift();
 }
 
-function getNumber(text) {
-   // if theres only one word
-  if (!/\s/g.test(text)) return text;
-  // separate text to get only the number
-  let textIterable = text.split(' ');
-  const numberIt = textIterable[textIterable.length - 1];
-  // get number as [ ' -DIGIT' ]
-  let number = text.match(/[^]-\d+\b$/gi);
-  // if not finds any -DIGIT
-  if (!number) return text;
-  // replace number to '-DIGIT';
-  number = number.join(' ').replace(/\s/g, '');
-  // if the number is in the end of the text and is the same as the ti
-  let index = number.replace('-', '');
-  index = parseInt(index);
-  // if the number given is bigger than the length of todos
-  if (index > todos.length) return text;
-  textIterable.pop();
-  textIterable = textIterable.join(' ');
-  const validate = {
-     is: number === numberIt,
-     text: textIterable,
+function getIndex(text) {
+  const patt = /^-\d+\b|-\d/;
+  const lastWord = text[text.length - 1];
+  let index;
+  // get index in the start or in the end of the text
+  if (patt.test(text[0])) {
+    index = text[0];
+    text.splice(0, 1);
+  }
+  else if (patt.test(lastWord)) {
+    index = lastWord;
+    text.splice(text.length - 1, 1);
+  }
+  else return 1;
+  // remove minus
+  index = parseInt(index.replace('-', ''));
+  if (index > todos.length || index < 0) return 2;
+  return {
+     text: text.join(' '),
      index,
   };
-  return validate;
 }
 
 function addNormalTodo(text) {
@@ -177,32 +173,25 @@ function addNormalTodo(text) {
 
 function addTodo(text) {
   if (text.length > 0) {
-    const validate = getNumber(text);
-    if (typeof validate === 'string') return addNormalTodo(validate);
-    if (validate.is) {
-      addRedo('add', validate.index);
-      todos.splice(validate.index, 0, {
-        isChecked: false,
-        text: validate.text,
-        lastActivity: '>',
-        lastUpdated: Date.now(),
-      });
-    }
+    const validate = getIndex(text);
+    if (validate === 1) return addNormalTodo(text.join(' '));
+    else if (validate === 2) return addNormalTodo(text.join(' '));
+    todos.splice(validate.index, 0, {
+      isChecked: false,
+      text: validate.text,
+      lastActivity: '>',
+      lastUpdated: Date.now(),
+    });
   }
 }
 
 function editTodo(text) {
   if (text.length > 0) {
-    const validate = getNumber(text);
-    if (validate.is) {
-      todos.splice(validate.index, 1);
-      todos.splice(validate.index, 0, {
-        isChecked: false,
-        text: validate.text,
-        lastActivity: '>',
-        lastUpdated: Date.now(),
-      });
-    }
+    const validate = getIndex(text);
+    if (validate === 1) return addNormalTodo(text.join(' '));
+    else if (validate === 2) return;
+    todos.splice(validate.index, 1);
+    todos[validate.index].text = validate.text;
   }
 }
 
@@ -332,8 +321,12 @@ function getCopy(ids) {
   if (ids.length === 0) return;
   const id = ids[0];
   if (todos[id]) {
-    const todo = (todos[id].text);
-    require('child_process').spawn('clip').stdin.end(todo);
+    const todo = todos[id].text;
+    let proc = require('child_process').spawn('clip'); 
+    // Don't know what to do to resolve the [à È] issue... :(
+    proc.stdin.setEncoding('utf8');
+    proc.stdin.write(todo.toString('utf8'));
+    proc.stdin.end();
   }
 }
 
@@ -529,7 +522,7 @@ function checkTask(answer, args) {
   switch (answer) {
     case 'a':
     case 'add':
-      addTodo(args.join(' '));
+      addTodo(args);
       break;
     case 'x':
     case 'check':
@@ -576,7 +569,7 @@ function checkTask(answer, args) {
       break;
     case 'ed':
     case 'edit':
-      editTodo(args.join(' '))
+      editTodo(args);
       break;
     case 'rs':
     case 'restart':

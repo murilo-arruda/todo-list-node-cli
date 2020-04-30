@@ -44,6 +44,8 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Switch any todo with another.
 * Copy any todo.
 * Only saves the file if there's any changes.
+* Remove the todos you already completed.
+* Get the todo to your clipboard.
 * Restart the program.
 
 ## Command Cheat
@@ -62,9 +64,9 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `rs` or `restart` - Restart the program. :|
 * `l` or `license` - Show the license of the software.
 * `rc` or `remcheckeds` - Remove checked to-dos.
+* `get` or `g` - This will copy to clipboard the todo.
 
 **Planning to add:**
-* `get` or `g` - This will copy to clipboard the todo.
 * `at` or `addtime` - This will loop the todo in the time you put.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
 * `sg` or `showgroup` - Show the selected group.
