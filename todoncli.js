@@ -50,8 +50,8 @@ function formatTodoTime(time) {
 function showTodos() {
   console.clear();
   console.log(colors.bwhite(lineHeader));
-  //const lastIndex = todos.length.toString();
-  todos.forEach((todo, index) => {
+  //const lastIndex = actualGroup.length.toString();
+  actualGroup.forEach((todo, index) => {
     // color for the whole console ??? if is checked or not
     const color = todo.isChecked ? colors.cyan : colors.bwhite;
     // bar with normal color...
@@ -94,7 +94,11 @@ function showTodos() {
       return;
     }
   });
-  return console.log(colors.bwhite(lineSub));
+  // show groups
+  console.log(colors.bwhite(lineSub));
+  let showGroups = `       ${groups.join(' ')}       `
+  while (showGroups.length < 78) showGroups = ` ${showGroups} `;
+  return console.log(showGroups);
 }
 
 /* Redo Method */
@@ -122,14 +126,14 @@ function redoAction() {
   switch(redo.command) {
     case 'add':
       // remove todo added
-      todos.splice(redo.index, 1);
+      actualGroup.splice(redo.index, 1);
       break;
     case 'check':
       //
       break;
     case 'rem':
       // add todo removed
-      todos.push(redo.object);
+      actualGroup.push(redo.object);
       break;
     case 'edit':
       //
@@ -154,7 +158,7 @@ function getIndex(text) {
   else return 1;
   // remove minus
   index = parseInt(index.replace('-', ''));
-  if (index > todos.length || index < 0) return 2;
+  if (index > actualGroup.length || index < 0) return 2;
   return {
      text: text.join(' '),
      index,
@@ -162,8 +166,8 @@ function getIndex(text) {
 }
 
 function addNormalTodo(text) {
-  addRedo('add', todos.length);
-  todos.push({
+  addRedo('add', actualGroup.length);
+  actualGroup.push({
     isChecked: false,
     text,
     lastActivity: '>',
@@ -176,7 +180,7 @@ function addTodo(text) {
     const validate = getIndex(text);
     if (validate === 1) return addNormalTodo(text.join(' '));
     else if (validate === 2) return addNormalTodo(text.join(' '));
-    todos.splice(validate.index, 0, {
+    actualGroup.splice(validate.index, 0, {
       isChecked: false,
       text: validate.text,
       lastActivity: '>',
@@ -190,8 +194,8 @@ function editTodo(text) {
     const validate = getIndex(text);
     if (validate === 1) return addNormalTodo(text.join(' '));
     else if (validate === 2) return;
-    todos.splice(validate.index, 1);
-    todos[validate.index].text = validate.text;
+    actualGroup.splice(validate.index, 1);
+    actualGroup[validate.index].text = validate.text;
   }
 }
 
@@ -203,7 +207,7 @@ function verifyTwoNumbers(args) {
     // need always be a number
     if (/[^\d+]/.test(item)) return false;
     // if the number is bigger or lower than expected
-    if (item < 0 || item > todos.length) return false;
+    if (item < 0 || item > actualGroup.length) return false;
   }
   return true;
 }
@@ -237,31 +241,31 @@ function switchTodo(args) {
 /* Copy todo */
 function copyTodo(args) {
   // if theres only the todo you want to move then default position to move is the last one
-  if (args.length === 1) args.push(todos.length);
+  if (args.length === 1) args.push(actualGroup.length);
   // verify both numbers
   if (verifyTwoNumbers(args) === false) return;
   // first is the todo you want to copy
-  const todo = todos[args[0]];
+  const todo = actualGroup[args[0]];
   // second the index you want to put
   const index = args[1];
   // copy it
-  todos.splice(index, 0, todo); 
+  actualGroup.splice(index, 0, todo); 
 }
 
 /* Move todo */
 function moveTodo(args) {
   // if theres only the todo you want to move then default position to move is the last one
-  if (args.length === 1) args.push(todos.length);
+  if (args.length === 1) args.push(actualGroup.length);
   // verify both numbers
   if (verifyTwoNumbers(args) === false) return;
   // first is the todo you want to move
-  const todo = todos[args[0]];
+  const todo = actualGroup[args[0]];
   // second the index you want to put
   const index = args[1];
   // remove the current todo of the todos.json
-  todos.splice(args[0], 1);
+  actualGroup.splice(args[0], 1);
   // move it
-  todos.splice(index, 0, todo); 
+  actualGroup.splice(index, 0, todo); 
 }
 
 /* Range In between */
@@ -269,7 +273,7 @@ function rangeIn(ids) {
   ids = [ids];
   let [start, end] = ids[0].split('-');
   // if the index given is bigger than how much you have
-  if (start > todos.length || todos.length < end) return;
+  if (start > actualGroup.length || actualGroup.length < end) return;
   if (start < 0 && end < 0 ) return;
   const args = organizeTwoNumbers([start, end]);
   let validate = [];
@@ -289,11 +293,11 @@ function checkTodos(ids) {
   });
   // loop for change each id
   ids.forEach((id) => {
-    if (todos[id]) {
-      const ischecked = !todos[id].isChecked;
-      todos[id].isChecked = ischecked;
-      todos[id].lastActivity = ischecked ? '»' : '>';
-      todos[id].lastUpdated = Date.now();
+    if (actualGroup[id]) {
+      const ischecked = !actualGroup[id].isChecked;
+      actualGroup[id].isChecked = ischecked;
+      actualGroup[id].lastActivity = ischecked ? '»' : '>';
+      actualGroup[id].lastUpdated = Date.now();
     }
   });
 }
@@ -312,7 +316,7 @@ function removeTodos(ids) {
   });
   ids.sort((a, b) => b - a);
   ids.forEach(id => {
-    if (todos[id]) todos.splice(id, 1);
+    if (actualGroup[id]) actualGroup.splice(id, 1);
   });
 }
 
@@ -320,8 +324,8 @@ function removeTodos(ids) {
 function getCopy(ids) {
   if (ids.length === 0) return;
   const id = ids[0];
-  if (todos[id]) {
-    const todo = todos[id].text;
+  if (actualGroup[id]) {
+    const todo = actualGroup[id].text;
     let proc = require('child_process').spawn('clip'); 
     // Don't know what to do to resolve the [à È] issue... :(
     proc.stdin.setEncoding('utf8');
@@ -332,7 +336,7 @@ function getCopy(ids) {
 
 /* Delete all the checked todos */
 function remCheckedTodos() {
-  let ids = todos.map((item, index) => {
+  let ids = actualGroup.map((item, index) => {
     if (item.isChecked === true) return index;
   });
   ids = ids.filter(item => item !== undefined);
@@ -503,7 +507,6 @@ function showProtec() {
  `);
 }
 
-/* */
 function askForATask(help) {
   if (help === true) showHelp();
   else if (help === 2) showProtec();
@@ -593,23 +596,29 @@ function loadFile() {
     todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
     redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
     OTODOS = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
+    // load all the groups and return their names
+    groups = Object.keys(todos);
+    // choose the first group (default)
+    actualGroup = todos[groups[0]];
     askForATask(false);
   } catch (err) {
     if (err.code === 'ENOENT') {
-      const templateTodos = ' ' + [
-  {
-    "isChecked": false,
-    "text": "Check me to test if is working!",
-    "lastActivity": ">",
-    "lastUpdated": Date.now()
-  },
-  {
-    "isChecked": true,
-    "text": "You can remove this template todo!",
-    "lastActivity": "»",
-    "lastUpdated": Date.now()
-  }
-];
+      const templateTodos = ' ' + {
+"default": [
+    {
+      "isChecked": false,
+      "text": "Check me to test if is working!",
+      "lastActivity": ">",
+      "lastUpdated": Date.now()
+    },
+    {
+      "isChecked": true,
+      "text": "You can remove this template todo!",
+      "lastActivity": "»",
+      "lastUpdated": Date.now()
+    }
+  ]
+};
       const templateRedos = '[]';
       // if only is missing redos files
       if (!redos && todos) {
@@ -622,6 +631,10 @@ function loadFile() {
       fs.writeFileSync('redos.json', templateRedos, 'utf8');
       redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
       todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
+      // load all the groups and return their names
+      groups = Object.keys(todos);
+      // choose the first group (default)
+      actualGroup = todos[groups[0]];
       return askForATask(false);
     } else {
       console.log(err);
@@ -633,7 +646,7 @@ function loadFile() {
 function saveData() {
   // just save if there's any change (optimization)
   if (JSON.stringify(todos) !== JSON.stringify(OTODOS)) {
-    fs.writeFileSync('todos.json', JSON.stringify(todos), 'utf8');
+    fs.writeFileSync('todos.json', JSON.stringify(todos, null, 2), 'utf8');
     fs.writeFileSync('redos.json', JSON.stringify(redos), 'utf8'); 
     // |, null, 2| for prettier output
   };
@@ -645,13 +658,14 @@ console.clear = () => {
   return process.stdout.write('\033c\033[3J');
 };
 
-/* Initialize todos and redos */
-let OTODOS, todos, redos;
+/* Initialize (todos = file of todos), (redos = file of redos), (groups = array with the name of all groups), (actualGroup = all the current todos of the actual group) */
+let OTODOS, todos, redos, groups, actualGroup;
 
 /* Start the program */
 function start() {
   console.clear();
-  OTODOS, todos, redos = undefined;
+  OTODOS, todos, redos, groups, actualGroup = undefined;
   loadFile();
 }
+
 start();

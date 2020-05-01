@@ -1,7 +1,7 @@
 # Todo List CLI
 > Todo List CLI build in Node.js
 
-*We are hackers, and hackers have black terminals with ~~green~~ gray and blue text*
+* We are hackers, and hackers have black terminals with ~~green~~ gray and blue text*
 
 ![Template](/preview/template.png?raw=trueg)
 
@@ -36,7 +36,6 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * All you need is node installed;
 * No more nstallation with npm or yarn. Just open and use it!
 * Minimalist gui;
-* Redo command (only is working with add and remove commands);
 * Add todo in the place you want (or how many todos you want);
 * Check the todo you want (or how many you want);
 * Remove the todo you want (or how many you want);
@@ -47,6 +46,10 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Remove the todos you already completed.
 * Get the todo to your clipboard.
 * Restart the program.
+
+I don't recommend you to use redo command yet.
+
+* Redo command (only is working with add and remove commands);
 
 ## Command Cheat
 
