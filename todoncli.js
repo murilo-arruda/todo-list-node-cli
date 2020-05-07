@@ -1,107 +1,52 @@
 const readline = require('readline');
 const fs = require('fs');
-const res = '\x1b[0m';
 
-const colors = {
-  cyan: m => {
-    return `\x1b[36m${m + res}`;
-  },
-  white: m => {
-    return `\x1b[90m${m + res}`;
-  },
-  bwhite: m => {
-    return `\x1b[1m${m + res}`;
-  },
-  inverse: m => {
-    return `\x1b[7m${m + res}`;
+//
+// Methods and functions
+//
+
+// Group Functions
+
+// show group to see now
+function showGroup(wanted) {
+  if (args.length > 0) {
+    groups.forEach((group, i) => {
+      if (wanted === group) actualName = i;
+    });
+    // reload actual group
+    actualGroup = todos[groups[actualName]];
   }
 }
 
-// const indexConsole = 20;
-const lineHeader = `
- ┌────┬─────┬───────────────────────────────────────────┬────────────────────┐
- │ ID │ Stt │ Todos                                     │ + Date             │
- ├────┼─────┼───────────────────────────────────────────┼────────────────────┤`;
-const lineSub =
-` └────┴─────┴───────────────────────────────────────────┴────────────────────┘`;
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-function formatTodoTime(time) {
-  const date = new Date(time);
-  // make date prettier
-  let specials = [date.getDate(), (date.getMonth() + 1), date.getHours(), date.getMinutes()];
-  specials = specials.map(item => {
-    item = item.toString();
-    while (item.length <= 1) item = `0${item}`;
-    return item;
-  });
-  let output = ` ${specials[0]}/${specials[1]}/${date.getFullYear()} ${specials[2]}:${specials[3]}`;
-  while (output.length < 16) output = ` ${output}`;
-  // console.log(specials);
-  return output;
+// tab to next group
+function tabGroup() {
+  if (groups.length > 1) {
+    if (groups.length - 1 === actualName) actualName = 0;
+    else actualName++;
+    // reload actual group
+    actualGroup = todos[groups[actualName]];
+  }
 }
 
-/* Show todos with gui */
-
-function showTodos() {
-  console.clear();
-  console.log(colors.bwhite(lineHeader));
-  //const lastIndex = actualGroup.length.toString();
-  actualGroup.forEach((todo, index) => {
-    // color for the whole console ??? if is checked or not
-    const color = todo.isChecked ? colors.cyan : colors.bwhite;
-    // bar with normal color...
-    const bar = colors.bwhite(` │ `);
-    // prettier the index...
-    index = index.toString();
-    while (index.length < 2) index = ` ${index}`; // 2 => lastIndex.length
-    index = color(index);
-    // status
-    const status = color(`(${todo.isChecked ? 'X' : ' '})`);
-    // task and checked symbol
-    let task = todo.text;
-    // make text adapts when there more than 41 charas per line
-    const startString = bar + index + bar + colors.white(status) + bar;
-    const actualTime = formatTodoTime(todo.lastUpdated);
-    const activity = color(todo.lastActivity);
-    if (task.length > 41) {
-      const allStrings = task.match(/.{1,41}/g);
-      allStrings.forEach( (string, si) => {
-        // output final for first item => show data, stt
-        if (si === 0) {
-          string = color(string);
-          console.log(startString + string + bar + activity + colors.white(actualTime) + bar);
-        }
-        // output final for the rest of items => only task
-        else {
-          while (string.length < 41) string += ' ';
-          // color string
-          string = color(string);
-          console.log(bar + '  ' + bar + '   ' + bar + string + bar + '                  ' + bar);
-          return;
-        }
-      });
-      return;
-    } else {
-      while (task.length < 41) task += ' ';
-      task = color(task);
-      // output final
-      console.log(startString + task + bar + activity + colors.white(actualTime) + bar);
-      return;
-    }
-  });
-  // show groups
-  console.log(colors.bwhite(lineSub));
-  let showGroups = `       ${groups.join(' ')}       `
-  while (showGroups.length < 78) showGroups = ` ${showGroups} `;
-  return console.log(showGroups);
+function nameGroup(args) {
+  if (args.length === 2) {
+    //todos.Prop3 = a.Prop1;
+    const wanted = args[0].toString();
+    const name = args[1].toString();
+    groups.forEach((group) => {
+      if (wanted === group) {
+        todos[wanted] = todos[group];
+      }
+    });
+    groups = Object.keys(todos);
+    console.log(groups);
+    console.log(kek);
+  } 
 }
 
-/* Redo Method */
+// Redo Functions
+
+// add redo to file
 function addRedo(command, args) {
   command = command.toLowerCase();
   switch(command) {
@@ -120,6 +65,7 @@ function addRedo(command, args) {
   }
 }
 
+// retrieve redo of file
 function redoAction() {
   if (redos.length === 0) return;
   const redo = redos[0];
@@ -142,6 +88,9 @@ function redoAction() {
   redos.shift();
 }
 
+// Todos Functions
+
+// retrieve index of an number argument
 function getIndex(text) {
   const patt = /^-\d+\b|-\d/;
   const lastWord = text[text.length - 1];
@@ -155,9 +104,11 @@ function getIndex(text) {
     index = lastWord;
     text.splice(text.length - 1, 1);
   }
+  // returns if there is no index
   else return 1;
   // remove minus
   index = parseInt(index.replace('-', ''));
+  // if returns that the number return is not in the rules
   if (index > actualGroup.length || index < 0) return 2;
   return {
      text: text.join(' '),
@@ -165,6 +116,7 @@ function getIndex(text) {
   };
 }
 
+// add normally in todos files (by pushing)
 function addNormalTodo(text) {
   addRedo('add', actualGroup.length);
   actualGroup.push({
@@ -175,31 +127,41 @@ function addNormalTodo(text) {
   });
 }
 
+// add todo in todos files (command check and index) 
 function addTodo(text) {
   if (text.length > 0) {
+    // parse text and return index if theres any
     const validate = getIndex(text);
+    // if returns that there is no index
     if (validate === 1) return addNormalTodo(text.join(' '));
+    // if returns that the number return is not in the rules
     else if (validate === 2) return addNormalTodo(text.join(' '));
-    actualGroup.splice(validate.index, 0, {
-      isChecked: false,
-      text: validate.text,
-      lastActivity: '>',
-      lastUpdated: Date.now(),
-    });
+    else {
+      actualGroup.splice(validate.index, 0, {
+        isChecked: false,
+        text: validate.text,
+        lastActivity: '>',
+        lastUpdated: Date.now(),
+      });
+    }
   }
 }
 
+// edit todo
 function editTodo(text) {
   if (text.length > 0) {
+    // parse text and return index if theres any
     const validate = getIndex(text);
+    // if returns that there is no index
     if (validate === 1) return addNormalTodo(text.join(' '));
+    // if returns that the number return is not in the rules
     else if (validate === 2) return;
     actualGroup.splice(validate.index, 1);
     actualGroup[validate.index].text = validate.text;
   }
 }
 
-/* Verify two numbers in a method that reads two numbers and returns true if everything is okay :3 */
+// Verify two numbers in a method that reads two numbers and returns true if everything is okay :3 
 function verifyTwoNumbers(args) {
   // always need two arguments
   if (args.length !== 2) return false;
@@ -212,15 +174,14 @@ function verifyTwoNumbers(args) {
   return true;
 }
 
-/* Returns an array with the min value first and the max value at the end */
+// Returns an array with the min value first and the max value at the end
 function organizeTwoNumbers(args) {
-  let start = parseInt(args[0]);
-  let end = parseInt(args[1]);
-  if (end < start) {
-    start = parseInt(args[1]);
-    end = parseInt(args[0]);
-  }
-  return [start, end];
+  // parse to numbers
+  const first = parseInt(args[0]);
+  const second = parseInt(args[1]);
+  // if the end is lower than the start switch and then return their values
+  if (second < first) return [second, first];
+  else return [first, second];
 }
 
 /* Switch todo */
@@ -268,7 +229,7 @@ function moveTodo(args) {
   actualGroup.splice(index, 0, todo); 
 }
 
-/* Range In between */
+/* Range In between and return their indexes*/
 function rangeIn(ids) {
   ids = [ids];
   let [start, end] = ids[0].split('-');
@@ -278,7 +239,7 @@ function rangeIn(ids) {
   const args = organizeTwoNumbers([start, end]);
   let validate = [];
   for (let i = args[0]; i <= args[1]; i++) validate.push(i.toString());
-  return validate;;
+  return validate;
 }
 
 function checkTodos(ids) {
@@ -343,7 +304,12 @@ function remCheckedTodos() {
   removeTodos(ids);
 }
 
-/* Show documentation */
+
+//
+// Predefined Outputs
+//
+
+// Show documentation
 function showHelp() {
   const newLine = ' │                                                                           │';
   const helpFull = [
@@ -449,7 +415,7 @@ function showHelp() {
  ├───────────────────────────────────────────────────────────────────────────┤
  │ Manage your todos anytime using command line!                             │
  │ Every change will be saved in your system.                                │
-${newLine}
+  ${newLine}
  │ Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!           │
  ├───────────────────────────────────────────────────────────────────────────┤`);
   console.log(newLine);
@@ -475,22 +441,22 @@ ${newLine}
   return console.log(` └───────────────────────────────────────────────────────────────────────────┘`);
 }
 
-/* Show the license :| */
+// Show the license :|
 function showLicense() {
   console.clear();
   console.log(`
-todoncli
+  todoncli
 
-Copyright © 2020-2020 Koetemagie
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without │ restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+  Copyright © 2020-2020 Koetemagie
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without │ restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  `);
 }
 
-/* ??? */
+// ???
 function showProtec() {
   console.clear();
   console.log(`
@@ -507,6 +473,94 @@ function showProtec() {
  `);
 }
 
+// Format todo time for showTodos() function
+function formatTodoTime(time) {
+  const date = new Date(time);
+  // make date prettier
+  let specials = [date.getDate(), (date.getMonth() + 1), date.getHours(), date.getMinutes()];
+  specials = specials.map(item => {
+    item = item.toString();
+    while (item.length <= 1) item = `0${item}`;
+    return item;
+  });
+  let output = ` ${specials[0]}/${specials[1]}/${date.getFullYear()} ${specials[2]}:${specials[3]}`;
+  while (output.length < 16) output = ` ${output}`;
+  // console.log(specials);
+  return output;
+}
+
+// Show todos with gui
+function showTodos() {
+  console.clear();
+  const lineHeader = `
+ ┌────┬─────┬───────────────────────────────────────────┬────────────────────┐
+ │ ID │ Stt │ Todos                                     │ + Date             │
+ ├────┼─────┼───────────────────────────────────────────┼────────────────────┤`;
+  const lineSub =
+  ` └────┴─────┴───────────────────────────────────────────┴────────────────────┘`;
+  console.log(colors.bwhite(lineHeader));
+  //const lastIndex = actualGroup.length.toString();
+  actualGroup.forEach((todo, index) => {
+    // color for the whole console ??? if is checked or not
+    const color = todo.isChecked ? colors.cyan : colors.bwhite;
+    // bar with normal color...
+    const bar = colors.bwhite(` │ `);
+    // prettier the index...
+    index = index.toString();
+    while (index.length < 2) index = ` ${index}`; // 2 => lastIndex.length
+    index = color(index);
+    // status
+    const status = color(`(${todo.isChecked ? 'X' : ' '})`);
+    // task and checked symbol
+    let task = todo.text;
+    // make text adapts when there more than 41 charas per line
+    const startString = bar + index + bar + colors.white(status) + bar;
+    const actualTime = formatTodoTime(todo.lastUpdated);
+    const activity = color(todo.lastActivity);
+    if (task.length > 41) {
+      const allStrings = task.match(/.{1,41}/g);
+      allStrings.forEach( (string, si) => {
+        // output final for first item => show data, stt
+        if (si === 0) {
+          string = color(string);
+          console.log(startString + string + bar + activity + colors.white(actualTime) + bar);
+        }
+        // output final for the rest of items => only task
+        else {
+          while (string.length < 41) string += ' ';
+          // color string
+          string = color(string);
+          console.log(bar + '  ' + bar + '   ' + bar + string + bar + '                  ' + bar);
+          return;
+        }
+      });
+      return;
+    } else {
+      while (task.length < 41) task += ' ';
+      task = color(task);
+      // output final
+      console.log(startString + task + bar + activity + colors.white(actualTime) + bar);
+      return;
+    }
+  });
+  // show groups
+  console.log(colors.bwhite(lineSub));
+  // map array to make the group selected more visible
+  const newGroups = groups.map((group) => {
+    if (group === groups[actualName]) return colors.underline(group);
+    else return group;
+  });
+  let groupsString = `      ${newGroups.join(' ')}      `;
+  // show list more organized
+  while (groupsString.length < 78) groupsString = ` ${groupsString} `;
+  return console.log(groupsString);
+}
+
+//
+// Read Arguments
+//
+
+// Ask for a command
 function askForATask(help) {
   if (help === true) showHelp();
   else if (help === 2) showProtec();
@@ -521,7 +575,7 @@ function askForATask(help) {
 /* Get command and pass to function */
 function checkTask(answer, args) {
   let help = false;
-  answer = answer.toLowerCase(); 4;
+  answer = answer.toLowerCase();
   switch (answer) {
     case 'a':
     case 'add':
@@ -542,6 +596,17 @@ function checkTask(answer, args) {
     case 'r':
     case 'rem':
       removeTodos(args);
+      break;
+    case 'namegroup':
+    case 'ng':
+      nameGroup(args);
+      break;
+    case 'tab':
+      tabGroup();
+      break;
+    case 'showgroup':
+    case 'sg':
+      showGroup(args.join(' '));
       break;
     case 'c':
     case 'copy':
@@ -591,6 +656,11 @@ function checkTask(answer, args) {
   askForATask(help);
 }
 
+//
+// Data Functions
+//
+
+// Load all the files or create them
 function loadFile() {
   try {
     todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
@@ -599,26 +669,28 @@ function loadFile() {
     // load all the groups and return their names
     groups = Object.keys(todos);
     // choose the first group (default)
-    actualGroup = todos[groups[0]];
+    actualName = 0;
+    actualGroup = todos[groups[actualName]];
     askForATask(false);
   } catch (err) {
     if (err.code === 'ENOENT') {
+      // ! Remember that the templates must be STRING to parse through fs.writeFileSync
       const templateTodos = ' ' + {
-"default": [
-    {
-      "isChecked": false,
-      "text": "Check me to test if is working!",
-      "lastActivity": ">",
-      "lastUpdated": Date.now()
-    },
-    {
-      "isChecked": true,
-      "text": "You can remove this template todo!",
-      "lastActivity": "»",
-      "lastUpdated": Date.now()
-    }
-  ]
-};
+        "default": [
+          {
+            "isChecked": false,
+            "text": "Check me to test if is working!",
+            "lastActivity": ">",
+            "lastUpdated": Date.now()
+          },
+          {
+            "isChecked": true,
+            "text": "You can remove this template todo!",
+            "lastActivity": "»",
+            "lastUpdated": Date.now()
+          }
+        ]
+      };
       const templateRedos = '[]';
       // if only is missing redos files
       if (!redos && todos) {
@@ -643,6 +715,7 @@ function loadFile() {
   }
 }
 
+// Save files
 function saveData() {
   // just save if there's any change (optimization)
   if (JSON.stringify(todos) !== JSON.stringify(OTODOS)) {
@@ -652,19 +725,55 @@ function saveData() {
   };
 }
 
-/* Redefines console.clear for better output (windows and linux) */
+//
+// Initialize
+//
+
+// const indexConsole = 20;
+
+// Colors method for colorize terminal output
+const res = '\x1b[0m';
+const colors = {
+  cyan: m => {
+    return `\x1b[36m${m + res}`;
+  },
+  white: m => {
+    return `\x1b[90m${m + res}`;
+  },
+  bwhite: m => {
+    return `\x1b[1m${m + res}`;
+  },
+  inverse: m => {
+    return `\x1b[7m${m + res}`;
+  },
+  underline: m => {
+    return `\x1b[4m${m + res}`;
+  }
+}
+
+// To get commands and ouputs
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+// Redefines console.clear for better output (windows and linux)
 console.clear = () => {
   process.stdout.write("\u001b[2J\u001b[0;0H");
   return process.stdout.write('\033c\033[3J');
 };
 
-/* Initialize (todos = file of todos), (redos = file of redos), (groups = array with the name of all groups), (actualGroup = all the current todos of the actual group) */
-let OTODOS, todos, redos, groups, actualGroup;
+// todos = file of todos
+// redos = file of redos
+// groups = array with the name of all groups
+// actualName = current id of the group
+// actualGroup = all the current todos of the actual group
+let OTODOS, todos, redos, groups, actualGroup, actualName;
 
-/* Start the program */
+// Start the program
 function start() {
   console.clear();
-  OTODOS, todos, redos, groups, actualGroup = undefined;
+  OTODOS, todos, redos, groups, actualGroup, actualName = undefined;
   loadFile();
 }
 
