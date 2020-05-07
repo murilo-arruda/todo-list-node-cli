@@ -32,20 +32,14 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 ## Features v1.3
 
 * Extremely light (4.2KB);
-* Easy to use;
-* All you need is node installed;
-* No more nstallation with npm or yarn. Just open and use it!
-* Minimalist gui;
-* Add todo in the place you want (or how many todos you want);
-* Check the todo you want (or how many you want);
-* Remove the todo you want (or how many you want);
-* See the time you last updated your todo.
-* Switch any todo with another.
-* Copy any todo.
 * Only saves the file if there's any changes.
 * Remove the todos you already completed.
 * Get the todo to your clipboard.
 * Restart the program.
+* Add groups for separate your todos.
+* Remove groups.
+* Rename groups.
+* Check a whole group.
 
 I don't recommend you to use redo command yet.
 
@@ -66,7 +60,6 @@ I don't recommend you to use redo command yet.
 * `c` or `copy` - This will copy the todo.
 * `rs` or `restart` - Restart the program. :|
 * `l` or `license` - Show the license of the software.
-* `rc` or `remcheckeds` - Remove checked to-dos.
 * `get` or `g` - This will copy to clipboard the todo.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
 * `tab` - This will tab to next group in order.
@@ -77,8 +70,8 @@ I don't recommend you to use redo command yet.
 * `cg` or `checkgroup` - Check all todos in the selected group.
 
 **Planning to add:**
-* `mt` or `movetodos` - This will move the todos to another group.
 * `at` or `addtime` - This will loop the todo in the time you put.
+* `ct` or `changetime` - This will change the time of a todo with loop.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
 
 ## Usage

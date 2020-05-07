@@ -9,12 +9,10 @@ const fs = require('fs');
 
 // show group to see now
 function showGroup(wanted) {
-  if (args.length > 0) {
+  if (wanted.length > 0) {
     groups.forEach((group, i) => {
       if (wanted === group) actualName = i;
     });
-    // reload actual group
-    actualGroup = todos[groups[actualName]];
   }
 }
 
@@ -161,6 +159,47 @@ function addNormalTodo(text) {
   });
 }
 
+// Timed Todos Functions
+
+// add todo to be repeated
+//function addTodoTimed(ids) {
+
+  // command output
+  // at todo -minutes
+    /*
+    {
+      "isChecked": false,
+      "text": "Passear com o Blackaute",
+      "lastActivity": ">",
+      "lastRepeated": 1588880877064,
+      "repeatTime": 600000,
+      "lastUpdated": 1588880877064
+    }
+  */
+//}
+
+// test todos
+function testTodos() {
+  // loop though all groups for get the names loop through each group
+  groups.forEach((group, gi) => {
+    const newGroup = todos[group];
+    // verify each todo
+    newGroup.forEach((todo) => {
+      // if todo is loopable
+      const loopable = todo["repeatTime"];
+      if (loopable) {
+        const dateNow = Date.now();
+        // if that already passed then resets it
+        if (todo.lastRepeated + todo.repeatTime >= dateNow) {
+          todo.lastActivity = '>';
+          todo.isChecked = false;
+          todo.lastRepeated, todo.lastUpdated = dateNow;
+        }
+      }
+    })
+  });
+}
+
 // add todo in todos files (command check and index) 
 function addTodo(text) {
   if (text.length > 0) {
@@ -247,7 +286,7 @@ function copyTodo(args) {
   actualGroup.splice(index, 0, todo); 
 }
 
-/* Move todo */
+// Move todo
 function moveTodo(args) {
   // if theres only the todo you want to move then default position to move is the last one
   if (args.length === 1) args.push(actualGroup.length);
@@ -280,9 +319,13 @@ function checkTodos(ids) {
   // verify if there's any item with range in
   ids.forEach((id, index) => {
     id = id.toString();
-    if (id.includes('-')) {
+    // 13-45 match
+    if (/\d+-\d+/g.test(id)) {
+      // range the item
       const validate = rangeIn(id);
+      // remove range item
       ids.splice(index, 1);
+      // add ranged items
       ids = ids.concat(validate);
     };
   });
@@ -303,9 +346,13 @@ function removeTodos(ids) {
   ids.forEach((item, index) => {
     item = item.toString();
     if (/[a-zA-Z]/g.test(item)) return;
-    if (item.includes('-')) {
+    // 13-45 match
+    if (/\d+-\d+/g.test(item)) {
+      // range the item
       const validate = rangeIn(item);
+      // remove range item
       ids.splice(index, 1);
+      // add ranged items
       ids = ids.concat(validate);
     };
   });
@@ -418,6 +465,11 @@ function showHelp() {
       'example': 'addgroup NewWorld',
     },
     {
+      'commands': ['showgroup', 'sg'],
+      'explanation': 'Show the selected group.',
+      'example': 'showgroup VidaLouca',
+    },
+    {
       'commands': ['remgroup', 'rg'],
       'explanation': 'Delete the selected group.',
       'example': 'remgroup NewWorld',
@@ -433,10 +485,20 @@ function showHelp() {
       'example': 'namegroup NewWorld VidaLouca',
     },
     {
+      'commands': ['movetodo', 'mt'],
+      'explanation': 'Move the selected todos to the selected group.',
+      'example': 'movetodo 7-2 6 VidaLouca',
+    },
+    {
+      'commands': ['tab', 't'],
+      'explanation': 'Show next group.',
+      'example': 'tab',
+    },
+    /*{
       'commands': ['setwidth', 'sw'],
       'explanation': 'For set a new line width for the gui, it\'s only for resolve design bugs.',
       'example': 'setwidth',
-    },
+    },*/
 	  {
       'commands': ['restart', 'rs'],
       'explanation': 'Restart the program. :|',
@@ -453,8 +515,7 @@ function showHelp() {
  │ ${colors.bwhite('TodoNcli v1.3')}                                                        ${colors.bwhite(2020)} │
  ├───────────────────────────────────────────────────────────────────────────┤
  │ Manage your todos anytime using command line!                             │
- │ Every change will be saved in your system.                                │
-  ${newLine}
+ │ Every change will be saved in your system.                                │\n${newLine}
  │ Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!           │
  ├───────────────────────────────────────────────────────────────────────────┤`);
   console.log(newLine);
@@ -660,12 +721,14 @@ function checkTask(answer, args) {
       actualGroup = todos[groups[actualName]];
       break;
     case 'tab':
+    case 't':
       tabGroup();
       groups = Object.keys(todos);
       break;
     case 'showgroup':
     case 'sg':
       showGroup(args.join(' '));
+      actualGroup = todos[groups[actualName]];
       break;
     case 'c':
     case 'copy':
@@ -711,6 +774,7 @@ function checkTask(answer, args) {
     default:
       help = false;
   }
+  testTodos();
   saveData();
   askForATask(help);
 }
@@ -722,9 +786,9 @@ function checkTask(answer, args) {
 // Load all the files or create them
 function loadFile() {
   try {
-    todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
     redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
     OTODOS = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
+    todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
     // load all the groups and return their names
     groups = Object.keys(todos);
     // choose the first group (default)
@@ -733,6 +797,9 @@ function loadFile() {
     askForATask(false);
   } catch (err) {
     if (err.code === 'ENOENT') {
+      //
+      // Templates
+      //
       // ! Remember that the templates must be STRING to parse through fs.writeFileSync
       const templateTodos = ' ' + {
         "default": [
@@ -751,8 +818,13 @@ function loadFile() {
         ]
       };
       const templateRedos = '[]';
+
+      // 
+      // Code Run
+      //
       // if only is missing redos files
       if (!redos && todos) {
+        fs.writeFileSync('config.json', templateConfig, 'utf8');
         fs.writeFileSync('redos.json', templateRedos, 'utf8');
         redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
         return askForATask(false);
