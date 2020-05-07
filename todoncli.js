@@ -71,6 +71,13 @@ function addGroup(args) {
   }
 }
 
+function checkGroup(args) {
+  if (args.length === 1) {
+    showGroup(args[0]);
+    checkTodos([`0-${actualGroup.length}`]);
+  }
+}
+
 // Redo Functions
 
 // add redo to file
@@ -416,6 +423,11 @@ function showHelp() {
       'example': 'remgroup NewWorld',
     },
     {
+      'commands': ['checkgroup', 'cg'],
+      'explanation': 'Check the todos of the selected group.',
+      'example': 'checkgroup NewWorld',
+    },
+    {
       'commands': ['namegroup', 'ng'],
       'explanation': 'Name the selected group. First is the group you want to rename and then the name you want.',
       'example': 'namegroup NewWorld VidaLouca',
@@ -623,6 +635,12 @@ function checkTask(answer, args) {
     case 'r':
     case 'rem':
       removeTodos(args);
+      break;
+    case 'checkgroup':
+    case 'cg':
+      checkGroup(args);
+      groups = Object.keys(todos);
+      actualGroup = todos[groups[actualName]];
       break;
     case 'addgroup':
     case 'ag':

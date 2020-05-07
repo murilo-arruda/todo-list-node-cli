@@ -71,13 +71,14 @@ I don't recommend you to use redo command yet.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
 * `tab` - This will tab to next group in order.
 * `ng` or `namegroup` - Rename the selected group. First is the group you want to rename, then the name you want.
-
-**Planning to add:**
-* `at` or `addtime` - This will loop the todo in the time you put.
-* `sg` or `showgroup` - Show the selected group.
 * `ag` or `addgroup` - Create a new group of to-dos. This helps you to organize better the types of to-dos you have.
 * `rg` or `remgroup` - Delete the selected group.
+* `sg` or `showgroup` - Show the selected group.
 * `cg` or `checkgroup` - Check all todos in the selected group.
+
+**Planning to add:**
+* `mt` or `movetodos` - This will move the todos to another group.
+* `at` or `addtime` - This will loop the todo in the time you put.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
 
 ## Usage
