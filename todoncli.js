@@ -33,14 +33,19 @@ function nameGroup(args) {
     //todos.Prop3 = a.Prop1;
     const wanted = args[0].toString();
     const name = args[1].toString();
-    groups.forEach((group) => {
+    groups.forEach((group, i) => {
       if (wanted === group) {
-        todos[wanted] = todos[group];
+        try {
+          if (i === actualName) actualName = groups.length - 1;
+          todos[name] = todos[wanted];
+          delete todos[wanted];
+        }
+        catch (e) { 
+          console.log("An error occured trying to copy the group with a new name. ", e);
+        }
       }
     });
     groups = Object.keys(todos);
-    console.log(groups);
-    console.log(kek);
   } 
 }
 
