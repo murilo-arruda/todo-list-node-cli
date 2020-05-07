@@ -29,6 +29,7 @@ function tabGroup() {
 }
 
 function nameGroup(args) {
+  // must be only two args
   if (args.length === 2) {
     //todos.Prop3 = a.Prop1;
     const wanted = args[0].toString();
@@ -45,8 +46,29 @@ function nameGroup(args) {
         }
       }
     });
-    groups = Object.keys(todos);
   } 
+}
+
+function remGroup(args) {
+  // must be only one arg
+  if (args.length === 1) {
+    try {
+      groups.forEach((group, i) => {
+      if (group === args[0]) actualName = i - 1;
+      });
+      delete todos[args[0]];
+    }
+    catch (e) {
+      console.log("An error occured trying to remove this group.", e);
+    }
+  }
+}
+
+function addGroup(args) {
+  // must be only one arg
+  if (args.length === 1) {
+    todos[args[0]] = [];
+  }
 }
 
 // Redo Functions
@@ -602,12 +624,26 @@ function checkTask(answer, args) {
     case 'rem':
       removeTodos(args);
       break;
+    case 'addgroup':
+    case 'ag':
+      addGroup(args);
+      groups = Object.keys(todos);
+      break;
+    case 'remgroup':
+    case 'rg':
+      remGroup(args);
+      groups = Object.keys(todos);
+      actualGroup = todos[groups[actualName]];
+      break;
     case 'namegroup':
     case 'ng':
       nameGroup(args);
+      groups = Object.keys(todos);
+      actualGroup = todos[groups[actualName]];
       break;
     case 'tab':
       tabGroup();
+      groups = Object.keys(todos);
       break;
     case 'showgroup':
     case 'sg':
