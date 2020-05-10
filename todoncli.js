@@ -161,23 +161,107 @@ function addNormalTodo(text) {
 
 // Timed Todos Functions
 
-// add todo to be repeated
-//function addTodoTimed(ids) {
+// parse minutes and index for a timed todo
+function parseMinutesIndex(args) {
+  const textJ = args;
+  const patt = /^-\d+\b|-\d/;
+  let index, minutes, text;
+  let lastArg = textJ[textJ.length - 1];
+  let penultArg = textJ[textJ.length - 2];
+  // if the input is like (at todo -minutes)
+  if (patt.test(lastArg) && patt.test(penultArg) === false && patt.test(args[0]) === false) {
+    // parse as normal number for index
+    minutes = parseInt(lastArg.replace('-', ''));
+    // remove minutes of the text
+    textJ.splice(textJ.length - 1, 1);
+  }
+  // if the input is like (at -minutes todo)
+  else if (patt.test(args[0]) && patt.test(lastArg) === false) {
+    // parse as normal number for index
+    minutes = parseInt(args[0].replace('-', ''));
+    // remove minutes of the text
+    textJ.splice(0, 1);
+  }
+  // if the input is like (at todo -minutes -index) then
+  else if (patt.test(penultArg) && patt.test(lastArg)) {
+    // parse as normal number for minutes
+    penultArg = parseInt(penultArg.replace('-', ''));
+    // convert minutes to miliseconds
+    minutes = penultArg;
+    // parse as normal number for index
+    index = parseInt(lastArg.replace('-', ''));
+    // if index is invalidate
+    if (index < 0 || index > actualGroup.length - 1) return 1;
+    // remove index and minutes of the text
+    textJ.splice(textJ.length - 2, 1);
+    textJ.splice(textJ.length - 1, 1);
+  }
+  // or if the input is like (at -minutes todo -index)
+  else if (patt.test(args[0]) && patt.test(lastArg)) {
+    // parse as normal number for minutes and convert it to miliseconds
+    minutes = parseInt(args[0].replace('-', ''));
+    // parse as normal number for index
+    index = parseInt(lastArg.replace('-', ''));
+    // if index is invalidate
+    if (index < 0 || index > actualGroup.length - 1) return 1;
+    // remove index and minutes of the text
+    textJ.shift();
+    textJ.splice(textJ.length - 1, 1);
+  };
+  text = textJ.join(' ');
+  return {
+    text,
+    index,
+    minutes: minutes * 1000
+  }
+} 
 
-  // command output
-  // at todo -minutes
-    /*
-    {
-      "isChecked": false,
-      "text": "Passear com o Blackaute",
-      "lastActivity": ">",
-      "lastRepeated": 1588880877064,
-      "repeatTime": 600000,
-      "lastUpdated": 1588880877064
+// Add todo to be repeated
+function addTodoTimed(args) {
+  if (args.length > 1) {
+    // validate the args with every unique possibility
+    const validate = parseMinutesIndex(args);
+    // if index is invalidate returns nothing
+    if (validate === 1) return false; 
+    // if has index then add with index
+    if (validate.index !== undefined && validate.minutes && validate.text) {
+      const dateNow = Date.now();
+      actualGroup.splice(validate.index, 0, {
+        isChecked: false,
+        text: validate.text,
+        lastActivity: '>',
+        repeatTime: validate.minutes,
+        lastRepeated: dateNow,
+        lastUpdated: dateNow,
+      });
     }
-  */
-//}
+    // if just has minutes and text then add
+    else if (validate.text && validate.minutes) {
+      const dateNow = Date.now();
+      actualGroup.push({
+        isChecked: false,
+        text: validate.text,
+        lastActivity: '>',
+        repeatTime: validate.minutes,
+        lastRepeated: dateNow,
+        lastUpdated: dateNow,
+      });
+    }
+  }
+  // command output:
+  // NORMAL
+  // at todo -minutes
+  // at -minutes todo
+  // at todo -minutes -index
+  // at -minutes todo -index
+  // NEVER
+  // at -index todo          => at -minutes todo
+  // at todo -index          => at todo -minutes
+  // at -index todo -minutes => at -minutes todo -index
+  // at todo                 => nothing
+}
 
+// Edit the old time of the loopable todo to a new one
 function editTimed(args) {
   // always two args (first: todo; second: time in minutes)
   if (args.length === 2) {
@@ -199,7 +283,7 @@ function editTimed(args) {
   }
 }
 
-// Test todos 
+// Test todos if their time already passed
 function testTodos() {
   // verify each todo in the actual group
   actualGroup.forEach(todo => {
@@ -218,6 +302,8 @@ function testTodos() {
     }
   });
 }
+
+// Normal Todos Functions
 
 // Add todo in todos files (command check and index) 
 function addTodo(text) {
@@ -508,6 +594,11 @@ function showHelp() {
       'example': 'et 5 60',
     },
     {
+      'commands': ['addtime', 'at'],
+      'explanation': 'Add a todo which will loop in a certain time.',
+      'example': 'addtime Do this every hour -60',
+    },
+    {
       'commands': ['movetodo', 'mt'],
       'explanation': 'Move the selected todos to the selected group.',
       'example': 'movetodo 7-2 6 VidaLouca',
@@ -724,6 +815,10 @@ function checkTask(answer, args) {
     case 'edittime':
       editTimed(args);
       break;
+    case 'at':
+    case 'addtime':
+      addTodoTimed(args);
+      break;
     case 'checkgroup':
     case 'cg':
       checkGroup(args);
@@ -794,6 +889,7 @@ function checkTask(answer, args) {
       break;
     case 'e':
     case 'exit':
+      saveData();
       console.clear();
       rl.close();
       process.exit();
@@ -876,7 +972,7 @@ function loadFile() {
 // Save files
 function saveData() {
   // just save if there's any change (optimization)
-  if (JSON.stringify(todos) !== JSON.stringify(OTODOS)) {
+  if (todos !== OTODOS) {
     fs.writeFileSync('todos.json', JSON.stringify(todos, null, 2), 'utf8');
     fs.writeFileSync('redos.json', JSON.stringify(redos), 'utf8'); 
     // |, null, 2| for prettier output

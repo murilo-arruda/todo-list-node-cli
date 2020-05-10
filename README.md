@@ -40,6 +40,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Remove groups.
 * Rename groups.
 * Check a whole group.
+* Edit any timed todo to a new time.
 
 I don't recommend you to use redo command yet.
 
@@ -68,11 +69,20 @@ I don't recommend you to use redo command yet.
 * `rg` or `remgroup` - Delete the selected group.
 * `sg` or `showgroup` - Show the selected group.
 * `cg` or `checkgroup` - Check all todos in the selected group.
+* `et` or `edittime` - This will edit the time for repeat todo.
+* `at` or `addtime` - Add a todo which will loop in a certain time.
+*Normal:*
+`at todo -minutes`
+`at -minutes todo`
+`at todo -minutes -index`
+`at -minutes todo -index`
+*Never:*
+`at -index todo` **=>** `at -minutes todo`
+`at todo -index` **=>** `at todo -minutes`
+`at -index todo -minutes` **=>** `at -minutes todo -index`
+`at todo` **=>** nothing
 
 **Planning to add:**
-* `et` or `edittime` - This will edit the time for repeat todo.
-* `at` or `addtime` - This will loop the todo in the time you put.
-* `ct` or `changetime` - This will change the time of a todo with loop.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
 
 ## Usage
