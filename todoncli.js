@@ -599,11 +599,6 @@ function showHelp() {
       'example': 'addtime Do this every hour -60',
     },
     {
-      'commands': ['movetodo', 'mt'],
-      'explanation': 'Move the selected todos to the selected group.',
-      'example': 'movetodo 7-2 6 VidaLouca',
-    },
-    {
       'commands': ['tab', 't'],
       'explanation': 'Show next group.',
       'example': 'tab',

@@ -3,7 +3,7 @@
 
 * We are hackers, and hackers have black terminals with ~~green~~ gray and blue text*
 
-![Template](/preview/template.png?raw=trueg)
+![Template](/preview/template.webp?raw=trueg)
 
 Simple implementation of a Todo List in Node.js. Manage your todos directly in the terminal. This is an updated ~~forked~~ version from todo-list-node-cli by [@murilo-arruda](https://github.com/murilo-arruda). *I forked this because I wanted to make something unique, something that I don't think everyone the original repository would agree.*
 
