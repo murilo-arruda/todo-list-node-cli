@@ -70,6 +70,7 @@ I don't recommend you to use redo command yet.
 * `cg` or `checkgroup` - Check all todos in the selected group.
 
 **Planning to add:**
+* `et` or `edittime` - This will edit the time for repeat todo.
 * `at` or `addtime` - This will loop the todo in the time you put.
 * `ct` or `changetime` - This will change the time of a todo with loop.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.

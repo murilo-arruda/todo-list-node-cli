@@ -141,7 +141,7 @@ function getIndex(text) {
   // remove minus
   index = parseInt(index.replace('-', ''));
   // if returns that the number return is not in the rules
-  if (index > actualGroup.length || index < 0) return 2;
+  if (index > actualGroup.length - 1 || index < 0) return 2;
   return {
      text: text.join(' '),
      index,
@@ -178,29 +178,29 @@ function addNormalTodo(text) {
   */
 //}
 
-// test todos
+
+
+// Test todos 
 function testTodos() {
-  // loop though all groups for get the names loop through each group
-  groups.forEach((group, gi) => {
-    const newGroup = todos[group];
-    // verify each todo
-    newGroup.forEach((todo) => {
-      // if todo is loopable
-      const loopable = todo["repeatTime"];
-      if (loopable) {
-        const dateNow = Date.now();
-        // if that already passed then resets it
-        if (todo.lastRepeated + todo.repeatTime >= dateNow) {
-          todo.lastActivity = '>';
-          todo.isChecked = false;
-          todo.lastRepeated, todo.lastUpdated = dateNow;
-        }
+  // verify each todo in the actual group
+  actualGroup.forEach(todo => {
+    // if todo is loopable
+    const loopable = todo.repeatTime;
+    if (loopable) {
+      const dateNow = Date.now();
+      const lastTimeTodo = todo.lastRepeated + todo.repeatTime;
+      // if that already passed then resets it
+      if (dateNow >= lastTimeTodo) {
+        todo.lastActivity = '>';
+        todo.isChecked = false;
+        todo.lastRepeated = dateNow;
+        todo.lastUpdated = dateNow;
       }
-    })
+    }
   });
 }
 
-// add todo in todos files (command check and index) 
+// Add todo in todos files (command check and index) 
 function addTodo(text) {
   if (text.length > 0) {
     // parse text and return index if theres any
@@ -220,7 +220,7 @@ function addTodo(text) {
   }
 }
 
-// edit todo
+// Edit todo method
 function editTodo(text) {
   if (text.length > 0) {
     // parse text and return index if theres any
@@ -229,7 +229,6 @@ function editTodo(text) {
     if (validate === 1) return addNormalTodo(text.join(' '));
     // if returns that the number return is not in the rules
     else if (validate === 2) return;
-    actualGroup.splice(validate.index, 1);
     actualGroup[validate.index].text = validate.text;
   }
 }
@@ -666,13 +665,13 @@ function askForATask(help) {
   else if (help === 2) showProtec();
   else if (help === 3) showLicense();
   else showTodos();
-  rl.question(' > ', (answer) => {
+  rl.question(colors.white(' > '), (answer) => {
     [answer, ...args] = answer.split(' ');
     checkTask(answer, args);
   });
 }
 
-/* Get command and pass to function */
+// Get command and pass to function
 function checkTask(answer, args) {
   let help = false;
   answer = answer.toLowerCase();
@@ -761,7 +760,7 @@ function checkTask(answer, args) {
     case 'edit':
       editTodo(args);
       break;
-    case 'rs':
+    case 'rs': 
     case 'restart':
       start();
       break;
