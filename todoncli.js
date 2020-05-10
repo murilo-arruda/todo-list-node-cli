@@ -178,7 +178,26 @@ function addNormalTodo(text) {
   */
 //}
 
-
+function editTimed(args) {
+  // always two args (first: todo; second: time in minutes)
+  if (args.length === 2) {
+    // need always be a number
+    if (/[^\d+]/.test(args[0])) return false;
+    // if the number is bigger or lower than expected
+    if (args[0] < 0 || args[0] > actualGroup.length - 1) return false;
+    // make todo easier for code
+    const todo = actualGroup[args[0]];
+    // if todo is loopabe
+    const loopable = todo.repeatTime;
+    // change repeat Time to the new
+    if (loopable) {
+      // convert to miliseconds
+      const newTime = args[1] * 1000;
+      // change the old time to the new one
+      todo.repeatTime = newTime;
+    }
+  }
+}
 
 // Test todos 
 function testTodos() {
@@ -241,7 +260,7 @@ function verifyTwoNumbers(args) {
     // need always be a number
     if (/[^\d+]/.test(item)) return false;
     // if the number is bigger or lower than expected
-    if (item < 0 || item > actualGroup.length) return false;
+    if (item < 0 || item > actualGroup.length - 1) return false;
   }
   return true;
 }
@@ -484,6 +503,11 @@ function showHelp() {
       'example': 'namegroup NewWorld VidaLouca',
     },
     {
+      'commands': ['edittime', 'et'],
+      'explanation': 'Edit the time of the selected todo to a new one. In example change the time of 5th todo to 60 minutes.',
+      'example': 'et 5 60',
+    },
+    {
       'commands': ['movetodo', 'mt'],
       'explanation': 'Move the selected todos to the selected group.',
       'example': 'movetodo 7-2 6 VidaLouca',
@@ -695,6 +719,10 @@ function checkTask(answer, args) {
     case 'r':
     case 'rem':
       removeTodos(args);
+      break;
+    case 'et':
+    case 'edittime':
+      editTimed(args);
       break;
     case 'checkgroup':
     case 'cg':
