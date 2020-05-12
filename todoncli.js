@@ -97,6 +97,19 @@ function addRedo(command, args) {
   }
 }
 
+// test todo if it's getting any alteration
+function testTodoRedo(command, id) {
+  redos.forEach((item, ii) =>{
+    if (id === item.index) {
+      switch(command) {
+        case 'rem':
+          redos.splice(ii, 1);
+        break;
+      }
+    }
+  });
+}
+
 // retrieve redo of file
 function redoAction() {
   if (redos.length === 0) return;
@@ -164,6 +177,7 @@ function addNormalTodo(text) {
 // parse minutes and index for a timed todo
 function parseMinutesIndex(args) {
   const textJ = args;
+  // pattern for number with minus as prefix
   const patt = /^-\d+\b|-\d/;
   let index, minutes, text;
   let lastArg = textJ[textJ.length - 1];
@@ -212,7 +226,7 @@ function parseMinutesIndex(args) {
   return {
     text,
     index,
-    minutes: minutes * 1000
+    minutes: minutes * 60000
   }
 } 
 
@@ -276,7 +290,7 @@ function editTimed(args) {
     // change repeat Time to the new
     if (loopable) {
       // convert to miliseconds
-      const newTime = args[1] * 1000;
+      const newTime = args[1] * 60000;
       // change the old time to the new one
       todo.repeatTime = newTime;
     }
@@ -462,6 +476,8 @@ function removeTodos(ids) {
   });
   ids.sort((a, b) => b - a);
   ids.forEach(id => {
+    id = parseInt(id);
+    testTodoRedo("rem", id);
     if (actualGroup[id]) actualGroup.splice(id, 1);
   });
 }
@@ -621,7 +637,7 @@ function showHelp() {
   ];
   console.clear();
   console.log(` ┌───────────────────────────────────────────────────────────────────────────┐
- │ ${colors.bwhite('TodoNcli v1.3')}                                                        ${colors.bwhite(2020)} │
+ │ ${colors.bwhite('TodoNcli v1.4')}                                                        ${colors.bwhite(2020)} │
  ├───────────────────────────────────────────────────────────────────────────┤
  │ Manage your todos anytime using command line!                             │
  │ Every change will be saved in your system.                                │\n${newLine}
@@ -683,18 +699,28 @@ function showProtec() {
 }
 
 // Format todo time for showTodos() function
-function formatTodoTime(time) {
-  const date = new Date(time);
-  // make date prettier
-  let specials = [date.getDate(), (date.getMonth() + 1), date.getHours(), date.getMinutes()];
-  specials = specials.map(item => {
-    item = item.toString();
-    while (item.length <= 1) item = `0${item}`;
-    return item;
-  });
-  let output = ` ${specials[0]}/${specials[1]}/${date.getFullYear()} ${specials[2]}:${specials[3]}`;
-  while (output.length < 16) output = ` ${output}`;
-  // console.log(specials);
+function formatTodoTime(time, repeatTime, lastRepeated) {
+  let output;
+  if (repeatTime === undefined) {
+    const date = new Date(time);
+    // make date prettier
+    let specials = [date.getDate(), (date.getMonth() + 1), date.getHours(), date.getMinutes()];
+    specials = specials.map(item => {
+      item = item.toString();
+      while (item.length <= 1) item = `0${item}`;
+      return item;
+    });
+    output = `${specials[0]}/${specials[1]}/${date.getFullYear()} ${specials[2]}:${specials[3]}`;
+  }
+  else {
+    const now = Date.now();
+    let timeLeft = ((repeatTime + lastRepeated) - now) / 60000;
+    // round number up to better output to 2 dec
+    timeLeft = Math.round((timeLeft + Number.EPSILON) * 100) / 100;
+    output = `-${timeLeft}m`;
+  }
+  // make output prettier
+  while (output.length < 17) output = ` ${output}`;
   return output;
 }
 
@@ -724,7 +750,8 @@ function showTodos() {
     let task = todo.text;
     // make text adapts when there more than 41 charas per line
     const startString = bar + index + bar + colors.white(status) + bar;
-    const actualTime = formatTodoTime(todo.lastUpdated);
+    // make actual time (if the todo has loop then uses the left time to repeat)
+    const actualTime = formatTodoTime(todo.lastUpdated, todo.repeatTime, todo.lastRepeated);
     const activity = color(todo.lastActivity);
     if (task.length > 41) {
       const allStrings = task.match(/.{1,41}/g);
@@ -969,7 +996,7 @@ function saveData() {
   // just save if there's any change (optimization)
   if (todos !== OTODOS) {
     fs.writeFileSync('todos.json', JSON.stringify(todos, null, 2), 'utf8');
-    fs.writeFileSync('redos.json', JSON.stringify(redos), 'utf8'); 
+    fs.writeFileSync('redos.json', JSON.stringify(redos, null, 2), 'utf8'); 
     // |, null, 2| for prettier output
   };
 }

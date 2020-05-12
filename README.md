@@ -29,18 +29,9 @@ Do the same thing with the **node terminal** if you open the app using **app.vbs
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## Features v1.3
+## Features v1.4
 
 * Extremely light (4.2KB);
-* Only saves the file if there's any changes.
-* Remove the todos you already completed.
-* Get the todo to your clipboard.
-* Restart the program.
-* Add groups for separate your todos.
-* Remove groups.
-* Rename groups.
-* Check a whole group.
-* Edit any timed todo to a new time.
 
 I don't recommend you to use redo command yet.
 
@@ -71,18 +62,29 @@ I don't recommend you to use redo command yet.
 * `cg` or `checkgroup` - Check all todos in the selected group.
 * `et` or `edittime` - This will edit the time for repeat todo.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
+
 *Normal:*
+
 `at todo -minutes`
+
 `at -minutes todo`
+
 `at todo -minutes -index`
+
 `at -minutes todo -index`
+
 *Never:*
+
 `at -index todo` **=>** `at -minutes todo`
+
 `at todo -index` **=>** `at todo -minutes`
+
 `at -index todo -minutes` **=>** `at -minutes todo -index`
+
 `at todo` **=>** nothing
 
 **Planning to add:**
+* See the time that left in minutes to repeat again the todo.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
 
 ## Usage
