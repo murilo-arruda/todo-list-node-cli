@@ -1,7 +1,7 @@
 # Todo List CLI
 > Todo List CLI build in Node.js
 
-* We are hackers, and hackers have black terminals with ~~green~~ gray and blue text*
+*We are hackers, and hackers have black terminals with gray and white text*
 
 ![Template](/preview/template.webp?raw=trueg)
 
@@ -31,7 +31,9 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 
 ## Features v1.4
 
-* Extremely light (4.2KB);
+* Extremely light (4.2KB)
+* Monochrome (Reasons: there's no reason at all to make the ready todos cyan)
+* See the time that left in minutes to repeat again the todo.
 
 I don't recommend you to use redo command yet.
 
@@ -64,16 +66,13 @@ I don't recommend you to use redo command yet.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
 
 **Planning to add:**
-* See the time that left in minutes to repeat again the todo.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
 
 ## Usage
 
-*Todos are save in the `todos.json` file*
-*Redos are save in the `redos.json` file*
-**Config is save in the `config.json` file**
-
-For development I recommend you use [nodemon](https://nodemon.io/). Or just fast exit using `CTRL + c` or `e` and then back with `node .`.
+*Todos are save in the `todos.json` file.*
+*Redos are save in the `redos.json` file.*
+~~Config is save in the `config.json` file.~~
 
 ![Documentation](/preview/documentation.png?raw=trueg)
 
@@ -94,7 +93,6 @@ Code improvements
 Minor Update
 [@ywpark1](https://github.com/ywpark1)
 [@zjael](https://github.com/zjael)
-[@Koetemagie](https://github.com/Koetemagie)
 
 Compatibility
 [@mani1soni](https://github.com/mani1soni)
@@ -109,6 +107,10 @@ Documentation
 ## 🙌 Contributing
 
 Pull requests are always open! Feel free to help!
+
+For asks just create an issue.
+
+For development I recommend you fast exit using `CTRL + c` or `e` and then back with `node .`.
 
 ## License
 

@@ -737,7 +737,7 @@ function showTodos() {
   //const lastIndex = actualGroup.length.toString();
   actualGroup.forEach((todo, index) => {
     // color for the whole console ??? if is checked or not
-    const color = todo.isChecked ? colors.cyan : colors.bwhite;
+    const color = todo.isChecked ? colors.white : colors.bwhite;
     // bar with normal color...
     const bar = colors.bwhite(` │ `);
     // prettier the index...
@@ -802,6 +802,7 @@ function askForATask(help) {
   else if (help === 2) showProtec();
   else if (help === 3) showLicense();
   else showTodos();
+  testTodos();
   rl.question(colors.white(' > '), (answer) => {
     [answer, ...args] = answer.split(' ');
     checkTask(answer, args);
@@ -919,7 +920,6 @@ function checkTask(answer, args) {
     default:
       help = false;
   }
-  testTodos();
   saveData();
   askForATask(help);
 }
@@ -1010,9 +1010,9 @@ function saveData() {
 // Colors method for colorize terminal output
 const res = '\x1b[0m';
 const colors = {
-  cyan: m => {
+  /*cyan: m => {
     return `\x1b[36m${m + res}`;
-  },
+  },*/
   white: m => {
     return `\x1b[90m${m + res}`;
   },
