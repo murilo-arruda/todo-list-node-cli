@@ -63,26 +63,6 @@ I don't recommend you to use redo command yet.
 * `et` or `edittime` - This will edit the time for repeat todo.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
 
-*Normal:*
-
-`at todo -minutes`
-
-`at -minutes todo`
-
-`at todo -minutes -index`
-
-`at -minutes todo -index`
-
-*Never:*
-
-`at -index todo` **=>** `at -minutes todo`
-
-`at todo -index` **=>** `at todo -minutes`
-
-`at -index todo -minutes` **=>** `at -minutes todo -index`
-
-`at todo` **=>** nothing
-
 **Planning to add:**
 * See the time that left in minutes to repeat again the todo.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
@@ -91,6 +71,7 @@ I don't recommend you to use redo command yet.
 
 *Todos are save in the `todos.json` file*
 *Redos are save in the `redos.json` file*
+**Config is save in the `config.json` file**
 
 For development I recommend you use [nodemon](https://nodemon.io/). Or just fast exit using `CTRL + c` or `e` and then back with `node .`.
 
@@ -125,7 +106,7 @@ Documentation
 [@tducasse](https://github.com/tducasse)
 [@Koetemagie](https://github.com/Koetemagie)
 
-## Contributing
+## 🙌 Contributing
 
 Pull requests are always open! Feel free to help!
 
