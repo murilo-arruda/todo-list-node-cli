@@ -5,7 +5,7 @@
 
 ![Template](/preview/template.webp?raw=trueg)
 
-Simple implementation of a Todo List in Node.js. Manage your todos directly in the terminal. This is an updated ~~forked~~ version from todo-list-node-cli by [@murilo-arruda](https://github.com/murilo-arruda). *I forked this because I wanted to make something unique, something that I don't think everyone the original repository would agree.*
+Implementation of a Todo List in Node.js. Manage your todos directly in the terminal with a lot of features.
 
 ## Installation
 
@@ -54,9 +54,9 @@ I don't recommend you to use redo command yet.
 * `c` or `copy` - This will copy the todo.
 * `rs` or `restart` - Restart the program. :|
 * `l` or `license` - Show the license of the software.
-* `get` or `g` - This will copy to clipboard the todo.
+* `g` or `get` - This will copy to clipboard the todo.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
-* `tab` - This will tab to next group in order.
+* `t` or `tab` - This will tab to next group in order.
 * `ng` or `namegroup` - Rename the selected group. First is the group you want to rename, then the name you want.
 * `ag` or `addgroup` - Create a new group of to-dos. This helps you to organize better the types of to-dos you have.
 * `rg` or `remgroup` - Delete the selected group.
@@ -66,6 +66,8 @@ I don't recommend you to use redo command yet.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
 
 **Planning to add:**
+* See the name of the group instead of **Todos** in the todos output.
+* If the time left is bigger than one hour then transform it in hours, then days, weeks and months.
 * `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
 
 ## Usage

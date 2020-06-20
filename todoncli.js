@@ -485,16 +485,30 @@ function removeTodos(ids) {
 /* Copy to clipboard method */
 function getCopy(ids) {
   if (ids.length === 0) return;
-  const id = ids[0];
-  if (actualGroup[id]) {
-    const todo = actualGroup[id].text;
-    let proc = require('child_process').spawn('clip'); 
-    // Don't know what to do to resolve the [à È] issue... :(
-    proc.stdin.setEncoding('utf8');
-    proc.stdin.write(todo.toString('utf8'));
-    proc.stdin.end();
-  }
-}
+  if (actualGroup[ids[0]]) {
+    const data = actualGroup[ids[0]].text;
+
+    switch (process.platform) {
+      case 'linux':
+        require('child_process').exec(`echo ${data} | xclip -sel clip`,
+          (err, stdout, stderr) => console.log(stdout)
+        );
+        break;
+      case 'win32':
+          proc = require('child_process').spawn('clip'); 
+          proc.stdin.write(data);
+          proc.stdin.end();
+        break;
+      case 'darwin':
+        require('child_process').exec(`echo ${data} | pbcopy`,
+          (err, stdout, stderr) => console.log(stdout)
+        );
+        break;
+      default:
+        console.log('Please report the OS you use in the our repository! > (Koetemagie/todoncli)')
+    }
+  };
+};
 
 /* Delete all the checked todos */
 function remCheckedTodos() {
