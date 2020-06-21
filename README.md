@@ -1,4 +1,4 @@
-# Todo List CLI
+# 🤍 Todo List CLI
 > Todo List CLI build in Node.js
 
 *We are hackers, and hackers have black terminals with gray and white text*
@@ -7,7 +7,7 @@
 
 Implementation of a Todo List in Node.js. Manage your todos directly in the terminal with a lot of features.
 
-## Installation
+## ⌨️ Installation
 
 - Install [node](https://nodejs.org/);
 - Download the latest version [here](https://github.com/Koetemagie/todoncli/releases/latest)!
@@ -29,7 +29,7 @@ Do the same thing with the **node terminal** if you open the app using **app.vbs
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## Features v1.4
+## ✨ Features v1.4
 
 * Extremely light (4.2KB)
 * Monochrome (Reasons: there's no reason at all to make the ready todos cyan)
@@ -38,7 +38,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * See the name of the group instead of **Todos** in the todos output.
 * If the time left of a timed todo is bigger than one hour then transform it in hours, then days, weeks and months.
 
-## Command Cheat
+## 🖨 Command Cheat
 
 > usage: `command [arguments]` - the arguments are space separated!
 
@@ -64,11 +64,9 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `et` or `edittime` - This will edit the time for repeat todo.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
 
-## Usage
+## 💻 Usage
 
 *Todos are save in the `todos.json` file.*
-~~*Redos are save in the `redos.json` file.*~~
-~~Config is save in the `config.json` file.~~
 
 ![Documentation](/preview/documentation.png?raw=trueg)
 
@@ -100,7 +98,7 @@ Documentation
 [@tducasse](https://github.com/tducasse)
 [@Koetemagie](https://github.com/Koetemagie)
 
-## 🙌 Contributing
+## 📝 Contributing
 
 Pull requests are always open! Feel free to help!
 
@@ -108,6 +106,6 @@ For asks just create an issue.
 
 For development I recommend you fast exit using `CTRL + c` or `e` and then back with `node .`.
 
-## License
+## 📃 License
 
 [MIT](/LICENSE.md?raw=trueg).
