@@ -34,10 +34,9 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Extremely light (4.2KB)
 * Monochrome (Reasons: there's no reason at all to make the ready todos cyan)
 * See the time that left in minutes to repeat again the todo.
-
-I don't recommend you to use redo command yet.
-
-* Redo command (only is working with add and remove commands);
+* Removed Redo command.
+* See the name of the group instead of **Todos** in the todos output.
+* If the time left of a timed todo is bigger than one hour then transform it in hours, then days, weeks and months.
 
 ## Command Cheat
 
@@ -65,15 +64,10 @@ I don't recommend you to use redo command yet.
 * `et` or `edittime` - This will edit the time for repeat todo.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
 
-**Planning to add:**
-* See the name of the group instead of **Todos** in the todos output.
-* If the time left is bigger than one hour then transform it in hours, then days, weeks and months.
-* `sw` or `setwidth` - For set a new line width for the gui, it's only for resolve design bugs.
-
 ## Usage
 
 *Todos are save in the `todos.json` file.*
-*Redos are save in the `redos.json` file.*
+~~*Redos are save in the `redos.json` file.*~~
 ~~Config is save in the `config.json` file.~~
 
 ![Documentation](/preview/documentation.png?raw=trueg)

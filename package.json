@@ -4,7 +4,7 @@
   "description": "Todo List CLI with node.",
   "main": "todoncli.js",
   "repository": "https://github.com/Koetemagie/todoncli",
-  "author": "koetemagie",
+  "author": "Koetemagie",
   "license": "MIT",
   "dependencies": {},
   "scripts": {
