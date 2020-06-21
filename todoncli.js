@@ -420,7 +420,7 @@ function moveTodo(args) {
   actualGroup.splice(index, 0, todo); 
 }
 
-/* Range In between and return their indexes*/
+// Range In between two numbers and return their indexes
 function rangeIn(ids) {
   ids = [ids];
   let [start, end] = ids[0].split('-');
@@ -490,7 +490,7 @@ function getCopy(ids) {
 
     switch (process.platform) {
       case 'linux':
-        require('child_process').exec(`echo ${data} | xclip -sel clip`,
+        require('child_process').exec(`echo "${data}" | xclip -sel clip`,
           (err, stdout, stderr) => console.log(stdout)
         );
         break;
@@ -649,7 +649,6 @@ function showHelp() {
       'example': 'exit',
 	  },
   ];
-  console.clear();
   console.log(` ┌───────────────────────────────────────────────────────────────────────────┐
  │ ${colors.bwhite('TodoNcli v1.4')}                                                        ${colors.bwhite(2020)} │
  ├───────────────────────────────────────────────────────────────────────────┤
@@ -682,7 +681,6 @@ function showHelp() {
 
 // Show the license :|
 function showLicense() {
-  console.clear();
   console.log(`
   todoncli
 
@@ -697,7 +695,6 @@ function showLicense() {
 
 // ???
 function showProtec() {
-  console.clear();
   console.log(`
  ┌───────────────────────────────────────────────────────────────────────────┐
  │    -=-                                                                    │
@@ -738,73 +735,87 @@ function formatTodoTime(time, repeatTime, lastRepeated) {
   return output;
 }
 
-// Show todos with gui
-function showTodos() {
-  console.clear();
-  const lineHeader = `
- ┌────┬─────┬───────────────────────────────────────────┬────────────────────┐
- │ ID │ Stt │ Todos                                     │ + Date             │
- ├────┼─────┼───────────────────────────────────────────┼────────────────────┤`;
-  const lineSub =
-  ` └────┴─────┴───────────────────────────────────────────┴────────────────────┘`;
-  console.log(colors.bwhite(lineHeader));
-  //const lastIndex = actualGroup.length.toString();
+const showTodos = () => {
+  let id = 'ID';                                                         // inconstant length item
+  let maxIdLength = (actualGroup.length.toString()).length;              // inconstant length
+  let status = 'Stt';                                                    // 3 length item
+  let todosName = groups[actualName];                                    // inconstant length item
+  let date = 'Date';                                                     // 2 to 18 length item
+  let brazilianDateType = false;                                         // day first | true or false
+  const maxTodosLength = (function () {                                  // inconstant length
+    const texts = actualGroup.map(t => t.text);
+    return Math.max(...(texts.map(el => el.length)));
+  })();
+  const minColumns = 15;                                                 // min column task size
+
+  // make ID have the same size of the largest item
+  while (id.length < maxIdLength) id = ` ${id}`;
+  // make date have the same size of the items
+  while (date.length < 18) date += ' ';
+
+  const startPart = `${id} ${status} ${date}`;
+  const startPartLength = startPart.length - 1;
+  // -1 because terminal sometimes read more one line with a custom rezise
+  let columnsTerminal = process.stdout.columns - startPart.length - 1;
+
+  // make status have the same size of the largest item
+  while (todosName.length < columnsTerminal && todosName.length < maxTodosLength) todosName += ' ';
+  // min length for task string...
+  if (columnsTerminal < minColumns) columnsTerminal = minColumns;
+
+
+
+ 
+
+  // top bar
+  console.log(colors.bwhite(`${startPart} ${todosName}\n`));
+
+  // Todos
   actualGroup.forEach((todo, index) => {
-    // color for the whole console ??? if is checked or not
+    let task = todo.text;
+    const activity = todo.lastActivity;
+    const status = todo.isChecked ? '(+)' : '( )';
     const color = todo.isChecked ? colors.white : colors.bwhite;
-    // bar with normal color...
-    const bar = colors.bwhite(` │ `);
+    const actualTime = formatTodoTime(todo.lastUpdated, todo.repeatTime, todo.lastRepeated);
+
     // prettier the index...
     index = index.toString();
-    while (index.length < 2) index = ` ${index}`; // 2 => lastIndex.length
-    index = color(index);
-    // status
-    const status = color(`(${todo.isChecked ? 'X' : ' '})`);
-    // task and checked symbol
-    let task = todo.text;
-    // make text adapts when there more than 41 charas per line
-    const startString = bar + index + bar + colors.white(status) + bar;
-    // make actual time (if the todo has loop then uses the left time to repeat)
-    const actualTime = formatTodoTime(todo.lastUpdated, todo.repeatTime, todo.lastRepeated);
-    const activity = color(todo.lastActivity);
-    if (task.length > 41) {
-      const allStrings = task.match(/.{1,41}/g);
-      allStrings.forEach( (string, si) => {
-        // output final for first item => show data, stt
-        if (si === 0) {
-          string = color(string);
-          console.log(startString + string + bar + activity + colors.white(actualTime) + bar);
-        }
-        // output final for the rest of items => only task
+    while (index.length < maxIdLength || index.length < 2) index = ` ${index}`;
+
+    // for every todo there's a start string 
+    const startString = `${index} ${color(status)} ${color(activity)}${colors.white(actualTime)}`;
+
+    if (task.length > columnsTerminal) {
+      let separator = '';
+      while (separator.length <= startPartLength + 1) separator += ' ';
+
+      const matchLimit = new RegExp(`.{1,${columnsTerminal}}`, 'g');
+      const allStrings = task.match(matchLimit);
+
+      allStrings.forEach((string, si) => {
+        // output final for the first line of the task > show data, status
+        if (si === 0)
+          console.log(`${startString} ${color(string)}`);
+        // output final for the rest of the lines > only task
         else {
-          while (string.length < 41) string += ' ';
-          // color string
-          string = color(string);
-          console.log(bar + '  ' + bar + '   ' + bar + string + bar + '                  ' + bar);
-          return;
+          string = string.replace(/^\s/, '');
+          while (string.length < columnsTerminal) string += ' ';
+          console.log(separator + color(string));
         }
       });
-      return;
-    } else {
-      while (task.length < 41) task += ' ';
-      task = color(task);
-      // output final
-      console.log(startString + task + bar + activity + colors.white(actualTime) + bar);
-      return;
-    }
+    } else console.log(`${startString} ${color(task)}`);
   });
+
   // show groups
-  console.log(colors.bwhite(lineSub));
   // map array to make the group selected more visible
   const newGroups = groups.map((group) => {
     if (group === groups[actualName]) return colors.underline(group);
     else return group;
   });
-  let groupsString = `      ${newGroups.join(' ')}      `;
-  // show list more organized
-  while (groupsString.length < 78) groupsString = ` ${groupsString} `;
-  return console.log(groupsString);
-}
+
+  let groupsString = `${newGroups.join(' ')}`;
+  return console.log('\n' + groupsString + '\n');
+};
 
 //
 // Read Arguments
@@ -812,12 +823,13 @@ function showTodos() {
 
 // Ask for a command
 function askForATask(help) {
+  console.clear();
   if (help === true) showHelp();
   else if (help === 2) showProtec();
   else if (help === 3) showLicense();
   else showTodos();
   testTodos();
-  rl.question(colors.white(' > '), (answer) => {
+  rl.question(colors.white('> '), (answer) => {
     [answer, ...args] = answer.split(' ');
     checkTask(answer, args);
   });
