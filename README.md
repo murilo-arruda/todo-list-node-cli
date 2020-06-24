@@ -64,6 +64,24 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `et` or `edittime` - This will edit the time for repeat todo.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
 
+## To-do
+
+![Project's to-dos](/preview/todos.png?raw=trueg)
+
+* You can use flags to add separators in a group. [**line**/**l**, **transparent**/**t**]
+* `a --separator line`
+* `a -s line`
+* `a -s l`
+* `a -5 -s l`
+
+## Tips
+
+* You can use *addtime* and *add* commands to create a todo and put in a index, for example:
+`a -5 Add this is in the fifth index`
+
+* You can use *t* command to switch groups quickly.
+
+
 ## 💻 Usage
 
 *Todos are save in the `todos.json` file.*

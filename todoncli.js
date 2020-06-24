@@ -263,8 +263,10 @@ function checkGroup(args) {
 // retrieve index of an number argument
 const getIndex = (text) => {
   const patt = /^-\d+\b|-\d/;
+  const pattFlag = /^-s/;
   const lastWord = text[text.length - 1];
   let index;
+  let type;
   // get index in the start or in the end of the text
   if (patt.test(text[0])) {
     index = text[0];
@@ -446,18 +448,22 @@ function addTodo(text) {
   if (text.length > 0) {
     // parse text and return index if theres any
     const validate = getIndex(text);
-    // if returns that there is no index
-    if (validate === 1) return addNormalTodo(text.join(' '));
-    // if returns that the number return is not in the rules
-    else if (validate === 2) return addNormalTodo(text.join(' '));
-    else {
-      actualGroup.splice(validate.index, 0, {
-        isChecked: false,
-        text: validate.text,
-        lastActivity: '>',
-        lastUpdated: Date.now(),
-      });
-    }
+    switch (validate) {
+      case 1: // if returns that there is no index
+      case 2: // if returns that the number return is not in the rules
+        return addNormalTodo(text.join(' '));
+        break;
+      case 3: // if returns that is using an predetermined flag
+
+        break;
+      default:
+        actualGroup.splice(validate.index, 0, {
+          isChecked: false,
+          text: validate.text,
+          lastActivity: '>',
+          lastUpdated: Date.now(),
+        });
+    };
   }
 }
 
@@ -669,7 +675,7 @@ const formatTodoTime = (time, repeatTime, lastRepeated) => {
     output = time;
   }
   // make output prettier
-  while (output.length < 17) output = ` ${output}`;
+  while (output.length < 16) output = ` ${output}`;
   return output;
 }
 
@@ -737,37 +743,55 @@ function showProtec() {
  `);
 }
 
-const showTodos = () => {
+function topBarTodos(maxIdLength) {
   let id = 'ID';                                                         // inconstant length item
-  let maxIdLength = (actualGroup.length.toString()).length;              // inconstant length
-  let status = 'Stt';                                                    // 3 length item
+  let check = 'Check';                                                   // 3 length item
+  //let brazilianDateType = false;                                       // day first | true or false
   let todosName = groups[actualName];                                    // inconstant length item
   let date = 'Date';                                                     // 2 to 18 length item
-  let brazilianDateType = false;                                         // day first | true or false
   const maxTodosLength = (function () {                                  // inconstant length
     const texts = actualGroup.map(t => t.text);
     return Math.max(...(texts.map(el => el.length)));
   })();
+
   const minColumns = 15;                                                 // min column task size
 
   // make ID have the same size of the largest item
   while (id.length < maxIdLength) id = ` ${id}`;
   // make date have the same size of the items
-  while (date.length < 18) date += ' ';
+  while (date.length < 16) date += ' ';
 
-  const startPart = `${id} ${status} ${date}`;
+  const startPart = `${id} ${check} ${date}`;
   const startPartLength = startPart.length - 1;
   // -1 because terminal sometimes read more one line with a custom rezise
-  let columnsTerminal = process.stdout.columns - startPart.length - 1;
+  let columnsTerminal = process.stdout.columns - startPartLength;
 
-  // make status have the same size of the largest item
+  // make check have the same size of the largest item
   while (todosName.length < columnsTerminal && todosName.length < maxTodosLength) todosName += ' ';
   // min length for task string...
   if (columnsTerminal < minColumns) columnsTerminal = minColumns;
 
   // top bar
   console.log(colors.bwhite(`${startPart} ${todosName}\n`));
+  return startPartLength; // Return columsTerminal
+}
 
+function bottomPartTodos() {
+  // show groups
+  // map array to make the group selected more visible
+  const newGroups = groups.map((group) => {
+    if (group === groups[actualName]) return colors.underline(group);
+    else return group;
+  });
+  let groupsString = `${newGroups.join(' ')}`;
+  return console.log('\n' + groupsString + '\n');
+};
+
+const showTodos = () => {
+  let maxIdLength = (actualGroup.length.toString()).length;              // inconstant length
+  // group information
+  const startPartLength = topBarTodos(maxIdLength);
+  const columnsTerminal = process.stdout.columns - startPartLength - 2;
   // Todos
   actualGroup.forEach((todo, index) => {
     let task = todo.text;
@@ -781,7 +805,7 @@ const showTodos = () => {
     while (index.length < maxIdLength || index.length < 2) index = ` ${index}`;
 
     // for every todo there's a start string 
-    const startString = `${index} ${color(status)} ${color(activity)}${colors.white(actualTime)}`;
+    const startString = `${index} ${color(status)} ${color(activity)} ${colors.white(actualTime)}`;
 
     if (task.length > columnsTerminal) {
       let separator = '';
@@ -803,16 +827,8 @@ const showTodos = () => {
       });
     } else console.log(`${startString} ${color(task)}`);
   });
-
-  // show groups
-  // map array to make the group selected more visible
-  const newGroups = groups.map((group) => {
-    if (group === groups[actualName]) return colors.underline(group);
-    else return group;
-  });
-
-  let groupsString = `${newGroups.join(' ')}`;
-  return console.log('\n' + groupsString + '\n');
+  // groups
+  bottomPartTodos();
 };
 
 //
