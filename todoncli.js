@@ -214,23 +214,32 @@ function nameGroup(args) {
         }
         catch (e) { 
           console.log("An error occured trying to copy the group with a new name. ", e);
+          process.exit();
         }
       }
     });
   } 
 }
 
+
 function remGroup(args) {
   // must be only one arg
-  if (args.length === 1) {
+  if (args.length === 1 && groups.length > 1) {
     try {
-      groups.forEach((group, i) => {
-      if (group === args[0]) actualName = i - 1;
-      });
+      if (args[0] === groups[0]) actualName = 0;
+      else {
+        groups.forEach((group, i) => {
+          if (args[0] === group) { 
+            actualName = i - 1;
+            return;
+          };
+        });
+      };
       delete todos[args[0]];
     }
     catch (e) {
       console.log("An error occured trying to remove this group.", e);
+      process.exit();
     }
   }
 }
@@ -248,63 +257,6 @@ function checkGroup(args) {
     checkTodos([`0-${actualGroup.length}`]);
   }
 }
-
-// Redo Functions
-
-// add redo to file
-/*function addRedo(command, args) {
-  command = command.toLowerCase();
-  switch(command) {
-    case 'add':
-      redos.unshift({
-        command,
-        index: args
-      });
-      break;
-    case 'rem':
-      redos.unshift({
-        command,
-        object: args
-      });
-      break;
-  }
-}*/
-
-// test todo if it's getting any alteration
-/*function testTodoRedo(command, id) {
-  redos.forEach((item, ii) =>{
-    if (id === item.index) {
-      switch(command) {
-        case 'rem':
-          redos.splice(ii, 1);
-        break;
-      }
-    }
-  });
-}*/
-
-// retrieve redo of file
-/*const redoAction () => {
-  if (redos.length === 0) return;
-  const redo = redos[0];
-  switch(redo.command) {
-    case 'add':
-      // remove todo added
-      actualGroup.splice(redo.index, 1);
-      break;
-    case 'check':
-      //
-      break;
-    case 'rem':
-      // add todo removed
-      actualGroup.push(redo.object);
-      break;
-    case 'edit':
-      //
-      break;
-  }
-  redos.shift();
-}*/
 
 // Todos Functions
 
