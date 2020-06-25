@@ -29,9 +29,8 @@ Do the same thing with the **node terminal** if you open the app using **app.vbs
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## ✨ Features v1.4
+## ✨ Features v2.0
 
-* Extremely light (4.2KB)
 * Monochrome (Reasons: there's no reason at all to make the ready todos cyan)
 * See the time that left in minutes to repeat again the todo.
 * Removed Redo command.
@@ -40,7 +39,8 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Added separators.
 * Added custom separators.
 * Added custom centered separators.
-
+* Added custom centered separators with spaces.
+* Now terminal works in any size.
 
 ## 🖨 Command Cheat
 

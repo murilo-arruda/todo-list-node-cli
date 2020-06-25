@@ -39,7 +39,7 @@ console.clear = () => {
   return process.stdout.write('\033c\033[3J');
 };
 
-const helpFull = [
+const HELP_ALL_COMMANDS = [
   {
     'commands': ['add', 'a'],
     'explanation': 'Add a new todo. Default is in the main list, if you want to add in a index then add in the end the index number with minus prefix.',
@@ -753,41 +753,43 @@ const formatTodoTime = (time, repeatTime, lastRepeated) => {
 
 // Show documentation
 function showHelp() {
-  const newLine = ' │                                                                           │';
-  console.log(` ┌───────────────────────────────────────────────────────────────────────────┐
- │ ${colors.bwhite('TodoNcli v1.4')}                                                        ${colors.bwhite(2020)} │
- ├───────────────────────────────────────────────────────────────────────────┤
- │ Manage your todos anytime using command line!                             │
- │ Every change will be saved in your system.                                │\n${newLine}
- │ Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!           │
- ├───────────────────────────────────────────────────────────────────────────┤`);
-  console.log(newLine);
-  // console through helps
-  helpFull.forEach(item => {
-    let commands = ` │ ${colors.bwhite(item.commands[0])} or ${colors.bwhite(item.commands[1])}`;
-    while (commands.length < 40) commands += ' ';
-    let example = `${colors.inverse(item.example)}`;
-    while (example.length < 60) example = ' ' + example;
-    console.log(commands + example + ' │ ');
-    let explanation = item.explanation;
-    while (explanation.length < 73) explanation += ' ';
-    if (explanation.length > 73) {
-      // divide words after 73 length
-      const allStrings = explanation.match(/.{1,73}/g);
-      allStrings.forEach(string => {
-        string = string.replace(/^ /, '');
-        while (string.length < 73) string += ' ';
-        console.log(` │ ${string} │ `);
-      });
-    } else console.log(` │ ${explanation} │ `);
-    return console.log(newLine);
+  let VERSION = '2.0';
+  const NAME = 'TodoNcli (^o^)/';
+  const SYNOPSIS = 'Manage your todos anytime using command line!\r\nEvery change will be saved in your drive.';
+  const USAGE = `Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!`;
+  const LEAVE = 'To leave, just press anything!';
+
+  // please see "const showTodos = ()"'s comments for the explanation
+  const ONE_BWHITE_LENGTH = `${colors.inverse('')}`.length;
+
+  // put version in the right
+  while (VERSION.length < process.stdout.columns - NAME.length)
+    VERSION = ' ' + VERSION;
+
+  console.log(NAME + VERSION + '\n');
+  console.log(SYNOPSIS + '\n' + USAGE + '\n' + LEAVE + '\n');
+
+  HELP_ALL_COMMANDS.forEach(ITEM => {
+
+    const COMMANDS = `${colors.bwhite(ITEM.commands[0])} or ${colors.bwhite(ITEM.commands[1])}`;
+    let EXAMPLE = ITEM.example;
+
+    // put example in right
+    while (EXAMPLE.length < (process.stdout.columns
+                             - COMMANDS.length + ONE_BWHITE_LENGTH * 2) )
+           EXAMPLE = ' ' + EXAMPLE;
+
+    console.log(COMMANDS + EXAMPLE);
+
+    return console.log(ITEM.explanation + '\n');
+
   });
-  return console.log(' └───────────────────────────────────────────────────────────────────────────┘')
+
 }
 
 // Show the license :|
 function showLicense() {
-  console.log(`
+  return console.log(`
   todoncli
 
   Copyright © 2020-2020 Koetemagie
