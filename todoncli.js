@@ -499,26 +499,18 @@ function addSeparator(text) {
     // all just reload
     if (text[0].length === 0) return;
     // ...
-    testSeparator(text[0]);
+    return testSeparator(text[0]);
 
-  } else if (text.length > 2) {
+  } else if (text.length >= 2) {
     const validate = getIndex(text);
 
-    if (typeof validate.index === 'number') {
-      // Quotes TEXT
-      const quoteStartPatt = /^['"]/;
-      const quoteEndPatt = /['"]$/;
+    if (typeof validate.index === 'number')
+      return testSeparator(validate.text, validate.index);
 
-      console.log(validate);
-      console.log(kek);
-
-
-      // if the separator contains quotes then removes them
-      testSeparator(separator, validate.index);
-    }
+    else return testSeparator(text.join(' '));
   }
   else {  
-    actualGroup.push({
+    return actualGroup.push({
       separator: true,
       text: '-'
     });
