@@ -83,7 +83,10 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `as X`
 
 * `as -5 line`
+* `as l -5`
 * `as -5 +`
+* `as # -5`
+
 
 ## 💻 Usage
 

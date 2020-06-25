@@ -444,22 +444,22 @@ const testSeparator = (type, index) => {
     switch (type) {
       case 'line':
       case 'l':
-        actualGroup.splice(validate.index, 0, {
+        actualGroup.splice(index, 0, {
           separator: true,
           text: '-'
         });
         break;
       case 'transparent':
       case 'tr':
-        actualGroup.splice(validate.index, 0, {
+        actualGroup.splice(index, 0, {
           separator: true,
           text: ' '
         });
         break;
       default:
-        actualGroup.splice(validate.index, 0, {
+        actualGroup.splice(index, 0, {
           separator: true,
-          text: type[0]
+          text: type
       });
     }
   } else {
@@ -481,7 +481,7 @@ const testSeparator = (type, index) => {
       default:
         actualGroup.push({
           separator: true,
-          text: type[0]
+          text: type
         });
     }
   }
@@ -856,31 +856,41 @@ const bottomPartTodos = () => {
 };
 
 const showTodos = () => {
-  let maxIdLength = (actualGroup.length.toString()).length;              // inconstant length
+  // inconstant length
+  let maxIdLength = (actualGroup.length.toString()).length;
   // group information
   const startPartLength = topBarTodos(maxIdLength);
   const columnsTerminal = process.stdout.columns - startPartLength - 2;
+  const columnsSeparator = process.stdout.columns - maxIdLength - 2;
+
   // Todos
   actualGroup.forEach((todo, index) => {
-    // prettier the index...
+    // prettier the index in the output to be
+    // the exactly width of the last todo's index
     index = index.toString();
     while (index.length < maxIdLength || index.length < 2) index = ` ${index}`;
 
     // if it is a separator
     if (todo.separator) {
       let separator = todo.text;
-      while (separator.length < columnsTerminal) separator += separator;
+      while (separator.length <= columnsSeparator) separator += todo.text;
       return console.log(colors.white(`${index} ${separator}`));
     };
+
 
     let task = todo.text;
     const activity = todo.lastActivity;
     const status = todo.isChecked ? '(+)' : '( )';
     const color = todo.isChecked ? colors.white : colors.bwhite;
-    const actualTime = formatTodoTime(todo.lastUpdated, todo.repeatTime, todo.lastRepeated);
+    const actualTime = formatTodoTime(
+      todo.lastUpdated,
+      todo.repeatTime,
+      todo.lastRepeated);
+
 
     // for every todo there's a start string 
     const startString = `${index} ${color(status)} ${color(activity)} ${colors.white(actualTime)}`;
+
 
     if (task.length > columnsTerminal) {
       let separator = '';
@@ -902,6 +912,8 @@ const showTodos = () => {
       });
     } else console.log(`${startString} ${color(task)}`);
   });
+
+
   // groups
   bottomPartTodos();
 };
