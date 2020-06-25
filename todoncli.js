@@ -501,16 +501,26 @@ function addSeparator(text) {
     // ...
     testSeparator(text[0]);
 
-  } else if (text.length === 2) {
-    
+  } else if (text.length > 2) {
     const validate = getIndex(text);
-    if (typeof validate.index === 'number')
-      testSeparator(validate.text, validate.index);
+
+    if (typeof validate.index === 'number') {
+      // Quotes TEXT
+      const quoteStartPatt = /^['"]/;
+      const quoteEndPatt = /['"]$/;
+
+      console.log(validate);
+      console.log(kek);
+
+
+      // if the separator contains quotes then removes them
+      testSeparator(separator, validate.index);
+    }
   }
   else {  
     actualGroup.push({
       separator: true,
-      text: ' '
+      text: '-'
     });
   };
 }
@@ -831,18 +841,37 @@ const topBarTodos = maxIdLength => {
   // make date have the same size of the items
   while (date.length < 16) date += ' ';
 
-  const startPart = `${id} ${check} ${date}`;
-  const startPartLength = startPart.length - 1;
+  // part without group's name
+
+  // when adding colors in a string we have to add characters for the terminal
+  // read them as colors
+  // because of that they are counted when getting they length
+  // for fix this we have to call the functions that add colors and remove them the times
+  // that wee add to the string
+  // in this case it is 3, then we call them 3 and remove them length to not be counted
+  // yes
+  // its weird
+  // but what can i do, right?
+  // its javascript afterall
+  const lengthColorsRemove = `${colors.inverse('')}`.length +
+                             `${colors.inverse('')}`.length +
+                             `${colors.inverse('')}`.length + 1;
+  
+  const startPart = `${colors.inverse(id)} ${colors.inverse(check)} ${colors.inverse(date)}`;
+
+
+  const startPartLength = startPart.length - lengthColorsRemove;
   // -1 because terminal sometimes read more one line with a custom rezise
   let columnsTerminal = process.stdout.columns - startPartLength;
 
   // make check have the same size of the largest item
-  while (todosName.length < columnsTerminal - 2 && todosName.length < maxTodosLength) todosName += ' ';
+  // minus 2 because this has to count the 2 spaces
+  while (todosName.length < columnsTerminal - 2) todosName += ' ';
   // min length for task string...
   if (columnsTerminal < minColumns) columnsTerminal = minColumns;
 
   // top bar
-  console.log(colors.bwhite(`${startPart} ${todosName}\n`));
+  console.log(`${startPart} ${colors.inverse(todosName)}\n`);
   return startPartLength; // Return columsTerminal
 }
 
