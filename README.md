@@ -37,6 +37,10 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Removed Redo command.
 * See the name of the group instead of **Todos** in the todos output.
 * If the time left of a timed todo is bigger than one hour then transform it in hours, then days, weeks and months.
+* Added separators.
+* Added custom separators.
+* Added custom centered separators.
+
 
 ## 🖨 Command Cheat
 

@@ -498,11 +498,14 @@ function addSeparator(text) {
     // if the type doesn't have anything at
     // all just reload
     if (text[0].length === 0) return;
+    // ...
     testSeparator(text[0]);
+
   } else if (text.length === 2) {
+    
     const validate = getIndex(text);
     if (typeof validate.index === 'number')
-      testSeparator(validate.text[0], validate.index);
+      testSeparator(validate.text, validate.index);
   }
   else {  
     actualGroup.push({
@@ -873,7 +876,12 @@ const showTodos = () => {
     // if it is a separator
     if (todo.separator) {
       let separator = todo.text;
-      while (separator.length <= columnsSeparator) separator += todo.text;
+
+      if (separator.length === 1)
+        while (separator.length <= columnsSeparator - 1) separator += todo.text;
+      else
+        while (separator.length <= columnsSeparator - 2) separator = ` ${separator} `;
+
       return console.log(colors.white(`${index} ${separator}`));
     };
 
