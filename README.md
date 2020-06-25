@@ -63,16 +63,12 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `cg` or `checkgroup` - Check all todos in the selected group.
 * `et` or `edittime` - This will edit the time for repeat todo.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
+* `as` or `addseparator` - Add a separator which will separe todos in a group.
 
 ## To-do
 
 ![Project's to-dos](/preview/todos.png?raw=trueg)
 
-* You can use flags to add separators in a group. [**line**/**l**, **transparent**/**t**]
-* `a --separator line`
-* `a -s line`
-* `a -s l`
-* `a -5 -s l`
 
 ## Tips
 
@@ -81,6 +77,13 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 
 * You can use *t* command to switch groups quickly.
 
+* You can use flags to add separators in a group. [**line**/**l**, **transparent**/**t**, or custom **"#"**]
+* `as line`
+* `as l`
+* `as X`
+
+* `as -5 line`
+* `as -5 +`
 
 ## 💻 Usage
 

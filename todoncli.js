@@ -263,11 +263,8 @@ function checkGroup(args) {
 // retrieve index of an number argument
 const getIndex = (text) => {
   const patt = /^-\d+\b|-\d/;
-  const pattFlag = /^-s/;
   const lastWord = text[text.length - 1];
   let index;
-  let type;
-  // get index in the start or in the end of the text
   if (patt.test(text[0])) {
     index = text[0];
     text.splice(0, 1);
@@ -441,7 +438,79 @@ const testTodos = () => {
   });
 }
 
+const testSeparator = (type, index) => {
+  // if exists index
+  if (typeof index === 'number') {
+    switch (type) {
+      case 'line':
+      case 'l':
+        actualGroup.splice(validate.index, 0, {
+          separator: true,
+          text: '-'
+        });
+        break;
+      case 'transparent':
+      case 'tr':
+        actualGroup.splice(validate.index, 0, {
+          separator: true,
+          text: ' '
+        });
+        break;
+      default:
+        actualGroup.splice(validate.index, 0, {
+          separator: true,
+          text: type[0]
+      });
+    }
+  } else {
+    switch (type) {
+      case 'line':
+      case 'l':
+        actualGroup.push({
+          separator: true,
+          text: '-'
+        });
+        break;
+      case 'transparent':
+      case 'tr':
+        actualGroup.push({
+          separator: true,
+          text: ' '
+        });
+        break;
+      default:
+        actualGroup.push({
+          separator: true,
+          text: type[0]
+        });
+    }
+  }
+}
+
+// People now doesn't care more about getting
+// offended, they are just searching something that
+// they can be offended.
 // Normal Todos Functions
+
+// Add separator todo in todos files
+function addSeparator(text) {
+  if (text.length === 1) {
+    // if the type doesn't have anything at
+    // all just reload
+    if (text[0].length === 0) return;
+    testSeparator(text[0]);
+  } else if (text.length === 2) {
+    const validate = getIndex(text);
+    if (typeof validate.index === 'number')
+      testSeparator(validate.text[0], validate.index);
+  }
+  else {  
+    actualGroup.push({
+      separator: true,
+      text: ' '
+    });
+  };
+}
 
 // Add todo in todos files (command check and index) 
 function addTodo(text) {
@@ -450,11 +519,9 @@ function addTodo(text) {
     const validate = getIndex(text);
     switch (validate) {
       case 1: // if returns that there is no index
-      case 2: // if returns that the number return is not in the rules
+      case 2: // if returns that the given index is not in the rules
+              // (bigger than actual length of the group)
         return addNormalTodo(text.join(' '));
-        break;
-      case 3: // if returns that is using an predetermined flag
-
         break;
       default:
         actualGroup.splice(validate.index, 0, {
@@ -575,8 +642,8 @@ function checkTodos(ids) {
     };
   });
   // loop for change each id
-  ids.forEach((id) => {
-    if (actualGroup[id]) {
+  ids.forEach(id => {
+    if (actualGroup[id] && !actualGroup[id].separator) {
       const ischecked = !actualGroup[id].isChecked;
       actualGroup[id].isChecked = ischecked;
       actualGroup[id].lastActivity = ischecked ? '»' : '>';
@@ -647,7 +714,7 @@ function remCheckedTodos() {
 
 const roundIt = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
 
-// Format todo time for showTodos() function
+// Format todo time for showTodos function
 const formatTodoTime = (time, repeatTime, lastRepeated) => {
   let output;
   if (repeatTime === undefined) {
@@ -743,7 +810,7 @@ function showProtec() {
  `);
 }
 
-function topBarTodos(maxIdLength) {
+const topBarTodos = maxIdLength => {
   let id = 'ID';                                                         // inconstant length item
   let check = 'Check';                                                   // 3 length item
   //let brazilianDateType = false;                                       // day first | true or false
@@ -767,7 +834,7 @@ function topBarTodos(maxIdLength) {
   let columnsTerminal = process.stdout.columns - startPartLength;
 
   // make check have the same size of the largest item
-  while (todosName.length < columnsTerminal && todosName.length < maxTodosLength) todosName += ' ';
+  while (todosName.length < columnsTerminal - 2 && todosName.length < maxTodosLength) todosName += ' ';
   // min length for task string...
   if (columnsTerminal < minColumns) columnsTerminal = minColumns;
 
@@ -776,7 +843,7 @@ function topBarTodos(maxIdLength) {
   return startPartLength; // Return columsTerminal
 }
 
-function bottomPartTodos() {
+const bottomPartTodos = () => {
   // show groups
   // map array to make the group selected more visible
   const newGroups = groups.map((group) => {
@@ -784,7 +851,8 @@ function bottomPartTodos() {
     else return group;
   });
   let groupsString = `${newGroups.join(' ')}`;
-  return console.log('\n' + groupsString + '\n');
+  while (groupsString.length < process.stdout.columns) groupsString = ` ${groupsString} `;
+  return console.log('\n' + groupsString);
 };
 
 const showTodos = () => {
@@ -794,15 +862,22 @@ const showTodos = () => {
   const columnsTerminal = process.stdout.columns - startPartLength - 2;
   // Todos
   actualGroup.forEach((todo, index) => {
+    // prettier the index...
+    index = index.toString();
+    while (index.length < maxIdLength || index.length < 2) index = ` ${index}`;
+
+    // if it is a separator
+    if (todo.separator) {
+      let separator = todo.text;
+      while (separator.length < columnsTerminal) separator += separator;
+      return console.log(colors.white(`${index} ${separator}`));
+    };
+
     let task = todo.text;
     const activity = todo.lastActivity;
     const status = todo.isChecked ? '(+)' : '( )';
     const color = todo.isChecked ? colors.white : colors.bwhite;
     const actualTime = formatTodoTime(todo.lastUpdated, todo.repeatTime, todo.lastRepeated);
-
-    // prettier the index...
-    index = index.toString();
-    while (index.length < maxIdLength || index.length < 2) index = ` ${index}`;
 
     // for every todo there's a start string 
     const startString = `${index} ${color(status)} ${color(activity)} ${colors.white(actualTime)}`;
@@ -866,10 +941,10 @@ const checkTask = (answer, args) => {
     case 'switch':
       switchTodo(args);
       break;
-    /*case 'rd':
-    case 'redo':
-      redoAction();
-      break;*/
+    case 'as':
+    case 'addseparator':
+      addSeparator(args);
+      break;
     case 'r':
     case 'rem':
       removeTodos(args);
