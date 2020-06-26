@@ -226,17 +226,29 @@ function removeGroup(args) {
   // must be only one arg
   if (args.length === 1 && groups.length > 1) {
     try {
-      console.log(groups[actualName]);
-      if (args[0] === groups[0]) actualName = 0;
-      else {
-        groups.forEach((group, i) => {
-          if (args[0] === group) { 
-            actualName = i - 1;
-            return;
-          };
-        });
-      };
+
+
+      switch (args[0]) {
+        // if it's the first group then just back to normal
+        case groups[0]:
+          actualName = 0;
+          break;
+
+        // verify if there's the same group 
+        // that is being used right now
+        case groups[actualName]:
+          actualName = actualName - 1;
+          break;
+
+        // does nothing if you are not
+        // removing a group that is
+        // being used
+        default: 
+      }
+
+      // delete group
       delete todos[args[0]];
+      
     }
     catch (e) {
       console.log("An error occured trying to remove this group.", e);
