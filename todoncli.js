@@ -222,10 +222,11 @@ function nameGroup(args) {
 }
 
 
-function remGroup(args) {
+function removeGroup(args) {
   // must be only one arg
   if (args.length === 1 && groups.length > 1) {
     try {
+      console.log(groups[actualName]);
       if (args[0] === groups[0]) actualName = 0;
       else {
         groups.forEach((group, i) => {
@@ -759,7 +760,6 @@ function showHelp() {
   const USAGE = `Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!`;
   const LEAVE = 'To leave, just press anything!';
 
-  // please see "const showTodos = ()"'s comments for the explanation
   const ONE_BWHITE_LENGTH = `${colors.inverse('')}`.length;
 
   // put version in the right
@@ -774,6 +774,8 @@ function showHelp() {
     const COMMANDS = `${colors.bwhite(ITEM.commands[0])} or ${colors.bwhite(ITEM.commands[1])}`;
     let EXAMPLE = ITEM.example;
 
+
+    // 0X0001 please see "const topBarTodos = ()"'s comments for the explanation
     // put example in right
     while (EXAMPLE.length < (process.stdout.columns
                              - COMMANDS.length + ONE_BWHITE_LENGTH * 2) )
@@ -837,7 +839,7 @@ const topBarTodos = maxIdLength => {
 
   // part without group's name
 
-  // when adding colors in a string we have to add characters for the terminal
+  // 0X0001 when adding colors in a string we have to add characters for the terminal
   // read them as colors
   // because of that they are counted when getting they length
   // for fix this we have to call the functions that add colors and remove them the times
@@ -1013,7 +1015,7 @@ const checkTask = (answer, args) => {
       break;
     case 'remgroup':
     case 'rg':
-      remGroup(args);
+      removeGroup(args);
       groups = Object.keys(todos);
       actualGroup = todos[groups[actualName]];
       break;
