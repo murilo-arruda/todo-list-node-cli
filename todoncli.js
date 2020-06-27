@@ -137,6 +137,11 @@ const HELP_ALL_COMMANDS = [
     'example': 'et 5 60',
   },
   {
+    'commands': ['addseparator', 'as'],
+    'explanation': 'Add a line to separate todos in a group. You can use them as titles or just white spaces.',
+    'example': 'as -0 New Title',
+  }
+  {
     'commands': ['addtime', 'at'],
     'explanation': 'Add a todo which will loop in a certain time.',
     'example': 'addtime Do this every hour -60',
@@ -225,7 +230,6 @@ async function nameGroup(args) {
 
       else
         throw 'Please, chose a group that exists.';
-
         
     }
     catch (e) {
