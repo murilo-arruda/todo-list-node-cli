@@ -1,5 +1,6 @@
 const readline = require('readline');
 const fs = require('fs');
+const sleep = require('util').promisify(setTimeout);
 
 //
 // Initialize
@@ -171,6 +172,7 @@ const start = () => {
   loadFile();
 }
 
+
 // CONST FUNCTIONS = Program functions
 // NORMAL FUNCTIONS = Commands functions
 
@@ -199,26 +201,37 @@ function tabGroup() {
   }
 }
 
-function nameGroup(args) {
+async function nameGroup(args) {
   // must be only two args
   if (args.length === 2) {
-    //todos.Prop3 = a.Prop1;
-    const wanted = args[0].toString();
-    const name = args[1].toString();
-    groups.forEach((group, i) => {
-      if (wanted === group) {
-        try {
-          if (i === actualName) actualName = groups.length - 1;
-          todos[name] = todos[wanted];
-          delete todos[wanted];
-        }
-        catch (e) { 
-          console.log("An error occured trying to copy the group with a new name. ", e);
-          process.exit();
-        }
+    const NAME = args[0];
+    const WANTED = args[1];
+
+    try {
+      if (todos[WANTED])
+        throw 'You have to chose a name that isn\' taken.';
+
+      else if (todos[NAME]) {
+        todos[WANTED] = todos[NAME];
+        // select the new group
+        // > groups list
+        actualName = groups.length - 1;
+        // > todos list
+        actualGroup = todos[WANTED];
+
+        // delete old group
+        delete todos[NAME];
       }
-    });
-  } 
+
+      else
+        throw 'Please, chose a group that exists.';
+
+        
+    }
+    catch (e) {
+      await alertError(false, e);
+    }
+  }
 }
 
 
@@ -248,7 +261,7 @@ function removeGroup(args) {
 
       // delete group
       delete todos[args[0]];
-      
+
     }
     catch (e) {
       console.log("An error occured trying to remove this group.", e);
@@ -449,6 +462,33 @@ const testTodos = () => {
       }
     }
   });
+}
+
+const alertError = async (type, message) => {
+  // types
+  // false = warning  = warn user to use correctly 
+  // true  = error    = break program
+
+  let out = type ? 'CRITICAL' : 'WARNING';
+
+  // prettier type with terminal size
+  while (out.length < process.stdout.columns)
+    out = out + ' ';
+
+  console.clear();
+
+  // top bar
+  console.log(colors.inverse(out) + '\n');
+
+  console.log(message + '\n');
+
+  console.log(colors.inverse(out) + '\n');
+
+  // 1.5 segunds timeout
+  await sleep(1500);
+
+  return;
+  
 }
 
 const testSeparator = (type, index) => {
@@ -982,7 +1022,7 @@ const askForATask = (help) => {
 }
 
 // Get command and pass to function
-const checkTask = (answer, args) => {
+const checkTask = async (answer, args) => {
   let help = false;
   answer = answer.toLowerCase();
   switch (answer) {
@@ -1033,9 +1073,11 @@ const checkTask = (answer, args) => {
       break;
     case 'namegroup':
     case 'ng':
-      nameGroup(args);
+      await nameGroup(args);
       groups = Object.keys(todos);
-      actualGroup = todos[groups[actualName]];
+      // the group is selected in the function
+      // since it's referring to a object name
+      // and it's easier and faster to use this way.
       break;
     case 'tab':
     case 't':
