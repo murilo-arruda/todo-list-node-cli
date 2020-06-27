@@ -66,23 +66,47 @@ const start = () => {
 
 // Group Functions
 
+const updateGroups = all => {
+  groups = Object.keys(todos);
+  // if just needs to load the groups
+  // then pass 1 to all (param)
+  if (all !== 1) actualGroup = todos[groups[actualName]];
+}
+
 // show group to see now
-function showGroup(wanted) {
-  if (wanted.length > 0) {
-    groups.forEach((group, i) => {
-      if (wanted === group) actualName = i;
+function showGroup(WANTED) {
+  // if group exists
+  if (todos[WANTED]) {
+    groups.every((group, index) => {
+      // Do your thing, then:
+      if (WANTED === group) {
+        actualName = index;
+        // break loop
+        return false;
+      }
+      else return true;
     });
+    updateGroups();
   }
+  else return alert('This group doesn\'t exist');
 }
 
 // tab to next group
-function tabGroup() {
+function tabGroup(reverse) {
   if (groups.length > 1) {
-    if (groups.length - 1 === actualName) actualName = 0;
-    else actualName++;
-    // reload actual group
-    actualGroup = todos[groups[actualName]];
+    if (reverse) {
+      // if gets in the start then back to end
+      if (0 === actualName) actualName = groups.length - 1;
+      // or just back
+      else actualName--;
+    } else {
+      // if gets in the end then back to start
+      if (groups.length - 1 === actualName) actualName = 0;
+      // or just go to next
+      else actualName++;
+    }
   }
+
 }
 
 async function nameGroup(args) {
@@ -112,19 +136,25 @@ async function nameGroup(args) {
         
     }
     catch (e) {
-      await alertError(false, e);
+      await alert(e);
     }
   }
 }
 
 
-function removeGroup(args) {
+async function removeGroup(args) {
   // must be only one arg
+  // and always have to exist at least two groups
   if (args.length === 1 && groups.length > 1) {
     try {
 
+      const GROUP = args[0];
 
-      switch (args[0]) {
+      // verify if this group exist
+      if (!todos[GROUP]) return await alert('This group doesn\'t exist.');
+
+      switch (GROUP) {
+
         // if it's the first group then just back to normal
         case groups[0]:
           actualName = 0;
@@ -143,29 +173,47 @@ function removeGroup(args) {
       }
 
       // delete group
-      delete todos[args[0]];
+      return delete todos[GROUP];
 
     }
     catch (e) {
-      console.log("An error occured trying to remove this group.", e);
-      process.exit();
+      return alert(e, true);
     }
   }
 }
 
-function addGroup(args) {
+async function addGroup(args) {
   // must be only one arg
   if (args.length === 1) {
-    todos[args[0]] = [];
+    const NAME = args[0];
+    // verify if group already exists
+    if (todos[NAME]) return await alert('This group already exists...');
+
+    // create group with the name
+    else return todos[NAME] = [];
   }
 }
 
-function checkGroup(args) {
+async function checkGroup(args) {
   if (args.length === 1) {
-    showGroup(args[0]);
-    checkTodos([`0-${actualGroup.length}`]);
+    const NAME = args[0];
+
+    // verify if the group exists
+    if (!todos[NAME]) return await alert('This group doesn\'t exist.');
+
+    // show group if isn't selected
+    if (groups[actualName] !== NAME) showGroup(NAME);
+
+    // check them all
+    checkTodos([`0-${todos[NAME].length}`]);
+
+    return;
   }
 }
+
+/* */
+// when showing groups, if all todos are selected then make it cyan
+/* */
 
 // Todos Functions
 
@@ -298,11 +346,6 @@ function addTodoTimed(args) {
   // at -minutes todo
   // at todo -minutes -index
   // at -minutes todo -index
-  // NEVER
-  // at -index todo          => at -minutes todo
-  // at todo -index          => at todo -minutes
-  // at -index todo -minutes => at -minutes todo -index
-  // at todo                 => nothing
 }
 
 // Edit the old time of the loopable todo to a new one
@@ -347,12 +390,13 @@ const testTodos = () => {
   });
 }
 
-const alertError = async (type, message) => {
+const alert = async (message, critical, time) => {
   // types
   // false = warning  = warn user to use correctly 
   // true  = error    = break program
 
-  let out = type ? 'CRITICAL' : 'WARNING';
+  let out = critical ? 'CRITICAL' : 'WARNING';
+  const TIMEOUT = time ? time : 1500;
 
   // prettier type with terminal size
   while (out.length < process.stdout.columns)
@@ -367,8 +411,11 @@ const alertError = async (type, message) => {
 
   console.log(colors.inverse(out) + '\n');
 
+  // if it's critical then just stop the program
+  if (critical) return process.exit();
+
   // 1.5 segunds timeout
-  await sleep(1500);
+  await sleep(TIMEOUT);
 
   return;
   
@@ -617,27 +664,30 @@ function removeTodos(ids) {
 }
 
 // Copy to clipboard method
-function getCopy(ids) {
-  if (ids.length === 0) return;
-  if (actualGroup[ids[0]]) {
-    let data = actualGroup[ids[0]].text;
+async function getCopy(ids) {
+  if (ids.length === 1 // always one argument (todo to get text)
+      && actualGroup[ids[0]]) { // the id has to exist, of course
+
+    const TEXT = actualGroup[ids[0]].text;
+    const EXEC = require('child_process').exec;
+  
     switch (process.platform) {
       case 'linux':
-        require('child_process').exec(`echo -n "${data}" | xclip -sel clip`);
+        EXEC(`echo -n "${TEXT}" | xclip -sel clip`);
         break;
       case 'win32':
           proc = require('child_process').spawn('clip'); 
-          proc.stdin.write(data);
+          proc.stdin.write(TEXT);
           proc.stdin.end();
         break;
       case 'darwin':
-        require('child_process').exec(`echo ${data} | pbcopy`);
+        EXEC(`echo -n ${TEXT} | pbcopy`);
         break;
       default:
-        //console.log('Please report the OS you use in the our repository! > (Koetemagie/todoncli)')
+        await alert('Please report the OS you use in the our repository!\nhttps://github.com/Koetemagie/todoncli.git');
     }
-  };
-};
+  }
+}
 
 // Delete all the checked todos
 function remCheckedTodos() {
@@ -903,16 +953,53 @@ const topBarTodos = maxIdLength => {
   return startPartLength; // Return columsTerminal
 }
 
-const bottomPartTodos = () => {
-  // show groups
-  // map array to make the group selected more visible
+// show groups in showTodos function
+const bottomPartGroups = () => {
+  const COLUMNS = process.stdout.columns;
+
+  // map array to underline the actual group
   const newGroups = groups.map((group) => {
-    if (group === groups[actualName]) return colors.underline(group);
-    else return group;
+
+    // colorize group that already is fully checked
+    const isComplete = (function() {
+      // return if is checked of every item
+      const MAP_IS_CHECKED = todos[group].map(todo => todo.isChecked);
+
+      // if theres one false then returns false
+      for (item of MAP_IS_CHECKED)
+        if (item === false) return false;
+
+      // if everything goes perfectly then returns true
+      return true;
+
+    })();
+    
+    switch (group) {
+      // is selected?
+      case groups[actualName]:
+        // colorize group that is fully checked 
+        if (isComplete) return colors.underline(colors.white(group));
+        // just underline it if it's selected
+        else return colors.underline(group);
+        break;
+
+      default:
+        // return group that is fully checked
+        if (isComplete) return colors.white(group);
+        else return group;
+    }
+
   });
-  let groupsString = `${newGroups.join(' ')}`;
-  while (groupsString.length < process.stdout.columns) groupsString = ` ${groupsString} `;
-  return console.log('\n' + groupsString);
+
+  // put groups in center
+  let groupsString = newGroups.join(' ');
+  while (groupsString.length < COLUMNS)
+    groupsString = ` ${groupsString} `;
+
+  return console.log(`
+${groupsString}
+`);
+
 };
 
 const showTodos = () => {
@@ -980,7 +1067,7 @@ const showTodos = () => {
 
 
   // groups
-  bottomPartTodos();
+  bottomPartGroups();
 };
 
 //
@@ -1005,7 +1092,62 @@ const askForATask = (help) => {
 const checkTask = async (answer, args) => {
   let help = false;
   answer = answer.toLowerCase();
+
   switch (answer) {
+
+    //
+    // groups
+    //
+    case 'showgroup':
+    case 'sg':
+      await showGroup(args.toString());
+      break;
+    case 'checkgroup':
+    case 'cg':
+      await checkGroup(args);
+      updateGroups();
+      break;
+    case 'addgroup':
+    case 'ag':
+      await addGroup(args);
+      updateGroups(1);
+      break;
+    case 'remgroup':
+    case 'rg':
+      await removeGroup(args);
+      updateGroups();
+      break;
+    case 'namegroup':
+    case 'ng':
+      await nameGroup(args);
+      updateGroups(1);
+      // the group is selected in the function
+      // since it's referring to a object name
+      // and it's easier and faster to use this way.
+      break;
+
+    case 'rc':
+    case 'remcheckeds':
+      if (args.length > 0) await alert(
+        'This command does not accept arguments, please if you are not in the selected group, go there and use from there.'
+        , false, 3000);
+      else remCheckedTodos();
+      break;
+
+    case 'tab':
+    case 't':
+      tabGroup();
+      updateGroups(1);
+      break;
+    case 'tabreverse':
+    case 'tr':
+      tabGroup(true); // true > reverse true
+      updateGroups();
+      break;
+
+    //
+    // todos
+    // 
     case 'a':
     case 'add':
       addTodo(args);
@@ -1026,49 +1168,6 @@ const checkTask = async (answer, args) => {
     case 'rem':
       removeTodos(args);
       break;
-    case 'et':
-    case 'edittime':
-      editTimed(args);
-      break;
-    case 'at':
-    case 'addtime':
-      addTodoTimed(args);
-      break;
-    case 'checkgroup':
-    case 'cg':
-      checkGroup(args);
-      groups = Object.keys(todos);
-      actualGroup = todos[groups[actualName]];
-      break;
-    case 'addgroup':
-    case 'ag':
-      addGroup(args);
-      groups = Object.keys(todos);
-      break;
-    case 'remgroup':
-    case 'rg':
-      removeGroup(args);
-      groups = Object.keys(todos);
-      actualGroup = todos[groups[actualName]];
-      break;
-    case 'namegroup':
-    case 'ng':
-      await nameGroup(args);
-      groups = Object.keys(todos);
-      // the group is selected in the function
-      // since it's referring to a object name
-      // and it's easier and faster to use this way.
-      break;
-    case 'tab':
-    case 't':
-      tabGroup();
-      groups = Object.keys(todos);
-      break;
-    case 'showgroup':
-    case 'sg':
-      showGroup(args.join(' '));
-      actualGroup = todos[groups[actualName]];
-      break;
     case 'c':
     case 'copy':
       copyTodo(args);
@@ -1085,10 +1184,6 @@ const checkTask = async (answer, args) => {
     case 'help':
       help = true;
       break;
-    case 'rc':
-    case 'remcheckeds':
-      remCheckedTodos();
-      break;
     case 'protec':
       help = 2;
       break;
@@ -1100,6 +1195,19 @@ const checkTask = async (answer, args) => {
     case 'edit':
       editTodo(args);
       break;
+
+    case 'et':
+    case 'edittime':
+      editTimed(args);
+      break;
+    case 'at':
+    case 'addtime':
+      addTodoTimed(args);
+      break;
+
+    // 
+    // program
+    // 
     case 'rs': 
     case 'restart':
       start();
@@ -1111,6 +1219,7 @@ const checkTask = async (answer, args) => {
       rl.close();
       process.exit();
       break;
+
     default:
       help = false;
   }
