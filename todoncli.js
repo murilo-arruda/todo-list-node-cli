@@ -40,128 +40,7 @@ console.clear = () => {
   return process.stdout.write('\033c\033[3J');
 };
 
-const HELP_ALL_COMMANDS = [
-  {
-    'commands': ['add', 'a'],
-    'explanation': 'Add a new todo. Default is in the main list, if you want to add in a index then add in the end the index number with minus prefix.',
-    'example': 'add my new task',
-  },
-  {
-    'commands': ['check', 'x'],
-    'explanation': 'Checkmark the items. This will check the first item and the third. If you want to check only one, then just type the index.',
-    'example': 'check 0 2',
-  },
-  {
-    'commands': ['edit', 'ed'],
-    'explanation': 'This will replace the indexed to-do to another. Same usage of add command.',
-    'example': 'edit this one is the new -5',
-  },
-  {
-    'commands': ['switch', 's'],
-    'explanation': 'This will switch the indexed to-do to another. There is no default!',
-    'example': 'switch 1 5',
-  }, 
-  {
-    'commands': ['copy', 'c'],
-    'explanation': 'This will copy the indexed to-do to other position. Default position is the last.',
-    'example': 'copy 2 4',
-  }, 
-  {
-    'commands': ['move', 'm'],
-    'explanation': 'This will move the indexed to-do to other position.',
-    'example': 'move 9 6',
-  }, 
-  {
-    'commands': ['rem', 'r'],
-    'explanation': 'This will remove the selected to-do. If you want to remove more, just separate the arguments with spaces.',
-    'example': 'rem 0 1',
-  },
-  /*{
-    'commands': ['redo', 'rd'],
-    'explanation': 'This will redo the last action you made.',
-    'example': 'redo',
-  },*/
-  {
-    'commands': ['get', 'g'],
-    'explanation': 'This will copy to clipboard the indexed todo.',
-    'example': 'get 5',
-  },
-  {
-    'commands': ['remcheckeds', 'rc'],
-    'explanation': 'This will remove all the the checked to-dos.',
-    'example': 'remcheckeds',
-  },
-  {
-    'commands': ['help', 'h'],
-    'explanation': 'Show this. Duh :3',
-    'example': 'help',
-  },
-  {
-    'commands': ['license', 'l'],
-    'explanation': 'Show the license of the software.',
-    'example': 'license',
-  },
-  {
-    'commands': ['remcheckeds', 'rc'],
-    'explanation': 'Remove the checkeds to-dos.',
-    'example': 'remcheckeds',
-  },
-  {
-    'commands': ['addgroup', 'ag'],
-    'explanation': 'Create a new group of to-dos. This helps you to organize better the types of to-dos you have.',
-    'example': 'addgroup NewWorld',
-  },
-  {
-    'commands': ['showgroup', 'sg'],
-    'explanation': 'Show the selected group.',
-    'example': 'showgroup VidaLouca',
-  },
-  {
-    'commands': ['remgroup', 'rg'],
-    'explanation': 'Delete the selected group.',
-    'example': 'remgroup NewWorld',
-  },
-  {
-    'commands': ['checkgroup', 'cg'],
-    'explanation': 'Check the todos of the selected group.',
-    'example': 'checkgroup NewWorld',
-  },
-  {
-    'commands': ['namegroup', 'ng'],
-    'explanation': 'Name the selected group. First is the group you want to rename and then the name you want.',
-    'example': 'namegroup NewWorld VidaLouca',
-  },
-  {
-    'commands': ['edittime', 'et'],
-    'explanation': 'Edit the time of the selected todo to a new one. In example change the time of 5th todo to 60 minutes.',
-    'example': 'et 5 60',
-  },
-  {
-    'commands': ['addseparator', 'as'],
-    'explanation': 'Add a line to separate todos in a group. You can use them as titles or just white spaces.',
-    'example': 'as -0 New Title',
-  }
-  {
-    'commands': ['addtime', 'at'],
-    'explanation': 'Add a todo which will loop in a certain time.',
-    'example': 'addtime Do this every hour -60',
-  },
-  {
-    'commands': ['tab', 't'],
-    'explanation': 'Show next group.',
-    'example': 'tab',
-  },
-  {
-    'commands': ['restart', 'rs'],
-    'explanation': 'Restart the program. :|',
-    'example': 'restart',
-  },
-  {
-    'commands': ['exit', 'e'],
-    'explanation': 'Exit the program. :|',
-    'example': 'exit',
-  },
-];
+
 
 // todos = file of todos
 // redos = file of redos
@@ -810,13 +689,109 @@ const formatTodoTime = (time, repeatTime, lastRepeated) => {
 
 // Show documentation
 function showHelp() {
+  const HELP_ALL_COMMANDS = [
+    [ ['add', 'a'],
+      'Add a new todo. Default is in the main list, if you want to add in a index then add in the end the index number with minus   prefix.',
+      'add my new task',
+    ],
+    [ ['check', 'x'],
+      'Checkmark the items. This will check the first item and the third. If you want to check only one, then just type the index.',
+      'check 0 2',
+    ],
+    [ ['edit', 'ed'],
+      'This will replace the indexed to-do to another. Same usage of add command.',
+      'edit this one is the new -5',
+    ],
+    [ ['switch', 's'],
+      'This will switch the indexed to-do to another. There is no default!',
+      'switch 1 5',
+    ], 
+    [ ['copy', 'c'],
+      'This will copy the indexed to-do to other position. Default position is the last.',
+      'copy 2 4',
+    ], 
+    [ ['move', 'm'],
+      'This will move the indexed to-do to other position.',
+      'move 9 6',
+    ], 
+    [ ['rem', 'r'],
+      'This will remove the selected to-do. If you want to remove more, just separate the arguments with spaces.',
+      'rem 0 1',
+    ],
+    [ ['get', 'g'],
+      'This will copy to clipboard the indexed todo.',
+      'get 5',
+    ],
+    [ ['remcheckeds', 'rc'],
+      'This will remove all the the checked to-dos.',
+      'remcheckeds',
+    ],
+    [ ['help', 'h'],
+      'Show this. Duh :3',
+      'help',
+    ],
+    [ ['license', 'l'],
+      'Show the license of the software.',
+      'license',
+    ],
+    [ ['remcheckeds', 'rc'],
+      'Remove the checkeds to-dos.',
+      'remcheckeds',
+    ],
+    [ ['addgroup', 'ag'],
+      'Create a new group of to-dos. This helps you to organize better the types of to-dos you have.',
+      'addgroup NewWorld',
+    ],
+    [ ['showgroup', 'sg'],
+      'Show the selected group.',
+      'showgroup VidaLouca',
+    ],
+    [ ['remgroup', 'rg'],
+      'Delete the selected group.',
+      'remgroup NewWorld',
+    ],
+    [ ['checkgroup', 'cg'],
+      'Check the todos of the selected group.',
+      'checkgroup NewWorld',
+    ],
+    [ ['namegroup', 'ng'],
+      'Name the selected group. First is the group you want to rename and then the name you want.',
+      'namegroup NewWorld VidaLouca',
+    ],
+    [ ['edittime', 'et'],
+      'Edit the time of the selected todo to a new one. In example change the time of 5th todo to 60 minutes.',
+      'et 5 60',
+    ],
+    [ ['addseparator', 'as'],
+      'Add a line to separate todos in a group. You can use them as titles or just white spaces.',
+      'as -0 New Title',
+    ],
+    [ ['addtime', 'at'],
+      'Add a todo which will loop in a certain time.',
+      'addtime Do this every hour -60',
+    ],
+    [ ['tab', 't'],
+      'Show next group.',
+      'tab',
+    ],
+    [ ['restart', 'rs'],
+      'Restart the program. :|',
+      'restart',
+    ],
+    [ ['exit', 'e'],
+      'Exit the program. :|',
+      'exit',
+    ],
+  ];
+
   let VERSION = '2.0';
   const NAME = 'TodoNcli (^o^)/';
   const SYNOPSIS = 'Manage your todos anytime using command line!\r\nEvery change will be saved in your drive.';
   const USAGE = `Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!`;
   const LEAVE = 'To leave, just press anything!';
 
-  const ONE_BWHITE_LENGTH = `${colors.inverse('')}`.length;
+  const TWO_BWHITE_LENGTH = `${colors.inverse('')}`.length
+                          + `${colors.inverse('')}`.length;
 
   // put version in the right
   while (VERSION.length < process.stdout.columns - NAME.length)
@@ -826,20 +801,21 @@ function showHelp() {
   console.log(SYNOPSIS + '\n' + USAGE + '\n' + LEAVE + '\n');
 
   HELP_ALL_COMMANDS.forEach(ITEM => {
+    const COMMANDS = ITEM[0];
+    const EXPLANATION = ITEM[1];
+    let example = ITEM[2];
 
-    const COMMANDS = `${colors.bwhite(ITEM.commands[0])} or ${colors.bwhite(ITEM.commands[1])}`;
-    let EXAMPLE = ITEM.example;
-
+    const COMMANDS_OUTPUT = `${colors.bwhite(COMMANDS[0])} or ${colors.bwhite(COMMANDS[1])}`;
 
     // 0X0001 please see "const topBarTodos = ()"'s comments for the explanation
     // put example in right
-    while (EXAMPLE.length < (process.stdout.columns
-                             - COMMANDS.length + ONE_BWHITE_LENGTH * 2) )
-           EXAMPLE = ' ' + EXAMPLE;
+    while (example.length < (process.stdout.columns
+                             - COMMANDS_OUTPUT.length + TWO_BWHITE_LENGTH) )
+           example = ' ' + example;
 
-    console.log(COMMANDS + EXAMPLE);
+    console.log(COMMANDS_OUTPUT + example);
 
-    return console.log(ITEM.explanation + '\n');
+    return console.log(EXPLANATION + '\n');
 
   });
 
