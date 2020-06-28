@@ -2,18 +2,86 @@ const readline = require('readline');
 const fs = require('fs');
 const sleep = require('util').promisify(setTimeout);
 
+const TODOS_PATH = 'todos.json';
+// TODOS     = file of todos
+// GROUPS    = array with the name of all groups
+// CUR_NAME  = <current id> of the group in <groups>
+// CUR_GROUP = all the current todos of the current group
+let TODOS, groups, CUR_GROUP, CUR_NAME;
+
+
+
+
+
+//
+// Data Functions
+//
+
+// Load all the files or create them
+const loadFile = () => {
+  try {
+    TODOS = JSON.parse(fs.readFileSync(TODOS_PATH, 'utf8'));
+    // load all the groups and return their names
+    groups = Object.keys(TODOS);
+    // choose the first group (default)
+    CUR_NAME = 0;
+    CUR_GROUP = TODOS[groups[CUR_NAME]];
+    askForATask();
+
+  } catch (err) {
+
+    if (err.code === 'ENOENT') {
+
+      const TEMPLATE_TODOS = ' ' + {
+        "default": [
+          {
+            "isChecked": false,
+            "text": "Check me to test if is working!",
+            "lastActivity": ">",
+            "lastUpdated": Date.now()
+          },
+          {
+            "isChecked": true,
+            "text": "You can remove this template todo!",
+            "lastActivity": "»",
+            "lastUpdated": Date.now()
+          }
+        ]
+      };
+
+      // if is missing both files generate them
+      fs.writeFileSync(TODOS_PATH, TEMPLATE_TODOS, 'utf8');
+
+      TODOS = JSON.parse(fs.readFileSync(TODOS_PATH, 'utf8'));
+      // load all the groups and return their names
+      groups = Object.keys(TODOS);
+      // choose the first group (default)
+      CUR_GROUP = TODOS[groups[0]];
+
+      return askForATask();
+    } else {
+      console.log(err);
+      process.exit(0);
+    }
+  }
+}
+
+// Save files
+const saveData = () => {
+  // just save if there's any change (optimization)
+    fs.writeFileSync(TODOS_PATH, JSON.stringify(TODOS, null, 2), 'utf8');
+    
+    // |, null, 2| for prettier output
+}
+
+
 //
 // Initialize
 //
 
-// const indexConsole = 20;
-
 // Colors method for colorize terminal output
 const res = '\x1b[0m';
 const colors = {
-  /*cyan: m => {
-    return `\x1b[36m${m + res}`;
-  },*/
   white: m => {
     return `\x1b[90m${m + res}`;
   },
@@ -34,25 +102,16 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-// Redefines console.clear for better output (windows and linux)
+// Redefines console.clear for full clean output (windows and linux)
 console.clear = () => {
   process.stdout.write("\u001b[2J\u001b[0;0H");
-  return process.stdout.write('\033c\033[3J');
+  process.stdout.write('\033c\033[3J');
 };
-
-
-
-// todos = file of todos
-// redos = file of redos
-// groups = array with the name of all groups
-// actualName = current id of the group
-// actualGroup = all the current todos of the actual group
-let OTODOS, todos, groups, actualGroup, actualName;
 
 // Start the program
 const start = () => {
   console.clear();
-  OTODOS, todos, groups, actualGroup, actualName = undefined;
+  TODOS, groups, CUR_GROUP, CUR_NAME = undefined;
   loadFile();
 }
 
@@ -67,20 +126,20 @@ const start = () => {
 // Group Functions
 
 const updateGroups = all => {
-  groups = Object.keys(todos);
+  groups = Object.keys(TODOS);
   // if just needs to load the groups
   // then pass 1 to all (param)
-  if (all !== 1) actualGroup = todos[groups[actualName]];
+  if (all !== 1) CUR_GROUP = TODOS[groups[CUR_NAME]];
 }
 
 // show group to see now
 function showGroup(WANTED) {
   // if group exists
-  if (todos[WANTED]) {
+  if (TODOS[WANTED]) {
     groups.every((group, index) => {
       // Do your thing, then:
       if (WANTED === group) {
-        actualName = index;
+        CUR_NAME = index;
         // break loop
         return false;
       }
@@ -96,17 +155,18 @@ function tabGroup(reverse) {
   if (groups.length > 1) {
     if (reverse) {
       // if gets in the start then back to end
-      if (0 === actualName) actualName = groups.length - 1;
+      if (0 === CUR_NAME)
+        CUR_NAME = groups.length - 1;
       // or just back
-      else actualName--;
+      else CUR_NAME--;
     } else {
       // if gets in the end then back to start
-      if (groups.length - 1 === actualName) actualName = 0;
+      if (groups.length - 1 === CUR_NAME)
+        CUR_NAME = 0;
       // or just go to next
-      else actualName++;
+      else CUR_NAME++;
     }
   }
-
 }
 
 async function nameGroup(args) {
@@ -116,19 +176,19 @@ async function nameGroup(args) {
     const WANTED = args[1];
 
     try {
-      if (todos[WANTED])
+      if (TODOS[WANTED])
         throw 'You have to chose a name that isn\' taken.';
 
-      else if (todos[NAME]) {
-        todos[WANTED] = todos[NAME];
+      else if (TODOS[NAME]) {
+        TODOS[WANTED] = TODOS[NAME];
         // select the new group
         // > groups list
-        actualName = groups.length - 1;
-        // > todos list
-        actualGroup = todos[WANTED];
+        CUR_NAME = groups.length - 1;
+        // > TODOS list
+        CUR_GROUP = TODOS[WANTED];
 
         // delete old group
-        delete todos[NAME];
+        delete TODOS[NAME];
       }
 
       else
@@ -151,19 +211,19 @@ async function removeGroup(args) {
       const GROUP = args[0];
 
       // verify if this group exist
-      if (!todos[GROUP]) return await alert('This group doesn\'t exist.');
+      if (!TODOS[GROUP]) return await alert('This group doesn\'t exist.');
 
       switch (GROUP) {
 
         // if it's the first group then just back to normal
         case groups[0]:
-          actualName = 0;
+          CUR_NAME = 0;
           break;
 
         // verify if there's the same group 
         // that is being used right now
-        case groups[actualName]:
-          actualName = actualName - 1;
+        case groups[CUR_NAME]:
+          CUR_NAME = CUR_NAME - 1;
           break;
 
         // does nothing if you are not
@@ -173,7 +233,7 @@ async function removeGroup(args) {
       }
 
       // delete group
-      return delete todos[GROUP];
+      return delete TODOS[GROUP];
 
     }
     catch (e) {
@@ -187,10 +247,10 @@ async function addGroup(args) {
   if (args.length === 1) {
     const NAME = args[0];
     // verify if group already exists
-    if (todos[NAME]) return await alert('This group already exists...');
+    if (TODOS[NAME]) return await alert('This group already exists...');
 
     // create group with the name
-    else return todos[NAME] = [];
+    else return TODOS[NAME] = [];
   }
 }
 
@@ -199,21 +259,17 @@ async function checkGroup(args) {
     const NAME = args[0];
 
     // verify if the group exists
-    if (!todos[NAME]) return await alert('This group doesn\'t exist.');
+    if (!TODOS[NAME]) return await alert('This group doesn\'t exist.');
 
     // show group if isn't selected
-    if (groups[actualName] !== NAME) showGroup(NAME);
+    if (groups[CUR_NAME] !== NAME) showGroup(NAME);
 
     // check them all
-    checkTodos([`0-${todos[NAME].length}`]);
+    checkTodos([`0-${TODOS[NAME].length}`]);
 
     return;
   }
 }
-
-/* */
-// when showing groups, if all todos are selected then make it cyan
-/* */
 
 // Todos Functions
 
@@ -235,7 +291,7 @@ const getIndex = (text) => {
   // remove minus
   index = parseInt(index.replace('-', ''));
   // if returns that the number return is not in the rules
-  if (index > actualGroup.length - 1 || index < 0) return 2;
+  if (index > CUR_GROUP.length - 1 || index < 0) return 2;
   return {
      text: text.join(' '),
      index,
@@ -244,7 +300,7 @@ const getIndex = (text) => {
 
 // add normally in todos files (by pushing)
 function addNormalTodo(text) {
-  actualGroup.push({
+  CUR_GROUP.push({
     isChecked: false,
     text,
     lastActivity: '>',
@@ -286,7 +342,7 @@ const parseMinutesIndex = (args) => {
     // parse as normal number for index
     index = parseInt(lastArg.replace('-', ''));
     // if index is invalidate
-    if (index < 0 || index > actualGroup.length - 1) return 1;
+    if (index < 0 || index > CUR_GROUP.length - 1) return 1;
     // remove index and minutes of the text
     textJ.splice(textJ.length - 2, 1);
     textJ.splice(textJ.length - 1, 1);
@@ -298,7 +354,7 @@ const parseMinutesIndex = (args) => {
     // parse as normal number for index
     index = parseInt(lastArg.replace('-', ''));
     // if index is invalidate
-    if (index < 0 || index > actualGroup.length - 1) return 1;
+    if (index < 0 || index > CUR_GROUP.length - 1) return 1;
     // remove index and minutes of the text
     textJ.shift();
     textJ.splice(textJ.length - 1, 1);
@@ -318,7 +374,7 @@ function addTodoTimed(args) {
     // if has index then add with index
     if (validate.index !== undefined && validate.minutes && validate.text) {
       const dateNow = Date.now();
-      actualGroup.splice(validate.index, 0, {
+      CUR_GROUP.splice(validate.index, 0, {
         isChecked: false,
         text: validate.text,
         lastActivity: '>',
@@ -330,7 +386,7 @@ function addTodoTimed(args) {
     // if just has minutes and text then add
     else if (validate.text && validate.minutes) {
       const dateNow = Date.now();
-      actualGroup.push({
+      CUR_GROUP.push({
         isChecked: false,
         text: validate.text,
         lastActivity: '>',
@@ -355,9 +411,9 @@ function editTimed(args) {
     // need always be a number
     if (/[^\d+]/.test(args[0])) return false;
     // if the number is bigger or lower than expected
-    if (args[0] < 0 || args[0] > actualGroup.length - 1) return false;
+    if (args[0] < 0 || args[0] > CUR_GROUP.length - 1) return false;
     // make todo easier for code
-    const todo = actualGroup[args[0]];
+    const todo = CUR_GROUP[args[0]];
     // if todo is loopabe
     const loopable = todo.repeatTime;
     // change repeat Time to the new
@@ -371,9 +427,9 @@ function editTimed(args) {
 }
 
 // Test todos if their time already passed
-const testTodos = () => {
+const testTimedTodos = () => {
   // verify each todo in the actual group
-  actualGroup.forEach(todo => {
+  CUR_GROUP.forEach(todo => {
     // if todo is loopable
     const loopable = todo.repeatTime;
     if (loopable) {
@@ -427,20 +483,20 @@ const testSeparator = (type, index) => {
     switch (type) {
       case 'line':
       case 'l':
-        actualGroup.splice(index, 0, {
+        CUR_GROUP.splice(index, 0, {
           separator: true,
           text: '-'
         });
         break;
       case 'transparent':
       case 'tr':
-        actualGroup.splice(index, 0, {
+        CUR_GROUP.splice(index, 0, {
           separator: true,
           text: ' '
         });
         break;
       default:
-        actualGroup.splice(index, 0, {
+        CUR_GROUP.splice(index, 0, {
           separator: true,
           text: type
       });
@@ -449,20 +505,20 @@ const testSeparator = (type, index) => {
     switch (type) {
       case 'line':
       case 'l':
-        actualGroup.push({
+        CUR_GROUP.push({
           separator: true,
           text: '-'
         });
         break;
       case 'transparent':
       case 'tr':
-        actualGroup.push({
+        CUR_GROUP.push({
           separator: true,
           text: ' '
         });
         break;
       default:
-        actualGroup.push({
+        CUR_GROUP.push({
           separator: true,
           text: type
         });
@@ -493,7 +549,7 @@ function addSeparator(text) {
     else return testSeparator(text.join(' '));
   }
   else {  
-    return actualGroup.push({
+    return CUR_GROUP.push({
       separator: true,
       text: '-'
     });
@@ -512,7 +568,7 @@ function addTodo(text) {
         return addNormalTodo(text.join(' '));
         break;
       default:
-        actualGroup.splice(validate.index, 0, {
+        CUR_GROUP.splice(validate.index, 0, {
           isChecked: false,
           text: validate.text,
           lastActivity: '>',
@@ -531,7 +587,7 @@ function editTodo(text) {
     if (validate === 1) return addNormalTodo(text.join(' '));
     // if returns that the number return is not in the rules
     else if (validate === 2) return;
-    actualGroup[validate.index].text = validate.text;
+    CUR_GROUP[validate.index].text = validate.text;
   }
 }
 
@@ -543,7 +599,7 @@ function verifyTwoNumbers(args) {
     // need always be a number
     if (/[^\d+]/.test(item)) return false;
     // if the number is bigger or lower than expected
-    if (item < 0 || item > actualGroup.length - 1) return false;
+    if (item < 0 || item > CUR_GROUP.length - 1) return false;
   }
   return true;
 }
@@ -576,30 +632,30 @@ function switchTodo(args) {
 // Copy a todo to another place
 function copyTodo(args) {
   // if theres only the todo you want to move then default position to move is the last one
-  if (args.length === 1) args.push(actualGroup.length);
+  if (args.length === 1) args.push(CUR_GROUP.length);
   // verify both numbers
   if (verifyTwoNumbers(args) === false) return;
   // first is the todo you want to copy
-  const todo = actualGroup[args[0]];
+  const todo = CUR_GROUP[args[0]];
   // second the index you want to put
   const index = args[1];
   // copy it
-  actualGroup.splice(index, 0, todo); 
+  CUR_GROUP.splice(index, 0, todo); 
 }
 
 function moveTodo(args) {
   // if theres only the todo you want to move then default position to move is the last one
-  if (args.length === 1) args.push(actualGroup.length);
+  if (args.length === 1) args.push(CUR_GROUP.length);
   // verify both numbers
   if (verifyTwoNumbers(args) === false) return;
   // first is the todo you want to move
-  const todo = actualGroup[args[0]];
+  const todo = CUR_GROUP[args[0]];
   // second the index you want to put
   const index = args[1];
   // remove the current todo of the todos.json
-  actualGroup.splice(args[0], 1);
+  CUR_GROUP.splice(args[0], 1);
   // move it
-  actualGroup.splice(index, 0, todo); 
+  CUR_GROUP.splice(index, 0, todo); 
 }
 
 // Range In between two numbers and return their indexes
@@ -607,7 +663,7 @@ function rangeIn(ids) {
   ids = [ids];
   let [start, end] = ids[0].split('-');
   // if the index given is bigger than how much you have
-  if (start > actualGroup.length || actualGroup.length < end) return;
+  if (start > CUR_GROUP.length || CUR_GROUP.length < end) return;
   if (start < 0 && end < 0 ) return;
   const args = organizeTwoNumbers([start, end]);
   let validate = [];
@@ -631,11 +687,11 @@ function checkTodos(ids) {
   });
   // loop for change each id
   ids.forEach(id => {
-    if (actualGroup[id] && !actualGroup[id].separator) {
-      const ischecked = !actualGroup[id].isChecked;
-      actualGroup[id].isChecked = ischecked;
-      actualGroup[id].lastActivity = ischecked ? '»' : '>';
-      actualGroup[id].lastUpdated = Date.now();
+    if (CUR_GROUP[id] && !CUR_GROUP[id].separator) {
+      const ischecked = !CUR_GROUP[id].isChecked;
+      CUR_GROUP[id].isChecked = ischecked;
+      CUR_GROUP[id].lastActivity = ischecked ? '»' : '>';
+      CUR_GROUP[id].lastUpdated = Date.now();
     }
   });
 }
@@ -659,16 +715,16 @@ function removeTodos(ids) {
   ids.sort((a, b) => b - a);
   ids.forEach(id => {
     id = parseInt(id);
-    if (actualGroup[id]) actualGroup.splice(id, 1);
+    if (CUR_GROUP[id]) CUR_GROUP.splice(id, 1);
   });
 }
 
 // Copy to clipboard method
 async function getCopy(ids) {
   if (ids.length === 1 // always one argument (todo to get text)
-      && actualGroup[ids[0]]) { // the id has to exist, of course
+      && CUR_GROUP[ids[0]]) { // the id has to exist, of course
 
-    const TEXT = actualGroup[ids[0]].text;
+    const TEXT = CUR_GROUP[ids[0]].text;
     const EXEC = require('child_process').exec;
   
     switch (process.platform) {
@@ -691,7 +747,7 @@ async function getCopy(ids) {
 
 // Delete all the checked todos
 function remCheckedTodos() {
-  let ids = actualGroup.map((item, index) => {
+  let ids = CUR_GROUP.map((item, index) => {
     if (item.isChecked === true) return index;
   });
   ids = ids.filter(item => item !== undefined);
@@ -905,10 +961,10 @@ const topBarTodos = maxIdLength => {
   let id = 'ID';                                                         // inconstant length item
   let check = 'Check';                                                   // 3 length item
   //let brazilianDateType = false;                                       // day first | true or false
-  let todosName = groups[actualName];                                    // inconstant length item
+  let todosName = groups[CUR_NAME];                                    // inconstant length item
   let date = 'Date';                                                     // 2 to 18 length item
   const maxTodosLength = (function () {                                  // inconstant length
-    const texts = actualGroup.map(t => t.text);
+    const texts = CUR_GROUP.map(t => t.text);
     return Math.max(...(texts.map(el => el.length)));
   })();
 
@@ -963,7 +1019,7 @@ const bottomPartGroups = () => {
     // colorize group that already is fully checked
     const isComplete = (function() {
       // return if is checked of every item
-      const MAP_IS_CHECKED = todos[group].map(todo => todo.isChecked);
+      const MAP_IS_CHECKED = TODOS[group].map(todo => todo.isChecked);
 
       // if theres one false then returns false
       for (item of MAP_IS_CHECKED)
@@ -976,7 +1032,7 @@ const bottomPartGroups = () => {
     
     switch (group) {
       // is selected?
-      case groups[actualName]:
+      case groups[CUR_NAME]:
         // colorize group that is fully checked 
         if (isComplete) return colors.underline(colors.white(group));
         // just underline it if it's selected
@@ -996,22 +1052,20 @@ const bottomPartGroups = () => {
   while (groupsString.length < COLUMNS)
     groupsString = ` ${groupsString} `;
 
-  return console.log(`
-${groupsString}
-`);
+  return console.log(`\n${groupsString}\n`);
 
 };
 
 const showTodos = () => {
   // inconstant length
-  let maxIdLength = (actualGroup.length.toString()).length;
+  let maxIdLength = (CUR_GROUP.length.toString()).length;
   // group information
   const startPartLength = topBarTodos(maxIdLength);
   const columnsTerminal = process.stdout.columns - startPartLength - 2;
   const columnsSeparator = process.stdout.columns - maxIdLength - 2;
 
   // Todos
-  actualGroup.forEach((todo, index) => {
+  CUR_GROUP.forEach((todo, index) => {
     // prettier the index in the output to be
     // the exactly width of the last todo's index
     index = index.toString();
@@ -1030,7 +1084,7 @@ const showTodos = () => {
     };
 
 
-    let task = todo.text;
+    const task = todo.text;
     const activity = todo.lastActivity;
     const status = todo.isChecked ? '(+)' : '( )';
     const color = todo.isChecked ? colors.white : colors.bwhite;
@@ -1075,22 +1129,39 @@ const showTodos = () => {
 //
 
 // Ask for a command
-const askForATask = (help) => {
+const askForATask = TYPE => {
   console.clear();
-  if (help === true) showHelp();
-  else if (help === 2) showProtec();
-  else if (help === 3) showLicense();
-  else showTodos();
-  testTodos();
-  rl.question(colors.white('> '), (answer) => {
-    [answer, ...args] = answer.split(' ');
+  // show
+  // 1 = documentation, commands
+  // 2 = ???
+  // 3 = license
+  //   = todos of the group
+  switch (TYPE) {
+    case 1: showHelp();
+      break;
+    case 2: showProtec();
+      break;
+    case 3: showLicense();
+      break;
+    default: showTodos();
+  }
+
+  // test timed todos to update their times
+  testTimedTodos();
+
+  rl.question('> ', ANSWER => {
+    let [answer, ...args] = ANSWER.split(' ');
     checkTask(answer, args);
   });
+
+  return;
 }
 
 // Get command and pass to function
 const checkTask = async (answer, args) => {
-  let help = false;
+  let TYPE;
+
+  // make it always lowercase to be read
   answer = answer.toLowerCase();
 
   switch (answer) {
@@ -1101,6 +1172,7 @@ const checkTask = async (answer, args) => {
     case 'showgroup':
     case 'sg':
       await showGroup(args.toString());
+      TYPE = 0;
       break;
     case 'checkgroup':
     case 'cg':
@@ -1137,12 +1209,14 @@ const checkTask = async (answer, args) => {
     case 'tab':
     case 't':
       tabGroup();
-      updateGroups(1);
+      updateGroups();
+      TYPE = 0;
       break;
     case 'tabreverse':
     case 'tr':
       tabGroup(true); // true > reverse true
       updateGroups();
+      TYPE = 0;
       break;
 
     //
@@ -1179,17 +1253,18 @@ const checkTask = async (answer, args) => {
     case 'g':
     case 'get':
       getCopy(args);
+      TYPE = 0;
       break;
     case 'h':
     case 'help':
-      help = true;
+      TYPE = 1;
       break;
     case 'protec':
-      help = 2;
+      TYPE = 2;
       break;
     case 'l':
     case 'license':
-      help = 3;
+      TYPE = 3;
       break;
     case 'ed':
     case 'edit':
@@ -1220,88 +1295,13 @@ const checkTask = async (answer, args) => {
       process.exit();
       break;
 
-    default:
-      help = false;
+    default: TYPE = 0;
   }
-  saveData();
-  askForATask(help);
-}
 
-//
-// Data Functions
-//
-
-// Load all the files or create them
-const loadFile = () => {
-  try {
-    //redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
-    OTODOS = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
-    todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
-    // load all the groups and return their names
-    groups = Object.keys(todos);
-    // choose the first group (default)
-    actualName = 0;
-    actualGroup = todos[groups[actualName]];
-    askForATask(false);
-  } catch (err) {
-    if (err.code === 'ENOENT') {
-      //
-      // Templates
-      //
-      // ! Remember that the templates must be STRING to parse through fs.writeFileSync
-      const templateTodos = ' ' + {
-        "default": [
-          {
-            "isChecked": false,
-            "text": "Check me to test if is working!",
-            "lastActivity": ">",
-            "lastUpdated": Date.now()
-          },
-          {
-            "isChecked": true,
-            "text": "You can remove this template todo!",
-            "lastActivity": "»",
-            "lastUpdated": Date.now()
-          }
-        ]
-      };
-      //const templateRedos = '[]';
-
-      // 
-      // Code Run
-      //
-      // if only is missing redos files
-      /*if (!redos && todos) {
-        fs.writeFileSync('config.json', templateConfig, 'utf8');
-        fs.writeFileSync('redos.json', templateRedos, 'utf8');
-        redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
-        return askForATask(false);
-      }*/
-      // if is missing both files generate them
-      fs.writeFileSync('todos.json', templateTodos, 'utf8');
-      //fs.writeFileSync('redos.json', templateRedos, 'utf8');
-      //redos = JSON.parse(fs.readFileSync('redos.json', 'utf8'));
-      todos = JSON.parse(fs.readFileSync('todos.json', 'utf8'));
-      // load all the groups and return their names
-      groups = Object.keys(todos);
-      // choose the first group (default)
-      actualGroup = todos[groups[0]];
-      return askForATask(false);
-    } else {
-      console.log(err);
-      process.exit(0);
-    }
-  }
-}
-
-// Save files
-const saveData = () => {
-  // just save if there's any change (optimization)
-  if (todos !== OTODOS) {
-    fs.writeFileSync('todos.json', JSON.stringify(todos, null, 2), 'utf8');
-    //fs.writeFileSync('redos.json', JSON.stringify(redos, null, 2), 'utf8'); 
-    // |, null, 2| for prettier output
-  };
+  if (TYPE === undefined)
+    saveData();
+  askForATask(TYPE);
+  return;
 }
 
 start();
