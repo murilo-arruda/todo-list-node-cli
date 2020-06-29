@@ -41,6 +41,9 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Added custom centered separators.
 * Added custom centered separators with spaces.
 * Now terminal works in any size.
+* Added tab reverse command.
+* Prettier terminal.
+
 
 ## 🖨 Command Cheat
 
@@ -59,7 +62,8 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `l` or `license` - Show the license of the software.
 * `g` or `get` - This will copy to clipboard the todo.
 * `rc` or `remcheckeds` - This will remove all the the checked to-dos.
-* `t` or `tab` - This will tab to next group in order.
+* `t` or `tab` - Show next group.
+* `tr` or `tabreverse` - Show previous group.
 * `ng` or `namegroup` - Rename the selected group. First is the group you want to rename, then the name you want.
 * `ag` or `addgroup` - Create a new group of to-dos. This helps you to organize better the types of to-dos you have.
 * `rg` or `remgroup` - Delete the selected group.
