@@ -37,13 +37,11 @@ const loadFile = () => {
           {
             "isChecked": false,
             "text": "Check me to test if is working!",
-            "lastActivity": ">",
             "lastUpdated": Date.now()
           },
           {
             "isChecked": true,
             "text": "You can remove this template todo!",
-            "lastActivity": "»",
             "lastUpdated": Date.now()
           }
         ]
@@ -303,7 +301,6 @@ function addNormalTodo(text) {
   CUR_GROUP.push({
     isChecked: false,
     text,
-    lastActivity: '>',
     lastUpdated: Date.now(),
   });
 }
@@ -377,7 +374,6 @@ function addTodoTimed(args) {
       CUR_GROUP.splice(validate.index, 0, {
         isChecked: false,
         text: validate.text,
-        lastActivity: '>',
         repeatTime: validate.minutes,
         lastRepeated: dateNow,
         lastUpdated: dateNow,
@@ -389,7 +385,6 @@ function addTodoTimed(args) {
       CUR_GROUP.push({
         isChecked: false,
         text: validate.text,
-        lastActivity: '>',
         repeatTime: validate.minutes,
         lastRepeated: dateNow,
         lastUpdated: dateNow,
@@ -437,7 +432,6 @@ const testTimedTodos = () => {
       const lastTimeTodo = todo.lastRepeated + todo.repeatTime;
       // if that already passed then resets it
       if (dateNow >= lastTimeTodo) {
-        todo.lastActivity = '>';
         todo.isChecked = false;
         todo.lastRepeated = dateNow;
         todo.lastUpdated = dateNow;
@@ -571,7 +565,6 @@ function addTodo(text) {
         CUR_GROUP.splice(validate.index, 0, {
           isChecked: false,
           text: validate.text,
-          lastActivity: '>',
           lastUpdated: Date.now(),
         });
     };
@@ -690,7 +683,6 @@ function checkTodos(ids) {
     if (CUR_GROUP[id] && !CUR_GROUP[id].separator) {
       const ischecked = !CUR_GROUP[id].isChecked;
       CUR_GROUP[id].isChecked = ischecked;
-      CUR_GROUP[id].lastActivity = ischecked ? '»' : '>';
       CUR_GROUP[id].lastUpdated = Date.now();
     }
   });
@@ -1085,7 +1077,7 @@ const showTodos = () => {
 
 
     const task = todo.text;
-    const activity = todo.lastActivity;
+    const activity = todo.isChecked ? '»' : '>';
     const status = todo.isChecked ? '(+)' : '( )';
     const color = todo.isChecked ? colors.white : colors.bwhite;
     const actualTime = formatTodoTime(
