@@ -80,18 +80,11 @@ const saveData = () => {
 // Colors method for colorize terminal output
 const res = '\x1b[0m';
 const colors = {
-  white: m => {
-    return `\x1b[90m${m + res}`;
-  },
-  bwhite: m => {
-    return `\x1b[1m${m + res}`;
-  },
-  inverse: m => {
-    return `\x1b[7m${m + res}`;
-  },
-  underline: m => {
-    return `\x1b[4m${m + res}`;
-  }
+  white: m => `\x1b[90m${m + res}`,
+  bwhite: m => `\x1b[1m${m + res}`,
+  inverse: m => `\x1b[7m${m + res}`,
+  underline: m => `\x1b[4m${m + res}`,
+  strike: m => `\x1b[9m${m + res}`
 }
 
 // To get commands and ouputs
@@ -979,9 +972,9 @@ const topBarTodos = maxIdLength => {
   // its weird
   // but what can i do, right?
   // its javascript afterall
-  const lengthColorsRemove = `${colors.inverse('')}`.length +
-                             `${colors.inverse('')}`.length +
-                             `${colors.inverse('')}`.length + 1;
+  const lengthColorsRemove = colors.inverse('').length +
+                             colors.inverse('').length +
+                             colors.inverse('').length + 1;
   
   const startPart = `${colors.inverse(id)} ${colors.inverse(check)} ${colors.inverse(date)}`;
 
@@ -1005,11 +998,21 @@ const topBarTodos = maxIdLength => {
 const bottomPartGroups = () => {
   const COLUMNS = process.stdout.columns;
 
+  // for put separator in center
+  const INVERSE_LENGTH = colors.inverse('').length;
+
+  const UNDERLINE_LENGTH = colors.underline('').length + INVERSE_LENGTH;
+  const STRIKE_LENGTH = colors.strike('').length + INVERSE_LENGTH;
+  const STRIKE_UNDERLINE_LENGTH = UNDERLINE_LENGTH + STRIKE_LENGTH + INVERSE_LENGTH;
+
+  let colorsStringLength = 0;
+
   // map array to underline the actual group
   const newGroups = groups.map((group) => {
 
     // colorize group that already is fully checked
     const isComplete = (function() {
+
       // return if is checked of every item
       const MAP_IS_CHECKED = TODOS[group].map(todo => todo.isChecked);
 
@@ -1026,25 +1029,55 @@ const bottomPartGroups = () => {
       // is selected?
       case groups[CUR_NAME]:
         // colorize group that is fully checked 
-        if (isComplete) return colors.underline(colors.white(group));
+        if (isComplete) {
+          colorsStringLength += STRIKE_LENGTH - INVERSE_LENGTH;
+
+          return colors.strike(group);
+        }
         // just underline it if it's selected
-        else return colors.underline(group);
+        else {
+          colorsStringLength += UNDERLINE_LENGTH;
+          return colors.inverse(colors.underline(group));
+        }
         break;
 
       default:
         // return group that is fully checked
-        if (isComplete) return colors.white(group);
-        else return group;
+        if (isComplete) {
+
+          colorsStringLength += STRIKE_LENGTH;
+
+          return colors.strike(colors.inverse(group));
+        }
+        else {
+          colorsStringLength += INVERSE_LENGTH;
+          return colors.inverse(group);
+        }
     }
 
   });
 
+  // center
+  for (let i = 0; i < newGroups.length - 1; i++)
+    colorsStringLength += INVERSE_LENGTH;
+
+  let groupsString = newGroups.join(colors.inverse(' '));
+
   // put groups in center
-  let groupsString = newGroups.join(' ');
-  while (groupsString.length < COLUMNS)
+  while (groupsString.length - colorsStringLength < COLUMNS)
     groupsString = ` ${groupsString} `;
 
-  return console.log(`\n${groupsString}\n`);
+  groupsString = groupsString.replace(/  +/g, s => colors.inverse(s));
+
+
+  console.log(`\n${groupsString}\n`);
+
+  // all right
+  // you can come to me
+  // and say
+  // 'HEY MAN, THIS IS NOT READABLE, THIS IS REALLY BAD'
+  // and I'll say
+  // 'MAN, I KNOW THAT, I KNOW, MAN, BUT YOU KNOW, THIS IS THE ONLY WAY THIS F***** S*** BECOME INVERSE IN TERMINAL, MAN'
 
 };
 
@@ -1061,18 +1094,31 @@ const showTodos = () => {
     // prettier the index in the output to be
     // the exactly width of the last todo's index
     index = index.toString();
-    while (index.length < maxIdLength || index.length < 2) index = ` ${index}`;
+    while (index.length < maxIdLength || index.length < 2)
+      index = ` ${index}`;
 
     // if it is a separator
     if (todo.separator) {
       let separator = todo.text;
 
+      // if it's just a letter
       if (separator.length === 1)
-        while (separator.length <= columnsSeparator - 1) separator += todo.text;
-      else
-        while (separator.length <= columnsSeparator - 2) separator = ` ${separator} `;
+        // repeat the separator to the end of the terminal columns
+        while (separator.length <= columnsSeparator)
+          separator += todo.text;
 
-      return console.log(colors.white(`${index} ${separator}`));
+      // if it's an word
+      else {
+        // put separator in center
+        // -1 because it adds more
+        while (separator.length <= columnsSeparator - 1)
+          separator = ` ${separator} `;
+        // if needs more one character add space in end
+        while (separator.length <= columnsSeparator)
+          separator += ' ';
+      }
+
+      return console.log(`${colors.white(index)} ${colors.white(separator)}`);
     };
 
 
