@@ -11,25 +11,20 @@ Implementation of a Todo List in Node.js. Manage your todos directly in the term
 
 - Install [node](https://nodejs.org/);
 - Download the latest version [here](https://github.com/Koetemagie/todoncli/releases/latest)!
+- Open it with app.vbs if you are in Windows or in terminal use `node .`.
 
-## Source Installation
+## TodoNcli Installation
 
-- Install [node](https://nodejs.org/);
 - Download this repository. Or use terminal with git: `git clone https://github.com/Passok11/todo-list-node-cli.git`;
 - Open the repository folder locally. Or use terminal: `cd todoncli`;
-- If you are using Windows, open **app.vbs**. Or in the terminal run todoncli using any of these commands: `node .`, `node index.js`, `npm start`.
+- If you are using Windows, open **app.vbs**. Or in the terminal run todoncli using any of these commands: `node .`, `node todoncli.js`;
+- You can make an alias in Linux to open it faster. Example: `echo 'alias nd="cd ~/TODONCLIFOLDER/ && node todoncli.js"'`.
 
 ### Windows:
 
-If you're using Windows 10/8x: 
-- **open the cmd** > **right click on the top tab** > **Properties** > **Terminal** > check **Disable Scroll-Forward**.
-- If you don't have that option on Terminal, update your Windows 10 to the last one. If you can't I recommend you: **Layout** > **Screen Buffer Size** > **Height** > **50**.
-Unfornately the last tip changes the Screen Buffer Size, so the help command won't show properly the documentation. Don't know how to resolve this bug. 
-Do the same thing with the **node terminal** if you open the app using **app.vbs**.
-
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## ✨ Features v2.0
+## ✨ Features v3.0
 
 * Monochrome (Reasons: there's no reason at all to make the ready todos cyan)
 * See the time that left in minutes to repeat again the todo.
@@ -43,7 +38,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Now terminal works in any size.
 * Added tab reverse command.
 * Prettier terminal.
-
+* Now you can switch the groups easily with the shorcut: `SHIFT` + `Arrow
 
 ## 🖨 Command Cheat
 

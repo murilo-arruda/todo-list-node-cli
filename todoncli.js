@@ -3,12 +3,12 @@ const fs = require('fs');
 const sleep = require('util').promisify(setTimeout);
 
 const TODOS_PATH = 'todos.json';
-// TODOS     = file of todos
-// GROUPS    = array with the name of all groups
-// CUR_NAME  = <current id> of the group in <groups>
-// CUR_GROUP = all the current todos of the current group
-let TODOS, GROUPS, CUR_GROUP, CUR_NAME;
-
+// TODOS      = file of todos
+// GROUPS     = array with the name of all groups
+// CUR_NAME   = <current id> of the group in <groups>
+// CUR_GROUP  = all the current todos of the current group
+// CUR_COLUMS = current colums of terminal, to change it if update
+let TODOS, GROUPS, CUR_GROUP, CUR_NAME, CUR_COLUMNS;
 
 // Colors method for colorize terminal output
 const colors = {
@@ -40,6 +40,7 @@ const todoncli = {
   // previous: save
   start: function () {
     console.clear();
+    CUR_COLUMNS = process.stdout.columns;
     TODOS, GROUPS, CUR_GROUP, CUR_NAME = undefined;
     this.load();
   },
@@ -406,10 +407,13 @@ const todoncli = {
       colorsStringLength += INVERSE_LENGTH;
   
     let groupsString = newGroups.join(colors.inverse(' '));
-  
+
     // put groups in center
-    while (groupsString.length - colorsStringLength < COLUMNS)
+    while (groupsString.length - colorsStringLength < COLUMNS - 1)
       groupsString = ` ${groupsString} `;
+
+    while (groupsString.length - colorsStringLength < COLUMNS)
+      groupsString += ' ';
   
     groupsString = groupsString.replace(/  +/g, s => colors.inverse(s));
   
@@ -504,6 +508,12 @@ const todoncli = {
     // groups
     this.groupsList();
   },
+  promptQuestion: function () {
+    rl.question(colors.white('>') + ' ', ANSWER => {
+      let [answer, ...args] = ANSWER.split(' ');
+      this.check(answer, args);
+    });
+  },
   ask: function (TYPE) {
     console.clear();
     // show
@@ -523,11 +533,7 @@ const todoncli = {
   
     // test timed todos to update their times
     itemsParse.updateTimeds();
-  
-    rl.question(colors.white('>') + ' ', ANSWER => {
-      let [answer, ...args] = ANSWER.split(' ');
-      this.check(answer, args);
-    });
+    this.promptQuestion();
   },
   // Get command and pass to function
   // previous: checkTask
@@ -536,7 +542,7 @@ const todoncli = {
   
     // make it always lowercase to be read
     answer = answer.toLowerCase();
-  
+
     switch (answer) {
   
       //
@@ -668,7 +674,35 @@ const todoncli = {
         process.exit();
         break;
   
-      default: TYPE = 0;
+      default:
+        TYPE = 0;
+
+        if (CUR_COLUMNS !== process.stdout.columns)
+          CUR_COLUMNS = process.stdout.columns;
+
+        else {
+          const LINES_LENGTH = (function () {
+            let LINE = '> ' + answer + args;
+  
+  
+            const patt = new RegExp(`.{${process.stdout.columns}}`, 'g');
+  
+            let arrLength = LINE.match(patt);
+  
+            if (arrLength === null)
+              return 1;
+  
+            else
+              return arrLength.length + 1;
+          })();
+  
+          process.stdout.moveCursor(0, LINES_LENGTH * -1);
+          readline.clearScreenDown(process.stdout, () => this.promptQuestion());
+
+          
+  
+          return;
+        }
     }
   
     if (TYPE === undefined)
@@ -681,6 +715,18 @@ const todoncli = {
 //
 // Group Functions
 //
+readline.emitKeypressEvents(process.stdin);
+// shortcut
+process.stdin.on('keypress', (ch, key) => {
+  // alt + > === tab
+  if (key.name === 'right' && key.shift === true)
+    todoncli.check('tab');
+  // alt + < === tabreverse
+  if (key.name === 'left' && key.shift === true) {
+    todoncli.check('tabreverse');
+  }
+      
+});
 
 const groups = {
   // previous updateGroups
@@ -1282,7 +1328,7 @@ const itemsParse = {
     else {
       const now = Date.now();
       let time = ((repeatTime + lastRepeated) - now) / 60000;
-      
+
       if (time > 60 && time < 1440)
         time = `-${this.roundIt(time / 60)}h`;    // Hours
       else if (time > 1440 && time < 10080)
