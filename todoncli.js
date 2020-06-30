@@ -535,6 +535,29 @@ const todoncli = {
     itemsParse.updateTimeds();
     this.promptQuestion();
   },
+  restartPrompt: function (answer, args) {
+    if (CUR_COLUMNS !== process.stdout.columns) {
+      CUR_COLUMNS = process.stdout.columns;
+      this.ask();
+    }
+    else {
+      const LINES_LENGTH = (function () {
+        let LINE = '> ' + answer + args;
+        const patt = new RegExp(`.{${process.stdout.columns}}`, 'g');
+    
+        let arrLength = LINE.match(patt);
+    
+        if (arrLength === null)
+          return 1;
+    
+        else
+          return arrLength.length + 1;
+      })();
+    
+      process.stdout.moveCursor(0, LINES_LENGTH * -1);
+      readline.clearScreenDown(process.stdout, () => this.promptQuestion());
+    }
+  },
   // Get command and pass to function
   // previous: checkTask
   check: async function (answer, args) {
@@ -632,7 +655,7 @@ const todoncli = {
       case 'g':
       case 'get':
         items.get(args);
-        TYPE = 0;
+        return this.restartPrompt(answer, args);
         break;
       case 'h':
       case 'help':
@@ -675,34 +698,7 @@ const todoncli = {
         break;
   
       default:
-        TYPE = 0;
-
-        if (CUR_COLUMNS !== process.stdout.columns)
-          CUR_COLUMNS = process.stdout.columns;
-
-        else {
-          const LINES_LENGTH = (function () {
-            let LINE = '> ' + answer + args;
-  
-  
-            const patt = new RegExp(`.{${process.stdout.columns}}`, 'g');
-  
-            let arrLength = LINE.match(patt);
-  
-            if (arrLength === null)
-              return 1;
-  
-            else
-              return arrLength.length + 1;
-          })();
-  
-          process.stdout.moveCursor(0, LINES_LENGTH * -1);
-          readline.clearScreenDown(process.stdout, () => this.promptQuestion());
-
-          
-  
-          return;
-        }
+        return this.restartPrompt(answer, args);
     }
   
     if (TYPE === undefined)
