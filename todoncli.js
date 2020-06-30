@@ -20,6 +20,20 @@ const colors = {
   strike: m => `\x1b[9m${m + colors.res}`
 }
 
+Array.prototype.move = function move(from, to) {
+  if (to === from) return this;
+
+  let target = this[from];                         
+  let increment = to < from ? -1 : 1;
+
+  for(let k = from; k != to; k += increment){
+    this[k] = this[k + increment];
+  }
+
+  this[to] = target;
+  return this;
+} 
+
 // To get commands and ouputs
 const rl = readline.createInterface({
   input: process.stdin,
@@ -567,10 +581,16 @@ const todoncli = {
     answer = answer.toLowerCase();
 
     switch (answer) {
-  
+
       //
       // groups
       //
+      case 'movegroup':
+      case 'mg':
+        await groups.move(args);
+        groups.update();
+        break;
+
       case 'showgroup':
       case 'sg':
         await groups.show(args.toString());
@@ -731,6 +751,61 @@ const groups = {
     // if just needs to load the groups
     // then pass 1 to all (param)
     if (all !== 1) CUR_GROUP = TODOS[GROUPS[CUR_NAME]];
+  },
+  // move a group recreating the todos
+  move: async args => {
+
+    if (args.length !== 2) return;
+
+    // GROUP: group to move
+    // WANTED: group where the old group will be
+    const GROUP = args[0];
+    const WANTED = args[1];
+
+    try {
+
+      if (!TODOS[GROUP]
+          || !TODOS[WANTED])
+        throw 'Some group doesn\'t exist.';
+
+
+  
+      let groupPos, wantedPos;
+  
+      let NEW_TODOS = {};
+      let NEW_GROUPS = GROUPS;
+
+
+      // get pos
+      NEW_GROUPS.forEach((gr, i) => {
+        switch (gr) {
+          case GROUP: groupPos = i;
+            break;
+          case WANTED: wantedPos = i;
+  
+            break;
+  
+          default:
+        }
+      });  
+  
+  
+      NEW_GROUPS = NEW_GROUPS.move(groupPos, wantedPos);
+
+
+      NEW_GROUPS.forEach((gr, i) => {
+        NEW_TODOS[gr] = TODOS[gr];
+      });
+
+      TODOS = NEW_TODOS;
+    }
+
+    catch (e) {
+      await todoncli.alert(e);
+    }
+
+     
+
   },
   // showGroup
   show: function (WANTED) {

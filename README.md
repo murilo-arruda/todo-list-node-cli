@@ -29,8 +29,8 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Monochrome (Reasons: there's no reason at all to make the ready todos cyan)
 * See the time that left in minutes to repeat again the todo.
 * Removed Redo command.
-* See the name of the group instead of **Todos** in the todos output.
-* If the time left of a timed todo is bigger than one hour then transform it in hours, then days, weeks and months.
+* Now you cann see the name of the group instead **Todos** in the todos output.
+* If the time left of a timed todo is bigger than one hour, now transforms it in hours, then days, weeks and months.
 * Added separators.
 * Added custom separators.
 * Added custom centered separators.
@@ -38,7 +38,8 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Now terminal works in any size.
 * Added tab reverse command.
 * Prettier terminal.
-* Now you can switch the groups easily with the shorcut: `SHIFT` + `Arrow
+* Now you can switch the groups easily with the shorcut: `SHIFT` + `left arrow`; `SHIFT` + `right arrow`.
+* Now you can move groups.
 
 ## 🖨 Command Cheat
 
@@ -67,6 +68,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `et` or `edittime` - This will edit the time for repeat todo.
 * `at` or `addtime` - Add a todo which will loop in a certain time.
 * `as` or `addseparator` - Add a separator which will separe todos in a group.
+* `mg` or `movegroup` - Move a group to another.
 
 ## To-do
 
