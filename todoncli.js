@@ -17,8 +17,7 @@ const colors = {
   bwhite: m => `\x1b[1m${m + colors.res}`,
   inverse: m => `\x1b[7m${m + colors.res}`,
   underline: m => `\x1b[4m${m + colors.res}`,
-  strike: m => `\x1b[9m${m + colors.res}`,
-}
+  strike: m => `\x1b[9m${m + colors.res}`, }
 
 Array.prototype.move = function move(from, to) {
   if (to === from) return this;
@@ -105,31 +104,37 @@ const todoncli = {
   
       if (err.code === 'ENOENT') {
     
-        const TEMPLATE_TODOS = '' + {
+      const TEMPLATE_TODOS = `{
           "default": [
             {
               "isChecked": false,
               "text": "Check me to test if is working!",
-              "lastUpdated": Date.now()
+              "lastUpdated": ${Date.now()}
             },
             {
               "isChecked": true,
               "text": "You can remove this template todo!",
-              "lastUpdated": Date.now()
+              "lastUpdated": ${Date.now()}
             }
           ]
-        };
+        }`;
     
       // if is missing both files generate them
       fs.writeFileSync(TODOS_PATH, TEMPLATE_TODOS, 'utf8');
     
+      // parse todos to program
       TODOS = JSON.parse(fs.readFileSync(TODOS_PATH, 'utf8'));
+
       // load all the groups and return their names
       GROUPS = Object.keys(TODOS);
+
+      // change id
+      CUR_NAME = 0;
+
       // choose the first group (default)
-      CUR_GROUP = TODOS[GROUPS[0]];
+      CUR_GROUP = TODOS[GROUPS[CUR_NAME]];
     
-      return askForATask();
+      return this.ask();
       // unknown error closes the process
     } else {
       console.log(err);
@@ -223,7 +228,12 @@ const todoncli = {
       ],
       [ ['editall', 'ea'],
         'Replace a word or phrase to another.',
-        'ea "book" "new book"'],
+        'ea "book" "new book"'
+      ],
+      [ ['addcheck', 'ax'],
+        'Add and check a todo. Same usage as add.',
+        'ax -1 This new'
+      ],
       [ ['tab', 't'],
         'Show next group.',
         'tab',
@@ -238,7 +248,7 @@ const todoncli = {
       ],
     ];
   
-    let VERSION = '3.0';
+    let VERSION = '3.1';
     const NAME = 'TodoNcli (^o^)/';
     const SYNOPSIS = 'Manage your todos anytime using command line!\r\nEvery change will be saved in your drive.';
     const USAGE = `Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!`;
@@ -661,6 +671,10 @@ const todoncli = {
       //
       // todos
       // 
+      case 'ax':
+      case 'addcheck':
+        items.add(args, true); // true to check
+        break;
       case 'a':
       case 'add':
         items.add(args);
@@ -1026,15 +1040,20 @@ const items = {
   },
   // Add todo in todos files (command check and index)
   // previous: addTodo
-  add: function (text) {
+  add: function (text, check) {
     if (text.length === 0) return;
     // parse text and return index if theres any
     const validate = itemsParse.index(text);
+
     switch (validate) {
       case 1: // if returns that there is no index
       case 2: // if returns that the given index is not in the rules
               // (bigger than actual length of the group)
-        return itemsParse.addDirect(text.join(' '));
+        itemsParse.addDirect(text.join(' '));
+        // if it's to check too
+        if (check)
+          this.check([CUR_GROUP.length - 1]);
+
         break;
       default:
         CUR_GROUP.splice(validate.index, 0, {
@@ -1042,6 +1061,9 @@ const items = {
           text: validate.text,
           lastUpdated: Date.now(),
         });
+        // if it's to check too
+        if (check)
+          this.check([validate.index]);
     };
   },
   // previous: editTodo

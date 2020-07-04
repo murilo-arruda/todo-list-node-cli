@@ -24,23 +24,10 @@ Implementation of a Todo List in Node.js. Manage your todos directly in the term
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## ✨ Features v3.0
+## ✨ Features v3.1
 
-* Monochrome (Reasons: there's no reason at all to make the ready todos cyan)
-* See the time that left in minutes to repeat again the todo.
-* Removed Redo command.
-* Now you cann see the name of the group instead **Todos** in the todos output.
-* If the time left of a timed todo is bigger than one hour, now transforms it in hours, then days, weeks and months.
-* Added separators.
-* Added custom separators.
-* Added custom centered separators.
-* Added custom centered separators with spaces.
-* Now terminal works in any size.
-* Added tab reverse command.
-* Prettier terminal.
-* Now you can switch the groups easily with the shorcut: `SHIFT` + `left arrow`; `SHIFT` + `right arrow`.
-* Now you can move groups.
-* Replace a word or phrase to another.
+* Fixed creating files error.
+* Added 'addcheck' command.
 
 ## 🖨 Command Cheat
 
@@ -71,6 +58,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `as` or `addseparator` - Add a separator which will separe todos in a group.
 * `mg` or `movegroup` - Move a group to another.
 * `ea` or `editall` - Replace a word or phrase to another.
+* `ax` or `addcheck` - Add and check a todo.
 
 ## To-do
 
