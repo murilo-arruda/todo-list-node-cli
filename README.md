@@ -18,7 +18,7 @@ Implementation of a Todo List in Node.js. Manage your todos directly in the term
 - Download this repository. Or use terminal with git: `git clone https://github.com/Passok11/todo-list-node-cli.git`;
 - Open the repository folder locally. Or use terminal: `cd todoncli`;
 - If you are using Windows, open **app.vbs**. Or in the terminal run todoncli using any of these commands: `node .`, `node todoncli.js`;
-- You can make an alias in Linux to open it faster. Example: `echo 'alias nd="cd ~/TODONCLIFOLDER/ && node todoncli.js"'`.
+- You can make an alias in Linux to open it faster. Example: `echo 'alias nd="cd ~/TODONCLIFOLDER/ && node todoncli.js"' >> ~/.bashrc`, then `. ~/.bashrc`.
 
 ### Windows:
 
@@ -40,6 +40,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * Prettier terminal.
 * Now you can switch the groups easily with the shorcut: `SHIFT` + `left arrow`; `SHIFT` + `right arrow`.
 * Now you can move groups.
+* Replace a word or phrase to another.
 
 ## 🖨 Command Cheat
 
@@ -69,6 +70,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `at` or `addtime` - Add a todo which will loop in a certain time.
 * `as` or `addseparator` - Add a separator which will separe todos in a group.
 * `mg` or `movegroup` - Move a group to another.
+* `ea` or `editall` - Replace a word or phrase to another.
 
 ## To-do
 
@@ -91,6 +93,9 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 * `as l -5`
 * `as -5 +`
 * `as # -5`
+
+* Fast replace.
+* `ea this new`
 
 
 ## 💻 Usage

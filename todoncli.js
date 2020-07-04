@@ -17,7 +17,7 @@ const colors = {
   bwhite: m => `\x1b[1m${m + colors.res}`,
   inverse: m => `\x1b[7m${m + colors.res}`,
   underline: m => `\x1b[4m${m + colors.res}`,
-  strike: m => `\x1b[9m${m + colors.res}`
+  strike: m => `\x1b[9m${m + colors.res}`,
 }
 
 Array.prototype.move = function move(from, to) {
@@ -221,6 +221,9 @@ const todoncli = {
         'Show previous group.',
         'tr',
       ],
+      [ ['editall', 'ea'],
+        'Replace a word or phrase to another.',
+        'ea "book" "new book"'],
       [ ['tab', 't'],
         'Show next group.',
         'tab',
@@ -522,6 +525,9 @@ const todoncli = {
     // groups
     this.groupsList();
   },
+  promptNothing: function () {
+    rl.question(colors.white('<') + ' ', A => this.ask());
+  },
   promptQuestion: function () {
     rl.question(colors.white('>') + ' ', ANSWER => {
       let [answer, ...args] = ANSWER.split(' ');
@@ -536,18 +542,26 @@ const todoncli = {
     // 3 = license
     //   = todos of the group
     switch (TYPE) {
-      case 1: this.help();
+      case 1:
+        this.help();
         break;
-      case 2: this.protec();
+      case 2:
+        this.protec();
         break;
-      case 3: this.license();
+      case 3:
+        this.license();
         break;
-      default: this.todos();
+      default:
+        this.todos();
     }
   
     // test timed todos to update their times
     itemsParse.updateTimeds();
-    this.promptQuestion();
+    
+    if (!TYPE)
+      this.promptQuestion();
+    else
+      this.promptNothing();
   },
   restartPrompt: function (answer, args) {
     if (CUR_COLUMNS !== process.stdout.columns) {
@@ -627,7 +641,10 @@ const todoncli = {
           , false, 3000);
         else groups.remCheckeds();
         break;
-  
+      case 'ea':
+      case 'editall':
+        groups.editAll(args);
+        break
       case 'tab':
       case 't':
         groups.tab();
@@ -677,17 +694,6 @@ const todoncli = {
         items.get(args);
         return this.restartPrompt(answer, args);
         break;
-      case 'h':
-      case 'help':
-        TYPE = 1;
-        break;
-      case 'protec':
-        TYPE = 2;
-        break;
-      case 'l':
-      case 'license':
-        TYPE = 3;
-        break;
       case 'ed':
       case 'edit':
         items.edit(args);
@@ -701,9 +707,23 @@ const todoncli = {
       case 'addtime':
         items.addTimed(args);
         break;
-  
+      //
+      // outputs
+      //
+      case 'h':
+      case 'help':
+        TYPE = 1;
+        break;
+      case 'protec':
+        TYPE = 2;
+        break;
+      case 'l':
+      case 'license':
+        TYPE = 3;
+        break;
+
       // 
-      // program
+      // todoncli
       // 
       case 'rs': 
       case 'restart':
@@ -731,7 +751,7 @@ const todoncli = {
 //
 // Group Functions
 //
-readline.emitKeypressEvents(process.stdin);
+
 // shortcut
 process.stdin.on('keypress', (ch, key) => {
   // alt + > === tab
@@ -745,6 +765,38 @@ process.stdin.on('keypress', (ch, key) => {
 });
 
 const groups = {
+
+  restoreMsg: 'Restoring todos with backup... ',
+
+  // search by letters and replace them
+  editAll: async function (args) {
+    const BAK_TODOS = TODOS;
+
+    const text = args.join(' ');
+    const count = ((text.split('')).filter(x => x === '"')).length;
+
+    try {
+      // INPUT: 'ea "KOP" "LEL"'
+      if (count === 4 && args.length > 1) {
+        args = (args.join(' ')).split('" "');
+        args[0] = args[0].replace(/^"|"$/g, '');
+        args[1] = args[1].replace(/^"|"$/g, '');
+      }
+
+      // INPUT: 'ea lol lel'
+      const [REPLACE, NEW] = [args[0], args[1]];
+
+      // for in each todo to change the patt
+      for (let i = 0; i < CUR_GROUP.length; i++)
+        CUR_GROUP[i].text = (CUR_GROUP[i].text).replace(REPLACE, NEW);
+
+    }
+    catch (e) {
+      TODOS = BAK_TODOS;
+      await todoncli.alert(this.restoreMsg + e.message, 2000);
+
+    }
+  },
   // previous updateGroups
   update: all => {
     GROUPS = Object.keys(TODOS);
