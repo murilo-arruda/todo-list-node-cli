@@ -3,6 +3,7 @@ const fs = require('fs');
 const sleep = require('util').promisify(setTimeout);
 
 const TODOS_PATH = 'todos.json';
+
 // TODOS      = file of todos
 // GROUPS     = array with the name of all groups
 // CUR_NAME   = <current id> of the group in <groups>
@@ -19,7 +20,38 @@ const colors = {
   underline: m => `\x1b[4m${m + colors.res}`,
   strike: m => `\x1b[9m${m + colors.res}`, }
 
-Array.prototype.move = function move(from, to) {
+
+// get true length of a a string with colors
+// this is necessary since javascript thinks
+// this is a  Hexadecimal escape sequence
+// or even Octal escape sequence
+// counting only what he wants to
+// so this is the only solution to count this correctly
+// javascript is very weird, isn't?
+String.prototype.trueLength = function () {
+ if (this === null) return 0;
+
+ let matches = this.match(/\[\d+m/g);
+
+ if (matches !== null)
+    matches = matches.join('').length;
+
+  let lengthHex = 0;
+
+  const hexs = this.split('');
+
+  if (hexs !== null) {
+    for (l of hexs) {
+      if (l === '\x1B')
+        lengthHex++;
+    }
+  }
+
+  return (lengthHex + matches - this.length) * -1;
+}
+
+// move an item to another position
+Array.prototype.move = function (from, to) {
   if (to === from) return this;
 
   let target = this[from];                         
@@ -72,9 +104,9 @@ const todoncli = {
     console.clear();
   
     // top bar
-    console.log(colors.inverse(out) + '\n');
-    console.log(message + '\n');
-    console.log(colors.inverse(out) + '\n');
+    console.log(colors.inverse(out) + '\n\n'
+                                + message + '\n\n'
+                                + colors.inverse(out) + '\n');
   
     // if it's critical then just stop the program
     if (critical)
@@ -248,14 +280,11 @@ const todoncli = {
       ],
     ];
   
-    let VERSION = '3.1';
+    let VERSION = '3.3';
     const NAME = 'TodoNcli (^o^)/';
     const SYNOPSIS = 'Manage your todos anytime using command line!\r\nEvery change will be saved in your drive.';
     const USAGE = `Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!`;
     const LEAVE = 'To leave, just press anything!';
-  
-    const TWO_BWHITE_LENGTH = `${colors.inverse('')}`.length
-                            + `${colors.inverse('')}`.length;
   
     // put version in the right
     while (VERSION.length < process.stdout.columns - NAME.length)
@@ -271,10 +300,8 @@ const todoncli = {
   
       const COMMANDS_OUTPUT = `${colors.bwhite(COMMANDS[0])} or ${colors.bwhite(COMMANDS[1])}`;
   
-      // 0X0001 please see "const topBarTodos = ()"'s comments for the explanation
       // put example in right
-      while (example.length < (process.stdout.columns
-                               - COMMANDS_OUTPUT.length + TWO_BWHITE_LENGTH) )
+      while (example.length < process.stdout.columns - COMMANDS_OUTPUT.trueLength())
              example = ' ' + example;
   
       console.log(COMMANDS_OUTPUT + example);
@@ -333,27 +360,10 @@ const todoncli = {
     while (date.length < 16) date += ' ';
   
     // part without group's name
-  
-    // 0X0001 when adding colors in a string we have to add characters for the terminal
-    // read them as colors
-    // because of that they are counted when getting they length
-    // for fix this we have to call the functions that add colors and remove them the times
-    // that wee add to the string
-    // in this case it is 3, then we call them 3 and remove them length to not be counted
-    // yes
-    // its weird
-    // but what can i do, right?
-    // its javascript afterall
-    const lengthColorsRemove = colors.inverse('').length +
-                               colors.inverse('').length +
-                               colors.inverse('').length + 1;
-    
     const startPart = `${colors.inverse(id)} ${colors.inverse(check)} ${colors.inverse(date)}`;
-  
-  
-    const startPartLength = startPart.length - lengthColorsRemove;
+
     // -1 because terminal sometimes read more one line with a custom rezise
-    let columnsTerminal = process.stdout.columns - startPartLength;
+    let columnsTerminal = process.stdout.columns - startPart.trueLength();
   
     // make check have the same size of the largest item
     // minus 2 because this has to count the 2 spaces
@@ -363,22 +373,11 @@ const todoncli = {
   
     // top bar
     console.log(`${startPart} ${colors.inverse(todosName)}\n`);
-    return startPartLength; // Return columsTerminal
+    return startPart.trueLength(); // Return columsTerminal
   },
   // show groups name
   // bottomPartGroups
   groupsList: () => {
-    const COLUMNS = process.stdout.columns;
-
-    // for put separator in center
-    const INVERSE_LENGTH = colors.inverse('').length;
-  
-    const UNDERLINE_LENGTH = colors.underline('').length + INVERSE_LENGTH;
-    const STRIKE_LENGTH = colors.strike('').length + INVERSE_LENGTH;
-    const STRIKE_UNDERLINE_LENGTH = UNDERLINE_LENGTH + STRIKE_LENGTH + INVERSE_LENGTH;
-  
-    let colorsStringLength = 0;
-  
     // map array to underline the actual group
     const newGroups = GROUPS.map(group => {
   
@@ -401,58 +400,39 @@ const todoncli = {
         // is selected?
         case GROUPS[CUR_NAME]:
           // colorize group that is fully checked 
-          if (isComplete) {
-            colorsStringLength += STRIKE_LENGTH - INVERSE_LENGTH;
-  
+          if (isComplete)
             return colors.strike(group);
-          }
           // just underline it if it's selected
-          else {
-            colorsStringLength += UNDERLINE_LENGTH;
+          else
             return colors.inverse(colors.underline(group));
-          }
           break;
   
         default:
           // return group that is fully checked
-          if (isComplete) {
-  
-            colorsStringLength += STRIKE_LENGTH;
-  
+          if (isComplete) 
             return colors.strike(colors.inverse(group));
-          }
-          else {
-            colorsStringLength += INVERSE_LENGTH;
+          else
             return colors.inverse(group);
-          }
       }
   
     });
   
     // center
-    for (let i = 0; i < newGroups.length - 1; i++)
-      colorsStringLength += INVERSE_LENGTH;
-  
     let groupsString = newGroups.join(colors.inverse(' '));
 
     // put groups in center
-    while (groupsString.length - colorsStringLength < COLUMNS - 1)
+    while (groupsString.trueLength()  < process.stdout.columns - 1)
+      // -1 trick when colums of terminal is odd
       groupsString = ` ${groupsString} `;
 
-    while (groupsString.length - colorsStringLength < COLUMNS)
+    while (groupsString.trueLength() < process.stdout.columns)
       groupsString += ' ';
   
     groupsString = groupsString.replace(/  +/g, s => colors.inverse(s));
-  
-  
+
+
     console.log(`\n${groupsString}\n`);
-  
-    // all right
-    // you can come to me
-    // and say
-    // 'HEY MAN, THIS IS NOT READABLE, THIS IS REALLY BAD'
-    // and I'll say
-    // 'MAN, I KNOW THAT, I KNOW, MAN, BUT YOU KNOW, THIS IS THE ONLY WAY THIS F***** S*** BECOME INVERSE IN TERMINAL, MAN'
+
   },
   // show todos information, todos and groups
   todos: function () {
@@ -460,15 +440,23 @@ const todoncli = {
     let maxIdLength = (CUR_GROUP.length.toString()).length;
     // group information
     const startPartLength = this.todosInformation(maxIdLength);
-    const columnsTerminal = process.stdout.columns - startPartLength - 2;
-    const columnsSeparator = process.stdout.columns - maxIdLength - 2;
-  
+    const TODO_LENGTH = process.stdout.columns - startPartLength - 1; // space for space
+
+    let space = '';
+    while (space.length <= startPartLength)
+        space += ' ';
+
+    const SEPARATOR_LENGTH = process.stdout.columns // columns
+                                                              - maxIdLength // space for id (start)
+                                                              - 1 // space for space, lol
+
     // Todos
-    CUR_GROUP.forEach((todo, index) => {
+    CUR_GROUP.forEach((todo, index) =>  {
       // prettier the index in the output to be
       // the exactly width of the last todo's index
       index = index.toString();
-      while (index.length < maxIdLength || index.length < 2)
+      while (index.length < maxIdLength
+                     || index.length < 2) // min length is 2 because ID = 2
         index = ` ${index}`;
   
       // if it is a separator
@@ -478,17 +466,18 @@ const todoncli = {
         // if it's just a letter
         if (separator.length === 1)
           // repeat the separator to the end of the terminal columns
-          while (separator.length <= columnsSeparator)
+          while (separator.length <  SEPARATOR_LENGTH)
             separator += todo.text;
   
         // if it's an word
         else {
           // put separator in center
           // -1 because it adds more
-          while (separator.length <= columnsSeparator - 1)
+          while (separator.length < SEPARATOR_LENGTH - 1)
+            // -1 trick when colums of terminal is odd
             separator = ` ${separator} `;
           // if needs more one character add space in end
-          while (separator.length <= columnsSeparator)
+          while (separator.length < SEPARATOR_LENGTH)
             separator += ' ';
         }
   
@@ -509,26 +498,31 @@ const todoncli = {
       // for every todo there's a start string 
       const startString = `${index} ${color(status)} ${color(activity)} ${colors.white(actualTime)}`;
   
+      // when text is bigger than terminal separate in lines
+      if (task.length > TODO_LENGTH) {
   
-      if (task.length > columnsTerminal) {
-        let separator = '';
-        while (separator.length <= startPartLength + 1) separator += ' ';
-  
-        const matchLimit = new RegExp(`.{1,${columnsTerminal}}`, 'g');
+        const matchLimit = new RegExp(`.{1,${TODO_LENGTH}}`, 'g');
         const allStrings = task.match(matchLimit);
-  
+
+        // loop to print all lines
         allStrings.forEach((string, si) => {
-          // output final for the first line of the task > show data, status
+
+          // output final for the first line of the task
+          // > show data, status
           if (si === 0)
             console.log(`${startString} ${color(string)}`);
+
           // output final for the rest of the lines > only task
           else {
             string = string.replace(/^\s/, '');
-            while (string.length < columnsTerminal) string += ' ';
-            console.log(separator + color(string));
+            console.log(space + color(string));
           }
+
         });
+
+      // if everything is normal just print the todo
       } else console.log(`${startString} ${color(task)}`);
+
     });
   
   
@@ -775,8 +769,13 @@ process.stdin.on('keypress', (ch, key) => {
   if (key.name === 'left' && key.shift === true) {
     todoncli.check('tabreverse');
   }
-      
 });
+
+// real time update to resize
+process.stdout.on('resize', () =>  {
+    rl.pause();
+    todoncli.ask();
+})
 
 const groups = {
 
@@ -1481,9 +1480,9 @@ const itemsParse = {
       else if (time > 10080 && time < 43800)
         time = `-${this.roundIt(time / 10080)}w`; // Weeks
       else if (time > 43800)
-        time = `-${this.roundIt(time / 43800)}m`; // Months
+        time = `-${this.roundIt(time / 43800)}mo`; // Months
       else
-        time = this.roundIt(time);
+        time = this.roundIt(time + 'm');
 
       output = time;
     }

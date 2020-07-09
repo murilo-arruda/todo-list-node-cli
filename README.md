@@ -24,10 +24,10 @@ Implementation of a Todo List in Node.js. Manage your todos directly in the term
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## ✨ Features v3.1
+## ✨ Features v3.3
 
-* Fixed creating files error.
-* Added 'addcheck' command.
+* Real time resize.
+* Faster.
 
 ## 🖨 Command Cheat
 
