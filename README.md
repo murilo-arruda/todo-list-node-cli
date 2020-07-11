@@ -127,7 +127,3 @@ Pull requests are always open! Feel free to help!
 For asks just create an issue.
 
 For development I recommend you fast exit using `CTRL + c` or `e` and then back with `node .`.
-
-## 📃 License
-
-[MIT](/LICENSE.md?raw=trueg).

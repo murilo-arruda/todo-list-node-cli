@@ -438,6 +438,10 @@ const todoncli = {
   todos: function () {
     // inconstant length
     let maxIdLength = (CUR_GROUP.length.toString()).length;
+    // min = 2
+    if (maxIdLength < 2)
+      maxIdLength = 2;
+
     // group information
     const startPartLength = this.todosInformation(maxIdLength);
     const TODO_LENGTH = process.stdout.columns - startPartLength - 1; // space for space
@@ -464,10 +468,13 @@ const todoncli = {
         let separator = todo.text;
   
         // if it's just a letter
-        if (separator.length === 1)
+        if (separator.length === 1) {
           // repeat the separator to the end of the terminal columns
-          while (separator.length <  SEPARATOR_LENGTH)
+          while (separator.length < SEPARATOR_LENGTH)
+            // -1 trick when colums of terminal is odd
             separator += todo.text;
+
+        }
   
         // if it's an word
         else {
