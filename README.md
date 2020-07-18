@@ -97,6 +97,10 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 Initial Work
 [@passok11](https://twitter.com/passocabr)
 
+Major Update
+
+[@Koetemagie](https://github.com/Koetemagie)
+
 Features
 [@IAMOTZ](https://github.com/IAMOTZ)
 [@Koetemagie](https://github.com/Koetemagie)
