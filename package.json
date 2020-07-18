@@ -1,17 +1,14 @@
 {
-  "name": "todo-cli-node",
-  "version": "0.3.0",
-  "description": "Todo List CLI build whit node",
-  "main": "index.js",
-  "repository": "https://github.com/github.com/passok11",
-  "author": "passok11",
+  "name": "todoncli",
+  "version": "3.0",
+  "description": "Todo List CLI with node.",
+  "main": "todoncli.js",
+  "repository": "https://github.com/Koetemagie/todoncli",
+  "author": "Koetemagie",
   "license": "MIT",
-  "dependencies": {
-    "chalk": "^2.4.1",
-    "each-async": "1.1.1",
-    "indent-string": "3.2.0"
-  },
+  "dependencies": {},
   "scripts": {
-    "start": "node index.js"
-  }
+    "start": "node todoncli.js"
+  },
+  "devDependencies": {}
 }

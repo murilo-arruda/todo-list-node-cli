@@ -1,185 +1,129 @@
-
-
-# Todo List CLI
+# 🤍 Todo List CLI
 > Todo List CLI build in Node.js
 
-Simple implementation of a Todo List in Node.js. Manage your todos directly in the terminal.
+*We are hackers, and hackers have black terminals with gray and white text*
 
-## Installation
+![Template](/preview/template.webp?raw=trueg)
 
-- Clone the repo: `git clone https://github.com/Passok11/todo-list-node-cli.git`
-- Go into the repo folder locally: `cd todo-list-node-cli`
-- Run `npm install` from the terminal to install **node_modules**.
-- And finally, run `node index.js` from the terminal to run Todo List CLI.
+Implementation of a Todo List in Node.js. Manage your todos directly in the terminal with a lot of features.
 
-Windows:
+## ⌨️ Installation
 
-If you're using Windows, do yourself a favor and use [`cmder`](http://cmder.net/) instead of `cmd.exe`.
+- Install [node](https://nodejs.org/);
+- Download the latest version [here](https://github.com/Koetemagie/todoncli/releases/latest)!
+- Open it with app.vbs if you are in Windows or in terminal use `node .`.
 
+## TodoNcli Installation
 
-## Usage
+- Download this repository. Or use terminal with git: `git clone https://github.com/Passok11/todo-list-node-cli.git`;
+- Open the repository folder locally. Or use terminal: `cd todoncli`;
+- If you are using Windows, open **app.vbs**. Or in the terminal run todoncli using any of these commands: `node .`, `node todoncli.js`;
+- You can make an alias in Linux to open it faster. Example: `echo 'alias nd="cd ~/TODONCLIFOLDER/ && node todoncli.js"' >> ~/.bashrc`, then `. ~/.bashrc`.
 
-### Add New Todo
+### Windows:
 
-Type `a YOUR_TODO_HERE` to add a new todo. In this example, we will add **'Third Todo'**.
+If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-```
-    0 - [X] First Todo
-    1 - [ ] Second Todo
+## ✨ Features v3.3
 
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    > a Third Todo
-```
+* Real time resize.
+* Faster.
 
-Which gives:
+## 🖨 Command Cheat
 
-```
-    0 - [X] First Todo
-    1 - [ ] Second Todo
-    2 - [ ] Third Todo
+> usage: `command [arguments]` - the arguments are space separated!
 
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    >
-```
+* `a` or `add` - Add a new todo. Default is in the main list, if you want to add in a index then add in the end the index number with minus prefix.
+* `x` or `check` - Checkmark the items. This will check the first item and the third. If you want to check only one, then just type one to-do index.
+* `r` or `remove` - This will remove the first two items. If you want to check only one, then just type the index.
+* `h` or `help` - Show help. Duh :3
+* `e` or `exit` - Exit the program. :|
+* `rd` or `redo` - This will redo the last to-do. Only working add e remove (with bugs).
+* `m` or `move` - This will move the todo.
+* `s` or `switch` - Switch the todo with another.
+* `c` or `copy` - This will copy the todo.
+* `rs` or `restart` - Restart the program. :|
+* `l` or `license` - Show the license of the software.
+* `g` or `get` - This will copy to clipboard the todo.
+* `rc` or `remcheckeds` - This will remove all the the checked to-dos.
+* `t` or `tab` - Show next group.
+* `tr` or `tabreverse` - Show previous group.
+* `ng` or `namegroup` - Rename the selected group. First is the group you want to rename, then the name you want.
+* `ag` or `addgroup` - Create a new group of to-dos. This helps you to organize better the types of to-dos you have.
+* `rg` or `remgroup` - Delete the selected group.
+* `sg` or `showgroup` - Show the selected group.
+* `cg` or `checkgroup` - Check all todos in the selected group.
+* `et` or `edittime` - This will edit the time for repeat todo.
+* `at` or `addtime` - Add a todo which will loop in a certain time.
+* `as` or `addseparator` - Add a separator which will separe todos in a group.
+* `mg` or `movegroup` - Move a group to another.
+* `ea` or `editall` - Replace a word or phrase to another.
+* `ax` or `addcheck` - Add and check a todo.
 
-### Check/Uncheck Existing Todo
+## To-do
 
-Type `c TODO_INDEX_HERE` to check/uncheck existing todos. You can check or uncheck more than one todo at once. In this example, we will check **'First Todo'** and **'Third Todo'**.
-
-```
-    0 - [ ] First Todo
-    1 - [ ] Second Todo
-    2 - [ ] Third Todo
-
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    > c 0 2
-```
-
-Which gives:
-
-```
-    0 - [X] First Todo
-    1 - [ ] Second Todo
-    2 - [X] Third Todo
-
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    >
-```
-
-### Remove Existing Todo
-
-Type `r TODO_INDEX_HERE` to remove an existing todo. You can remove more than one todo at once. In this example, we will remove **'First Todo'** and **'Third Todo'**.
-
-```
-    0 - [X] First Todo
-    1 - [ ] Second Todo
-    2 - [X] Third Todo
-
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    > r 0 2
-```
-
-Which gives:
-
-```
-    0 - [ ] Second Todo
-
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    >
-```
-
-In this example, we will remove a range of todos(from **'Second Todo'** to **'Third Todo'**)
-```
-    0 - [ ] First Todo
-    1 - [X] Second Todo
-    2 - [X] Third Todo
-    3 - [X] Fourth Todo
-    4 - [ ] Fifth Todo
-
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    > r 1-3
-```
-
-Which gives:
-
-```
-    0 - [ ] First Todo
-    1 - [ ] Fifth Todo
-
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    >
-```
-
-### Documentation
-
-You can open the built-in documentation by typing `h` as such:
-
-```
-    0 - [X] First Todo
-
-    type an option: (a)dd, (c)heck, (r)emove, (h)elp, (e)xit
-    > h
-```
-
-Which gives:
-
-```
-  TODO LIST NODE CLI
-
-  Manage your todos anytime using command line!
-
-  Every change will be saved in your system.
-
-  usage: 'command [arguments]' - the arguments are space separated!
+![Project's to-dos](/preview/todos.png?raw=trueg)
 
 
-  add - add a new todo. Example add my new task
+## Tips
 
-  check - checkmark the  items. Example: check 0 2. this will check the first item and the third.
+* You can use *addtime* and *add* commands to create a todo and put in a index, for example:
+`a -5 Add this is in the fifth index`
 
-  remove - remove items from the list. Example remove 0 1. this will remove the first two items.
+* You can use *t* command to switch groups quickly.
 
-  you can use the initial letter of each command for a shortcut
+* You can use flags to add separators in a group. [**line**/**l**, **transparent**/**t**, or custom **"#"**]
+* `as line`
+* `as l`
+* `as X`
 
-  > PRESS ENTER TO CONTINUE <
-```
+* `as -5 line`
+* `as l -5`
+* `as -5 +`
+* `as # -5`
 
-  > usage: `command [arguments]` - the arguments are space separated!
+* Fast replace.
+* `ea this new`
 
-* `a` or `add` - add a new todo. Example add my new task
-* `c` or `check` - checkmark the items. Example: `check 0 2`. this will check the first item and the third.
-* `r` or `remove` - remove items from the list. Example `remove 0 1`. this will remove the first two items.
-* `h` or `help` - get available commands
-* `e` or `exit` - exit cli
 
-*Todos are save in the `todos.json` file*
+## 💻 Usage
 
-## Release History
-* 0.3.0
-    * Hacktoberfest
-* 0.2.0
-    * First beta release
-* 0.1.0
-    * Work in progress
+*Todos are save in the `todos.json` file.*
+
+![Documentation](/preview/documentation.png?raw=trueg)
 
 ## Contributors
 
-Initial Work - [@passok11](https://twitter.com/passocabr)
+Initial Work
+[@passok11](https://twitter.com/passocabr)
 
-Features - [IAMOTZ](https://github.com/IAMOTZ)
+Features
+[@IAMOTZ](https://github.com/IAMOTZ)
+[@Koetemagie](https://github.com/Koetemagie)
 
-Code improvements - [@Johnb21](https://github.com/Johnb21) [JackieCalapristi](https://github.com/JackieCalapristi)
+Code improvements
+[@Johnb21](https://github.com/Johnb21)
+[@JackieCalapristi](https://github.com/JackieCalapristi)
+[@Koetemagie](https://github.com/Koetemagie)
 
-Minor Update - [ywpark1](https://github.com/ywpark1) [zjael](https://github.com/zjael)
+Minor Update
+[@ywpark1](https://github.com/ywpark1)
+[@zjael](https://github.com/zjael)
 
-Compatibility - [mani1soni](https://github.com/mani1soni)
+Compatibility
+[@mani1soni](https://github.com/mani1soni)
 
-Documentation - [@gattigaga](https://github.com/gattigaga)
+Documentation
+[@gattigaga](https://github.com/gattigaga)
 [@Ridermansb](https://github.com/Ridermansb)
 [@Primogenia](https://github.com/Primogenia)
 [@tducasse](https://github.com/tducasse)
+[@Koetemagie](https://github.com/Koetemagie)
 
-
-## Contributing
+## 📝 Contributing
 
 Pull requests are always open! Feel free to help!
+
+For asks just create an issue.
+
+For development I recommend you fast exit using `CTRL + c` or `e` and then back with `node .`.
