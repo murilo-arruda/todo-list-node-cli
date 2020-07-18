@@ -98,7 +98,6 @@ Initial Work
 [@passok11](https://twitter.com/passocabr)
 
 Major Update
-
 [@Koetemagie](https://github.com/Koetemagie)
 
 Features
