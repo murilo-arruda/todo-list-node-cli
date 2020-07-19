@@ -1,11 +1,11 @@
 {
   "name": "todoncli",
-  "version": "3.0",
+  "version": "3.4",
   "description": "Todo List CLI with node.",
   "main": "todoncli.js",
-  "repository": "https://github.com/Koetemagie/todoncli",
-  "author": "Koetemagie",
-  "license": "MIT",
+  "repository": "https://github.com/murilo-arruda/todo-list-node-cli/",
+  "author": "https://github.com/murilo-arruda",
+  "license": "",
   "dependencies": {},
   "scripts": {
     "start": "node todoncli.js"

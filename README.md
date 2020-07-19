@@ -24,10 +24,10 @@ Implementation of a Todo List in Node.js. Manage your todos directly in the term
 
 If you're using Windows 7 or lower. I recommend you use another terminal, such as [cmder](http://cmder.net/). ~~Or just update to Windows 10 :3~~
 
-## ✨ Features v3.3
+## ✨ Features v3.4
 
-* Real time resize.
-* Faster.
+* Cleaner code.
+* Fixed NaN error on todos with time.
 
 ## 🖨 Command Cheat
 
@@ -88,7 +88,7 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 
 ## 💻 Usage
 
-*Todos are save in the `todos.json` file.*
+*Todos are saved in the `todos.json` file.*
 
 ![Documentation](/preview/documentation.png?raw=trueg)
 

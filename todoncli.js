@@ -11,6 +11,9 @@ const TODOS_PATH = 'todos.json';
 // CUR_COLUMS = current colums of terminal, to change it if update
 let TODOS, GROUPS, CUR_GROUP, CUR_NAME, CUR_COLUMNS;
 
+
+/// Parsers for program ///
+
 // Colors method for colorize terminal output
 const colors = {
   res: '\x1b[0m',
@@ -20,6 +23,73 @@ const colors = {
   underline: m => `\x1b[4m${m + colors.res}`,
   strike: m => `\x1b[9m${m + colors.res}`, }
 
+// To get commands and ouputs
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+// center in terminal size (colums only yet) //
+const center = (str, instead, only = false, letter = ' ') => {
+  // str = string to center                             // String //
+  // instead = instead of using process.stdoud use this // Array //
+  // only = only add space (+= ' ')                     // Boolean //
+  // letter = instead of using space use this           // String with one letter //
+
+  // need always a string
+  if (!str) return '';
+
+  if (only && instead)
+    instead = [0, instead];
+
+  if (!instead) {
+    const columns = process.stdout.columns;
+    if (!only) {
+      while (str.trueLength() < columns - 3)
+        // 3 = 2 of the spaces added + 1 of odd terminal sizes 
+        str = letter + str + letter;
+    }
+
+    while (str.trueLength() < columns)
+      str += letter;
+
+  } else {
+    if (!only) {
+      while (str.trueLength() < instead[0])
+        str = letter + str + letter;
+    }
+
+    if (instead.length === 1)
+      instead.push(instead);
+
+    while (str.trueLength() < instead[1])
+      str += letter;
+  }
+
+  return str; 
+}
+
+
+/// Helpers for the program ///
+
+// shortcut
+process.stdin.on('keypress', (ch, key) => {
+  // alt + > === tab
+  if (key.name === 'right' && key.shift === true)
+    todoncli.check('tab');
+  // alt + < === tabreverse
+  if (key.name === 'left' && key.shift === true) {
+    todoncli.check('tabreverse');
+  }
+});
+
+// real time update to resize
+process.stdout.on('resize', () =>  {
+    rl.pause();
+    todoncli.ask();
+})
+
+/// Methods ///
 
 // get true length of a a string with colors
 // this is necessary since javascript thinks
@@ -29,18 +99,17 @@ const colors = {
 // so this is the only solution to count this correctly
 // javascript is very weird, isn't?
 String.prototype.trueLength = function () {
- if (this === null) return 0;
+  // always string
 
  let matches = this.match(/\[\d+m/g);
 
- if (matches !== null)
+ if (matches)
     matches = matches.join('').length;
 
   let lengthHex = 0;
-
   const hexs = this.split('');
 
-  if (hexs !== null) {
+  if (hexs) {
     for (l of hexs) {
       if (l === '\x1B')
         lengthHex++;
@@ -63,13 +132,9 @@ Array.prototype.move = function (from, to) {
 
   this[to] = target;
   return this;
-} 
+}
 
-// To get commands and ouputs
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+/// ///
 
 // Redefines console.clear for full clean output (windows and linux)
 console.clear = () => {
@@ -105,8 +170,8 @@ const todoncli = {
   
     // top bar
     console.log(colors.inverse(out) + '\n\n'
-                                + message + '\n\n'
-                                + colors.inverse(out) + '\n');
+                 + message + '\n\n'
+                 + colors.inverse(out) + '\n');
   
     // if it's critical then just stop the program
     if (critical)
@@ -218,10 +283,6 @@ const todoncli = {
         'Show this. Duh :3',
         'help',
       ],
-      [ ['license', 'l'],
-        'Show the license of the software.',
-        'license',
-      ],
       [ ['addgroup', 'ag'],
         'Create a new group of to-dos. This helps you to organize better the types of to-dos you have.',
         'addgroup NewWorld',
@@ -280,8 +341,8 @@ const todoncli = {
       ],
     ];
   
-    let VERSION = '3.3';
-    const NAME = 'TodoNcli (^o^)/';
+    let VERSION = '3.4';
+    const NAME = 'TodoNcli (>_<)/';
     const SYNOPSIS = 'Manage your todos anytime using command line!\r\nEvery change will be saved in your drive.';
     const USAGE = `Usage: ${colors.inverse('command [arguments]')} - the arguments are space separated!`;
     const LEAVE = 'To leave, just press anything!';
@@ -310,20 +371,6 @@ const todoncli = {
   
     });
   },
-  // showLicense
-  // Show the license :|
-  license: () => {
-    console.log(`
-    todoncli
-  
-    Copyright © 2020-2020 Koetemagie
-    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without │ restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-  
-    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-  
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-   `);
-  },
   // ???
   // showProtec
   protec: () => {
@@ -342,38 +389,41 @@ const todoncli = {
   },
   // previous: topPartTodos
   todosInformation: maxIdLength => {
-    let id = 'ID';                                                         // inconstant length item
-    let check = 'Check';                                                   // 3 length item
-    //let brazilianDateType = false;                                       // day first | true or false
-    let todosName = GROUPS[CUR_NAME];                                      // inconstant length item
-    let date = 'Date';                                                     // 2 to 18 length item
-    const maxTodosLength = (function () {                                  // inconstant length
+    let id = 'ID';                                         // inconstant length item
+    let check = 'Check';                                  // 3 length item
+    //let brazilianDateType = false;                    // day first | true or false
+    let todosName = GROUPS[CUR_NAME];                   // inconstant length item
+    let date = 'Date';                                    // 2 to 18 length item
+    const minColumns = 15;                                // min column task size
+    const maxTodosLength = (function () {               // inconstant length
       const texts = CUR_GROUP.map(t => t.text);
       return Math.max(...(texts.map(el => el.length)));
     })();
   
-    const minColumns = 15;                                                 // min column task size
-  
     // make ID have the same size of the largest item
-    while (id.length < maxIdLength) id = ` ${id}`;
+    //while (id.length < maxIdLength) id = ` ${id}`;
+    id = center(id, [maxIdLength]);
     // make date have the same size of the items
-    while (date.length < 16) date += ' ';
+    //while (date.length < 16) date += ' ';
+    date = center(date, [16]);
   
     // part without group's name
     const startPart = `${colors.inverse(id)} ${colors.inverse(check)} ${colors.inverse(date)}`;
 
-    // -1 because terminal sometimes read more one line with a custom rezise
     let columnsTerminal = process.stdout.columns - startPart.trueLength();
   
     // make check have the same size of the largest item
     // minus 2 because this has to count the 2 spaces
-    while (todosName.length < columnsTerminal - 2) todosName += ' ';
+    //while (todosName.length < columnsTerminal - 1) todosName += ' ';
+    todosName = center(todosName, [columnsTerminal - 2, columnsTerminal - 1]);
     // min length for task string...
     if (columnsTerminal < minColumns) columnsTerminal = minColumns;
   
     // top bar
     console.log(`${startPart} ${colors.inverse(todosName)}\n`);
-    return startPart.trueLength(); // Return columsTerminal
+
+    // Return the length of the startpart to fix the lengh of the task
+    return startPart.trueLength();
   },
   // show groups name
   // bottomPartGroups
@@ -421,15 +471,10 @@ const todoncli = {
     let groupsString = newGroups.join(colors.inverse(' '));
 
     // put groups in center
-    while (groupsString.trueLength()  < process.stdout.columns - 1)
-      // -1 trick when colums of terminal is odd
-      groupsString = ` ${groupsString} `;
-
-    while (groupsString.trueLength() < process.stdout.columns)
-      groupsString += ' ';
-  
+    groupsString = center(groupsString, [process.stdout.columns - 1, process.stdout.columns]);
+    
+    // replace the empty space with inverse space
     groupsString = groupsString.replace(/  +/g, s => colors.inverse(s));
-
 
     console.log(`\n${groupsString}\n`);
 
@@ -444,15 +489,13 @@ const todoncli = {
 
     // group information
     const startPartLength = this.todosInformation(maxIdLength);
-    const TODO_LENGTH = process.stdout.columns - startPartLength - 1; // space for space
+    let TODO_LENGTH = process.stdout.columns - startPartLength - 1; // space for space
 
-    let space = '';
-    while (space.length <= startPartLength)
-        space += ' ';
+    let space = center(' ', startPartLength + 1, true); // +1 equals to the space (1 length)
 
     const SEPARATOR_LENGTH = process.stdout.columns // columns
-                                                              - maxIdLength // space for id (start)
-                                                              - 1 // space for space, lol
+                                                          - maxIdLength // space for id (start)
+                                                          - 1 // space for space, lol
 
     // Todos
     CUR_GROUP.forEach((todo, index) =>  {
@@ -460,7 +503,7 @@ const todoncli = {
       // the exactly width of the last todo's index
       index = index.toString();
       while (index.length < maxIdLength
-                     || index.length < 2) // min length is 2 because ID = 2
+              || index.length < 2) // min length is 2 because ID = 2
         index = ` ${index}`;
   
       // if it is a separator
@@ -470,22 +513,14 @@ const todoncli = {
         // if it's just a letter
         if (separator.length === 1) {
           // repeat the separator to the end of the terminal columns
-          while (separator.length < SEPARATOR_LENGTH)
-            // -1 trick when colums of terminal is odd
-            separator += todo.text;
+          separator = center(separator, SEPARATOR_LENGTH, true, todo.text);
 
         }
   
         // if it's an word
         else {
           // put separator in center
-          // -1 because it adds more
-          while (separator.length < SEPARATOR_LENGTH - 1)
-            // -1 trick when colums of terminal is odd
-            separator = ` ${separator} `;
-          // if needs more one character add space in end
-          while (separator.length < SEPARATOR_LENGTH)
-            separator += ' ';
+          separator = center(separator, [SEPARATOR_LENGTH - 1, SEPARATOR_LENGTH]);
         }
   
         return console.log(`${colors.white(index)} ${colors.white(separator)}`);
@@ -507,6 +542,10 @@ const todoncli = {
   
       // when text is bigger than terminal separate in lines
       if (task.length > TODO_LENGTH) {
+
+        // if the terminal size is so small then makes it at least 10
+        if (TODO_LENGTH < 10)
+          return console.log(`${startString} ${color(task)}`);
   
         const matchLimit = new RegExp(`.{1,${TODO_LENGTH}}`, 'g');
         const allStrings = task.match(matchLimit);
@@ -550,7 +589,6 @@ const todoncli = {
     // show
     // 1 = documentation, commands
     // 2 = ???
-    // 3 = license
     //   = todos of the group
     switch (TYPE) {
       case 1:
@@ -558,9 +596,6 @@ const todoncli = {
         break;
       case 2:
         this.protec();
-        break;
-      case 3:
-        this.license();
         break;
       default:
         this.todos();
@@ -732,10 +767,6 @@ const todoncli = {
       case 'protec':
         TYPE = 2;
         break;
-      case 'l':
-      case 'license':
-        TYPE = 3;
-        break;
 
       // 
       // todoncli
@@ -766,23 +797,6 @@ const todoncli = {
 //
 // Group Functions
 //
-
-// shortcut
-process.stdin.on('keypress', (ch, key) => {
-  // alt + > === tab
-  if (key.name === 'right' && key.shift === true)
-    todoncli.check('tab');
-  // alt + < === tabreverse
-  if (key.name === 'left' && key.shift === true) {
-    todoncli.check('tabreverse');
-  }
-});
-
-// real time update to resize
-process.stdout.on('resize', () =>  {
-    rl.pause();
-    todoncli.ask();
-})
 
 const groups = {
 
@@ -1030,7 +1044,7 @@ const items = {
       return itemsParse.addDirectSeparator(text[0]);
   
     } else if (text.length >= 2) {
-      const validate = getIndex(text);
+      const validate = itemsParse.index(text);
   
       if (typeof validate.index === 'number')
         return itemsParse.addDirectSeparator(validate.text, validate.index);
@@ -1104,7 +1118,6 @@ const items = {
     if (args[1] - 1 !== args[0])
       this.move([args[1] - 1, args[0]]); 
   },
-
   // previous: copyTodo
   copy: args => {
     // if theres only the todo you want to move then default   position to move is the last one
@@ -1459,7 +1472,7 @@ const itemsParse = {
     return validate;
   },
   // round number to 2 dec
-  roundIt: n => Math.round((n + Number.EPSILON) * 100) / 100,
+  roundIt: (n, type) => (Math.round((n + Number.EPSILON) * 100) / 100) + type,
   // Format todo time for showTodos function
   // previous: formatTodoTime
   time: function (time, repeatTime, lastRepeated) {
@@ -1481,15 +1494,15 @@ const itemsParse = {
       let time = ((repeatTime + lastRepeated) - now) / 60000;
 
       if (time > 60 && time < 1440)
-        time = `-${this.roundIt(time / 60)}h`;    // Hours
+        time = this.roundIt(time / 60, 'h');    // Hours
       else if (time > 1440 && time < 10080)
-        time = `-${this.roundIt(time / 1440)}d`;  // Days
+        time = this.roundIt(time / 1440, 'd');  // Days
       else if (time > 10080 && time < 43800)
-        time = `-${this.roundIt(time / 10080)}w`; // Weeks
+        time = this.roundIt(time / 10080, 'w'); // Weeks
       else if (time > 43800)
-        time = `-${this.roundIt(time / 43800)}mo`; // Months
+        time = this.roundIt(time / 43800, 'mo'); // Months
       else
-        time = this.roundIt(time + 'm');
+        time = this.roundIt(time, 'm');
 
       output = time;
     }
@@ -1498,7 +1511,5 @@ const itemsParse = {
     return output;
   }
 }
-
-
 
 todoncli.start();
