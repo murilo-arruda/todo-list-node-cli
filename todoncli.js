@@ -1,8 +1,12 @@
 const readline = require('readline');
 const fs = require('fs');
 const sleep = require('util').promisify(setTimeout);
-
 const TODOS_PATH = 'todos.json';
+
+
+////////////////////////////////////////////////
+/// Library for the most important variables ///
+////////////////////////////////////////////////
 
 // TODOS      = file of todos
 // GROUPS     = array with the name of all groups
@@ -12,9 +16,48 @@ const TODOS_PATH = 'todos.json';
 let TODOS, GROUPS, CUR_GROUP, CUR_NAME, CUR_COLUMNS;
 
 
-/// Parsers for program ///
 
-// Colors method for colorize terminal output
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////
+/// Parsers for the program ///
+///////////////////////////////
+
+
+
+// foundation of the program, without this, it won't work (hew)
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+
+
+
+
+
+
+
+
+
+
+// colors lib to colorize strings
 const colors = {
   res: '\x1b[0m',
   white: m => `\x1b[90m${m + colors.res}`,
@@ -23,37 +66,61 @@ const colors = {
   underline: m => `\x1b[4m${m + colors.res}`,
   strike: m => `\x1b[9m${m + colors.res}`, }
 
-// To get commands and ouputs
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
 
-// center in terminal size (colums only yet) //
+
+
+
+
+
+
+
+
+
+
+// center a string in terminal (columns only //
 const center = (str, instead, only = false, letter = ' ') => {
-  // str = string to center                             // String //
-  // instead = instead of using process.stdoud use this // Array //
-  // only = only add space (+= ' ')                     // Boolean //
-  // letter = instead of using space use this           // String with one letter //
 
-  // need always a string
+  // get lenght of current columns from terminal
+  const columns = process.stdout.columns;
+
+  /// str = string to center // String ///
+  /// instead = instead of using process.stdoud use this // Array ///
+  /// only = only add space (+= ' ') // Boolean //
+  /// letter = instead of using space use this // String with one letter
+
   if (!str) return '';
 
+
+  /// if you prefer to align to right AND use a different aligner
   if (only && instead)
     instead = [0, instead];
 
+
+
+
+  /// if you prefer to not use any different aligner
   if (!instead) {
-    const columns = process.stdout.columns;
+
+    //// if it's setted to center in both ways
     if (!only) {
       while (str.trueLength() < columns - 3)
-        // 3 = 2 of the spaces added + 1 of odd terminal sizes 
+        ///// 3 = 2 of the spaces added + 1 of odd terminal sizes 
         str = letter + str + letter;
     }
 
+    //// final touch
     while (str.trueLength() < columns)
       str += letter;
 
+
+
+
+
+
+  /// if you prefer to use a different aligner
   } else {
+
+    //// if it's setted to center in both ways
     if (!only) {
       while (str.trueLength() < instead[0])
         str = letter + str + letter;
@@ -66,13 +133,36 @@ const center = (str, instead, only = false, letter = ' ') => {
       str += letter;
   }
 
+
+
+
   return str; 
 }
 
 
-/// Helpers for the program ///
 
-// shortcut
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////
+/// Helpers for the program ///
+///////////////////////////////
+
+
+// shortcut 
 process.stdin.on('keypress', (ch, key) => {
   // alt + > === tab
   if (key.name === 'right' && key.shift === true)
@@ -83,13 +173,30 @@ process.stdin.on('keypress', (ch, key) => {
   }
 });
 
+
 // real time update to resize
 process.stdout.on('resize', () =>  {
     rl.pause();
     todoncli.ask();
 })
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////
 /// Methods ///
+///////////////
 
 // get true length of a a string with colors
 // this is necessary since javascript thinks
@@ -119,7 +226,15 @@ String.prototype.trueLength = function () {
   return (lengthHex + matches - this.length) * -1;
 }
 
-// move an item to another position
+
+
+
+
+
+
+
+// move an item to another index in array
+
 Array.prototype.move = function (from, to) {
   if (to === from) return this;
 
@@ -134,26 +249,58 @@ Array.prototype.move = function (from, to) {
   return this;
 }
 
-/// ///
 
-// Redefines console.clear for full clean output (windows and linux)
+
+
+
+// redefines console.clear for full clean output (windows and linux)
 console.clear = () => {
   process.stdout.write("\u001b[2J\u001b[0;0H");
   process.stdout.write('\033c\033[3J');
 };
 
-//
-// Data Functions
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////
+/// Data Functions - Functional Program ///
+///////////////////////////////////////////
+
+
+
+
 
 const todoncli = {
-  // previous: save
+  
+
+  // start the program, a few cleaners
   start: function () {
     console.clear();
     CUR_COLUMNS = process.stdout.columns;
     TODOS, GROUPS, CUR_GROUP, CUR_NAME = undefined;
     this.load();
   },
+
+
+
+
+
+
+  // give an alert for the program
   alert: async (message, critical, time) => {
     // types
     // false = warning  = warn user to use correctly 
@@ -180,10 +327,31 @@ const todoncli = {
     // 1.5 segunds timeout
     await sleep(TIMEOUT);
   },
-  // previous: saveData
+
+
+
+
+
+
+
+
+
+
+
+
+  // save data to file...
   // |, null, 2| for prettier output
-  save: () => fs.writeFileSync(TODOS_PATH, JSON.stringify(TODOS), 'utf8'),
-  // previous: loadFile
+  save: () =>
+    fs.writeFileSync(TODOS_PATH, JSON.stringify(TODOS), 'utf8'),
+
+
+
+
+
+
+
+
+  // load the file
   load: function () {
     try {
       TODOS = JSON.parse(fs.readFileSync(TODOS_PATH, 'utf8'));
@@ -200,47 +368,62 @@ const todoncli = {
     } catch (err) {
   
       if (err.code === 'ENOENT') {
-    
-      const TEMPLATE_TODOS = `{
-          "default": [
-            {
-              "isChecked": false,
-              "text": "Check me to test if is working!",
-              "lastUpdated": ${Date.now()}
-            },
-            {
-              "isChecked": true,
-              "text": "You can remove this template todo!",
-              "lastUpdated": ${Date.now()}
-            }
-          ]
-        }`;
-    
-      // if is missing both files generate them
-      fs.writeFileSync(TODOS_PATH, TEMPLATE_TODOS, 'utf8');
-    
-      // parse todos to program
-      TODOS = JSON.parse(fs.readFileSync(TODOS_PATH, 'utf8'));
+      
+        const TEMPLATE_TODOS = `{
+            "default": [
+              {
+                "isChecked": false,
+                "text": "Check me to test if is working!",
+                "lastUpdated": ${Date.now()}
+              },
+              {
+                "isChecked": true,
+                "text": "You can remove this template todo!",
+                "lastUpdated": ${Date.now()}
+              }
+            ]
+          }`;
+      
+        // if is missing both files generate them
+        fs.writeFileSync(TODOS_PATH, TEMPLATE_TODOS, 'utf8');
+      
+        // parse todos to program
+        TODOS = JSON.parse(fs.readFileSync(TODOS_PATH, 'utf8'));
 
-      // load all the groups and return their names
-      GROUPS = Object.keys(TODOS);
+        // load all the groups and return their names
+        GROUPS = Object.keys(TODOS);
 
-      // change id
-      CUR_NAME = 0;
+        // change id
+        CUR_NAME = 0;
 
-      // choose the first group (default)
-      CUR_GROUP = TODOS[GROUPS[CUR_NAME]];
-    
-      return this.ask();
-      // unknown error closes the process
-    } else {
-      console.log(err);
-      process.exit(0);
-    }
+        // choose the first group (default)
+        CUR_GROUP = TODOS[GROUPS[CUR_NAME]];
+      
+        return this.ask();
+        // unknown error closes the process
+      } else {
+        console.log(err);
+        process.exit(0);
+      }
     }
   },
-  // showHelp
-  // Show documentation
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // show documentation
   help: () => {
     const HELP_ALL_COMMANDS = [
       [ ['add', 'a'],
@@ -371,40 +554,40 @@ const todoncli = {
   
     });
   },
-  // ???
-  // showProtec
-  protec: () => {
-    console.log(`
-   ┌───────────────────────────────────────────────────────────────────────────┐
-   │    -=-                                                                    │
-   │ (\\  _  /)                                    The Angel will protec you!   │
-   │ ( \\( )/ )                                                :Z               │
-   │ (       )                                                                 │
-   │  \`>   <´                                                                  │
-   │  /     \\                                                                  │
-   │  \`-._.-´         fgpfy vjlqb jqihl acuan zogf                             │
-   │                                                                           │
-   └───────────────────────────────────────────────────────────────────────────┘
-   `);
-  },
-  // previous: topPartTodos
+
+
+
+
+
+
+
+
+  // show the information of todos, group name, id, etc....
+  // top part of gui
   todosInformation: maxIdLength => {
+
     let id = 'ID';                                         // inconstant length item
-    let check = 'Check';                                  // 3 length item
-    //let brazilianDateType = false;                    // day first | true or false
+    let check = 'Check'; // 3 length item
+
     let todosName = GROUPS[CUR_NAME];                   // inconstant length item
-    let date = 'Date';                                    // 2 to 18 length item
-    const minColumns = 15;                                // min column task size
-    const maxTodosLength = (function () {               // inconstant length
+    let date = 'Date'; // 2 to 18 length item
+    const minColumns = 15; // min column task size
+    const maxTodosLength = (function () {
+      // inconstant length
       const texts = CUR_GROUP.map(t => t.text);
       return Math.max(...(texts.map(el => el.length)));
     })();
+
+
+
+
+
+
   
     // make ID have the same size of the largest item
-    //while (id.length < maxIdLength) id = ` ${id}`;
     id = center(id, [maxIdLength]);
+
     // make date have the same size of the items
-    //while (date.length < 16) date += ' ';
     date = center(date, [16]);
   
     // part without group's name
@@ -414,7 +597,7 @@ const todoncli = {
   
     // make check have the same size of the largest item
     // minus 2 because this has to count the 2 spaces
-    //while (todosName.length < columnsTerminal - 1) todosName += ' ';
+
     todosName = center(todosName, [columnsTerminal - 2, columnsTerminal - 1]);
     // min length for task string...
     if (columnsTerminal < minColumns) columnsTerminal = minColumns;
@@ -425,8 +608,17 @@ const todoncli = {
     // Return the length of the startpart to fix the lengh of the task
     return startPart.trueLength();
   },
-  // show groups name
-  // bottomPartGroups
+
+
+
+
+
+
+
+
+
+
+  // show groups name (bottom part of gui)
   groupsList: () => {
     // map array to underline the actual group
     const newGroups = GROUPS.map(group => {
@@ -479,7 +671,16 @@ const todoncli = {
     console.log(`\n${groupsString}\n`);
 
   },
-  // show todos information, todos and groups
+
+
+
+
+
+
+
+
+
+  // show todo
   todos: function () {
     // inconstant length
     let maxIdLength = (CUR_GROUP.length.toString()).length;
@@ -495,7 +696,7 @@ const todoncli = {
 
     const SEPARATOR_LENGTH = process.stdout.columns // columns
                                                           - maxIdLength // space for id (start)
-                                                          - 1 // space for space, lol
+                                                          - 1 // space for space, yeah
 
     // Todos
     CUR_GROUP.forEach((todo, index) =>  {
@@ -527,6 +728,10 @@ const todoncli = {
       };
   
   
+
+
+
+      // lib
       const task = todo.text;
       const activity = todo.isChecked ? '»' : '>';
       const status = todo.isChecked ? '(+)' : '( )';
@@ -537,9 +742,16 @@ const todoncli = {
         todo.lastRepeated);
   
   
+
+
+
+
+
       // for every todo there's a start string 
       const startString = `${index} ${color(status)} ${color(activity)} ${colors.white(actualTime)}`;
   
+
+
       // when text is bigger than terminal separate in lines
       if (task.length > TODO_LENGTH) {
 
@@ -575,15 +787,34 @@ const todoncli = {
     // groups
     this.groupsList();
   },
+
+
+
+
+
+  // to leave documentation (help command)
   promptNothing: function () {
     rl.question(colors.white('<') + ' ', A => this.ask());
   },
+
+
+
+
+
+  // to get answer for todos
   promptQuestion: function () {
     rl.question(colors.white('>') + ' ', ANSWER => {
       let [answer, ...args] = ANSWER.split(' ');
       this.check(answer, args);
     });
   },
+
+
+
+
+
+
+  // decides if it's help documentatio or todos-list to ask a new command
   ask: function (TYPE) {
     console.clear();
     // show
@@ -593,9 +824,6 @@ const todoncli = {
     switch (TYPE) {
       case 1:
         this.help();
-        break;
-      case 2:
-        this.protec();
         break;
       default:
         this.todos();
@@ -609,6 +837,16 @@ const todoncli = {
     else
       this.promptNothing();
   },
+
+
+
+
+
+
+
+
+  // clear if the last command wasn't validated
+  // (this was tough to work on)
   restartPrompt: function (answer, args) {
     if (CUR_COLUMNS !== process.stdout.columns) {
       CUR_COLUMNS = process.stdout.columns;
@@ -632,8 +870,13 @@ const todoncli = {
       readline.clearScreenDown(process.stdout, () => this.promptQuestion());
     }
   },
-  // Get command and pass to function
-  // previous: checkTask
+
+
+
+
+
+
+  // get command and pass to a function
   check: async function (answer, args) {
     let TYPE;
   
@@ -757,6 +1000,7 @@ const todoncli = {
       case 'addtime':
         items.addTimed(args);
         break;
+
       //
       // outputs
       //
@@ -764,12 +1008,9 @@ const todoncli = {
       case 'help':
         TYPE = 1;
         break;
-      case 'protec':
-        TYPE = 2;
-        break;
 
       // 
-      // todoncli
+      // general todoncli
       // 
       case 'rs': 
       case 'restart':
@@ -794,13 +1035,38 @@ const todoncli = {
   }
 }
 
-//
-// Group Functions
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////
+/// Group Functions - Functional Program ///
+////////////////////////////////////////////
 
 const groups = {
 
+  // restore message todos if a error occur
   restoreMsg: 'Restoring todos with backup... ',
+
+
+
+
 
   // search by letters and replace them
   editAll: async function (args) {
@@ -831,14 +1097,32 @@ const groups = {
 
     }
   },
-  // previous updateGroups
+
+
+
+
+
+
+
+  // update all groups (parser)
   update: all => {
     GROUPS = Object.keys(TODOS);
     // if just needs to load the groups
     // then pass 1 to all (param)
     if (all !== 1) CUR_GROUP = TODOS[GROUPS[CUR_NAME]];
   },
-  // move a group recreating the todos
+
+
+
+
+
+
+
+
+
+
+
+  // move a group recreating the todos file
   move: async args => {
 
     if (args.length !== 2) return;
@@ -890,10 +1174,25 @@ const groups = {
       await todoncli.alert(e);
     }
 
-     
-
   },
-  // showGroup
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // showGroup selected by name
   show: function (WANTED) {
     // if group exists
     if (TODOS[WANTED]) {
@@ -910,7 +1209,17 @@ const groups = {
 
     } else return todoncli.alert('This group doesn\'t exist');
   },
-  // show next group
+
+
+
+
+
+
+
+
+
+
+  // show next group (left to right or right to left)
   tab: reverse => {
     if (GROUPS.length < 1) return;
 
@@ -929,7 +1238,16 @@ const groups = {
       else CUR_NAME++;
     }
   },
-  // nameGroup
+
+
+
+
+
+
+
+
+
+  // change the name of a group
   name: async args => {
     // must be only two args
     if (args.length !== 2) return;
@@ -960,7 +1278,17 @@ const groups = {
       await todoncli.alert(e);
     }
   },
-  // previous: removeGroup
+
+
+
+
+
+
+
+
+
+
+  // remove a group selected by its name
   remove: async args => {
     // must be only one arg
     // and always have to exist at least two groups
@@ -992,7 +1320,18 @@ const groups = {
       return todoncli.alert(e, true);
     }
   },
-  // previous: addGroup
+
+
+
+
+
+
+
+
+
+
+
+  // add a new group
   add: async args => {
     if (args.length !== 1) return;
     const NAME = args[0];
@@ -1003,7 +1342,18 @@ const groups = {
     else
       return TODOS[NAME] = [];
   },
-  // previous: checkGroup
+
+
+
+
+
+
+
+
+
+
+
+  // check all the todos of a  group
   check: async args => {
     if (args.length !== 1) return;
     const NAME = args[0];
@@ -1018,8 +1368,15 @@ const groups = {
     items.check([`0-${TODOS[NAME].length}`]);
     return;
   },
-  // remove checked todos
-  // previous: rem
+
+
+
+
+
+
+
+
+  // remove checked todos of a group selected
   remCheckeds: () => {
     let ids = CUR_GROUP.map((item, index) => {
       if (item.isChecked === true) return index;
@@ -1027,14 +1384,27 @@ const groups = {
     ids = ids.filter(item => item !== undefined);
     items.remove(ids);
   }
+
+
+
+
 }
 
-//
-// Todos Functions
-//
+///////////////////////////////////////////////////////
+/// Todos Individual Functions - Functional Program ///
+///////////////////////////////////////////////////////
 
 const items = {
-  // add separator 
+
+
+
+
+
+
+
+
+
+  // add separator in a index...
   addSeparator: function (text) {
     if (text.length === 1) {
       // if the type doesn't have anything at
@@ -1058,8 +1428,14 @@ const items = {
       });
     }
   },
-  // Add todo in todos files (command check and index)
-  // previous: addTodo
+
+
+
+
+
+
+
+  // add a new todo
   add: function (text, check) {
     if (text.length === 0) return;
     // parse text and return index if theres any
@@ -1086,7 +1462,20 @@ const items = {
           this.check([validate.index]);
     };
   },
-  // previous: editTodo
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // edit a selected todo by its index
   edit: function (text) {
     if (text.length < 1) return;
     // parse text and return index if theres any
@@ -1097,7 +1486,16 @@ const items = {
     else if (validate === 2) return;
     CUR_GROUP[validate.index].text = validate.text;
   },
-  // previous: switchTodo
+
+
+
+
+
+
+
+
+
+  // switch a todo index with another
   switch: function (args) {
     // this does not have a default position, it's forced   two arguments!!!
     // because for switching you must be careful
@@ -1118,7 +1516,13 @@ const items = {
     if (args[1] - 1 !== args[0])
       this.move([args[1] - 1, args[0]]); 
   },
-  // previous: copyTodo
+
+
+
+
+
+
+  // copy a selected todo by its index (idk why I made this)
   copy: args => {
     // if theres only the todo you want to move then default   position to move is the last one
     if (args.length === 1)
@@ -1133,7 +1537,20 @@ const items = {
     // copy it
     CUR_GROUP.splice(index, 0, todo); 
   },
-  // previous: moveTodo
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // move a todo selected by its index to a new index 
   move: args => {
     // if theres only the todo you want to move then default   position to move is the last one
     if (args.length === 1) args.push(CUR_GROUP.length);
@@ -1148,7 +1565,20 @@ const items = {
     // move it
     CUR_GROUP.splice(index, 0, todo); 
   },
-  // previous: checkTodos
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // check a list of todos or just a single one
   check: ids => {
     // verify if there's any item with range in
     ids.forEach((id, index) => {
@@ -1172,6 +1602,18 @@ const items = {
       }
     });
   },
+
+
+
+
+
+
+
+
+
+
+
+  // remove a list of todos or just a single one
   remove: ids => {
     if (ids.length === 0) return;
     // verify if there's any item with range in
@@ -1194,7 +1636,18 @@ const items = {
       if (CUR_GROUP[id]) CUR_GROUP.splice(id, 1);
     });
   },
-  // Copy a text of todo to clipboard
+
+
+
+
+
+
+
+
+
+
+
+  // copy the text of a todo selected by its index
   get: async ids => {
     // always one argument (todo to get text)
     if (ids.length === 1
@@ -1221,8 +1674,19 @@ const items = {
       }
     }
   },
-  // Edit the old time of the loopable todo to a new one
-  // previous: editTimed
+
+
+
+
+
+
+
+
+
+
+
+
+  // edit the old time of the loopable todo to a new one..
   editTime: args => {
     // always two args (first: todo; second: time in minutes)
     if (args.length !== 2) return;
@@ -1242,8 +1706,14 @@ const items = {
       todo.repeatTime = newTime;
     }
   },
-  // Add todo to be repeated
-  // previous: addTodoTimed
+
+
+
+
+
+
+
+  // add todo with a limit time (with repeat)
   addTimed: (args) => {
     if (args.length < 2) return;
     // validate the args with every unique possibility
@@ -1273,10 +1743,41 @@ const items = {
       });
     }
   }
+
+
+
+
+
+
+
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////
+/// Parse functions and methods of the program ///
+//////////////////////////////////////////////////
+
 const itemsParse = {
-  // retrieve index of an number argument
+
+
+
+
+
+  // retrieve index of a number argument
   index: args => {
     const patt = /^-\d+\b|-\d/;
     const lastWord = args[args.length - 1];
@@ -1301,8 +1802,26 @@ const itemsParse = {
        index,
     };
   },
-  // previous: parseMinutesIndex 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // parse minutes......
+
   timed: args => {
+
+
+
     const textJ = args;
     let time;
     // pattern for number with minus as prefix
@@ -1310,6 +1829,12 @@ const itemsParse = {
     let index, minutes, text;
     let lastArg = textJ[textJ.length - 1];
     let penultArg = textJ[textJ.length - 2];
+
+
+
+
+
+
     // if the input is like (at todo -minutes)
     if (patt.test(lastArg) && patt.test(penultArg) === false   && patt.test(args[0]) === false) {
       // parse as normal number for index
@@ -1317,6 +1842,11 @@ const itemsParse = {
       // remove minutes of the text
       textJ.splice(textJ.length - 1, 1);
     }
+
+
+
+
+
     // if the input is like (at -minutes todo)
     else if (patt.test(args[0]) && patt.test(lastArg) ===   false) {
       // parse as normal number for index
@@ -1324,6 +1854,11 @@ const itemsParse = {
       // remove minutes of the text
       textJ.splice(0, 1);
     }
+
+
+
+
+
     // if the input is like (at todo -minutes -index) then
     else if (patt.test(penultArg) && patt.test(lastArg)) {
       // parse as normal number for minutes
@@ -1338,6 +1873,12 @@ const itemsParse = {
       textJ.splice(textJ.length - 2, 1);
       textJ.splice(textJ.length - 1, 1);
     }
+
+
+
+
+
+
     // or if the input is like (at -minutes todo -index)
     else if (patt.test(args[0]) && patt.test(lastArg)) {
       // parse as normal number for minutes and convert it   to miliseconds
@@ -1350,11 +1891,22 @@ const itemsParse = {
       textJ.shift();
       textJ.splice(textJ.length - 1, 1);
     };
+
+
+
+
     text = textJ.join(' ');
     minutes = minutes * 60000;
     return { text, index, minutes };
   },
-  // previous: addNormalTodo
+
+
+
+
+
+
+
+  // add direct todo
   addDirect: text => {
     CUR_GROUP.push({
       isChecked: false,
@@ -1362,8 +1914,15 @@ const itemsParse = {
       lastUpdated: Date.now(),
     });
   },
-  // update todos if their time already passed
-  // previous: testTimedTodos
+
+
+
+
+
+
+
+
+  // update todos with time limits if their time already passed
   updateTimeds: () => {
     CUR_GROUP.forEach(todo => {
       // if todo is loopable
@@ -1381,7 +1940,20 @@ const itemsParse = {
       }
     });
   },
-  // previous: testSeparator
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // parse the separator to add in the program
   addDirectSeparator: (type, index) => {
     // if exists index
     if (typeof index === 'number') {
@@ -1431,8 +2003,20 @@ const itemsParse = {
       }
     }
   },
-  // previous: verifyTwoNumbers
-  // Verify two numbers in a function that reads two numbers and returns true if everything is okay :3 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // verify two numbers in a function that reads two numbers and returns true if everything is okay :3 
   verifyTwoNumbers: args => {
     // always need two arguments
     if (args.length !== 2) return false;
@@ -1446,8 +2030,17 @@ const itemsParse = {
     }
     return true;
   },
+
+
+
+
+
+
+
+
+
+
   // Returns an array with the min value first and the max value at the end
-  // previous: organizeTwoNumbers
   twoNumbers: args => {
     // parse to numbers
     const first = parseInt(args[0]);
@@ -1456,8 +2049,17 @@ const itemsParse = {
     if (second < first) return [second, first];
     else return [first, second];
   },
-  // Range In between two numbers and return their indexes
-  // previous: rangeIn
+
+
+
+
+
+
+
+
+
+
+  // Find a range in between two numbers and return their indexes
   rangeIn: function (ids) {
     ids = [ids];
     let [start, end] = ids[0].split('-');
@@ -1471,12 +2073,33 @@ const itemsParse = {
       validate.push(i.toString());
     return validate;
   },
-  // round number to 2 dec
+
+
+
+
+
+
+
+
+
+
+  // round number to 2 dec (time)
   roundIt: (n, type) => (Math.round((n + Number.EPSILON) * 100) / 100) + type,
-  // Format todo time for showTodos function
-  // previous: formatTodoTime
+
+
+
+
+
+  // format todo time for showTodos function
   time: function (time, repeatTime, lastRepeated) {
     let output;
+
+
+
+
+
+
+
     if (repeatTime === undefined) {
       const date = new Date(time);
       // make date prettier
@@ -1489,6 +2112,13 @@ const itemsParse = {
       });
       output = `${specials[0]}/${specials[1]}/${date.getFullYear()} ${specials[2]}:${specials[3]}`;
     }
+
+
+
+
+
+
+
     else {
       const now = Date.now();
       let time = ((repeatTime + lastRepeated) - now) / 60000;
@@ -1510,6 +2140,11 @@ const itemsParse = {
     while (output.length < 16) output = ` ${output}`;
     return output;
   }
+
+
+
+
+
 }
 
 todoncli.start();

@@ -97,17 +97,14 @@ If you're using Windows 7 or lower. I recommend you use another terminal, such a
 Initial Work
 [@passok11](https://twitter.com/passocabr)
 
-Major Update
-[@Koetemagie](https://github.com/Koetemagie)
-
 Features
 [@IAMOTZ](https://github.com/IAMOTZ)
-[@Koetemagie](https://github.com/Koetemagie)
+[@BeyondMagic](https://github.com/beyondmagic)
 
 Code improvements
 [@Johnb21](https://github.com/Johnb21)
 [@JackieCalapristi](https://github.com/JackieCalapristi)
-[@Koetemagie](https://github.com/Koetemagie)
+[@BeyondMagic](https://github.com/beyondmagic)
 
 Minor Update
 [@ywpark1](https://github.com/ywpark1)
@@ -121,7 +118,7 @@ Documentation
 [@Ridermansb](https://github.com/Ridermansb)
 [@Primogenia](https://github.com/Primogenia)
 [@tducasse](https://github.com/tducasse)
-[@Koetemagie](https://github.com/Koetemagie)
+[@BeyondMagic](https://github.com/beyondmagic)
 
 ## 📝 Contributing
 
